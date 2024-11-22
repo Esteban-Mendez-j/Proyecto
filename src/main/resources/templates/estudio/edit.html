@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{estudio.edit.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{estudio.edit.headline}]]</h1>
+            </div>
+            <div th:replace="~{fragments/forms::globalErrors('estudio')}" />
+            <form th:action="${requestUri}" method="post">
+                <!-- campos ocultos -->
+                <input type="hidden" name="idEstudio" th:value="${estudio.idEstudio}" />
+                <input type="hidden" name="idUsuario" th:value="${estudio.idUsuario}" />
+
+                <!-- campos modificables -->
+                <div th:replace="~{fragments/forms::inputRow(object='estudio', field='titulo', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='estudio', field='academia', required=true)}" />
+                <input type="submit" th:value="#{estudio.edit.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

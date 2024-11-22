@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/ofertas.css}">
+
+    <!-- Para agregar los iconos de redes sociales -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <title>Ofertas</title>
+</head>
+<body class="pagina-ofertas">
+    <div th:replace="~{fragments/plantilla :: header}"></div>  
+
+    <section class="filtro-busqueda"> 
+        <form th:action="@{/vacantes/listar}" method="get" th:object="${filtro}">
+            <div class="search-container">
+                <button class="busqueda-button"><ion-icon name="search-outline"></ion-icon></button>
+                <input type="text" class="search-input" placeholder="Buscar..." th:value="${filtro.titulo}" name="titulo"> 
+                <button class="filter-button"><ion-icon name="options-outline"></ion-icon></button>
+            </div>
+            <div class="form-container" id="filterForm" >
+                <div class="form-row" >
+                    <div class="form-group">
+                        <label for="ciudad">Ciudad</label>
+                        <input type="text" id="ciudad" th:value="${filtro.ciudad}" name="ciudad">
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="cargo">Cargo</label>
+                        <input type="text" id="cargo" th:value="${filtro.cargo}" name="cargo">
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="modalidad">Modalidad</label>
+                        <select id="modalidad" name="modalidad" th:value="${filtro.modalidad}">
+                            <option value="null" th:selected="${filtro.modalidad == 'null'}">Todos</option>
+                            <option value="Presencial" th:selected="${filtro.modalidad == 'Presencial'}">Presencial</option>
+                            <option value="Remota" th:selected="${filtro.modalidad == 'Remota'}">Remoto</option>
+                        </select>
+                    </div>
+                </div>
+            
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="experiencia">Experiencia</label>
+                        <input type="number" id="experiencia" th:value="${filtro.experiencia}" name="experiencia">
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="sueldo">Sueldo Mínimo</label>
+                        <input type="number" id="sueldo" th:value="${filtro.sueldo}" name="sueldo">
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="tipo">Tipo</label>
+                        <select id="tipo" name="tipo" >
+                            <option value="null" th:selected="${filtro.tipo == 'null'}">Todos</option>
+                            <option value="Vacante" th:selected="${filtro.tipo == 'Vacante'}">Vacante</option>
+                            <option value="Voluntariado" th:selected="${filtro.tipo == 'Voluntariado'}">Voluntariado</option>
+                        </select>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="fechaPublicacion">Fecha de Publicación</label>
+                        <input type="date" id="fechaPublicacion" th:value="${filtro.fechaPublicacion}" name="fechaPublicacion">
+                    </div>
+                </div>
+            
+                <div class="form-buttons">
+                    <a th:href="@{/vacantes/eliminar/filtro}" class="cancel-btn" >Borrar filtro</a>
+                    
+                </div>
+            </div>
+        </form>
+        <script>
+            // Seleccionamos el botón de filtro y el formulario
+            const filterButton = document.querySelector('.filter-button');
+            const filterForm = document.getElementById('filterForm');
+    
+            // Añadimos el evento al botón para mostrar u ocultar el formulario
+            filterButton.addEventListener('click', (event) => {
+                // Prevenir el comportamiento por defecto (si lo hay)
+                event.preventDefault();
+    
+                // Toggle de la clase 'active' en el formulario
+                filterForm.classList.toggle('active');
+    
+                // Comprobamos si el formulario tiene la clase 'active'
+                // Si la tiene, significa que se está mostrando, si no, se oculta
+                if (filterForm.classList.contains('active')) {
+                    filterForm.style.display = 'block';  // Aseguramos que el formulario se muestre
+                } else {
+                    filterForm.style.display = 'none';  // Ocultamos el formulario cuando no tenga la clase 'active'
+                }
+            });
+        </script>
+
+    </section>  
+    
+    <!-- Si la lista esta vacia sale esto -->
+    <div th:if="${vacantes.empty}" class="sin-resultados"> <img th:src="@{/images/Sin-Resultados.png}" alt="No hay Resultados"></div>
+    
+    <!-- Si la lista esta llena sale esto  -->
+    <section class="ofertas" th:if="${!vacantes.empty}">
+        <div class="container-ofertas">
+            <h2>Otras ofertas</h2>
+
+            <div class="card-ofertas" th:each="vacante : ${vacantes}">
+                <img class="imgen_user" th:if="${vacante.imagenEmpresa != null}" alt="imagen de vacante" th:src="@{'/img/'+ ${vacante.imagenEmpresa}}" >
+                <img class="imgen_user" th:if="${vacante.imagenEmpresa == null}" alt="imagen de vacante" th:src="@{/images/imgEmpresa.png}" >
+                
+                <div class="informacion">
+                    <a class="card__title" th:href="@{/vacantes/seleccion/{nvacantes}(nvacantes=${vacante.nvacantesEncryt})}"
+                    th:text="${vacante.titulo}"></a>
+                    <p class="card__content" th:text="${vacante.nameEmpresa}" > </p>
+                    <p class="card__content" th:text="${vacante.ciudad + ' - ' + vacante.departamento}"></p>
+                    <div class="card__date" th:text="${vacante.fechaPublicacion}"></div>
+                    <a th:href="@{/vacantes/seleccion/{nvacantes}(nvacantes=${vacante.nvacantesEncryt})}"
+                    class="card__link"><ion-icon name="arrow-forward-outline"></ion-icon></a> 
+                </div>
+            </div>
+        </div>
+
+        <div class="container-info-ofertas">
+            <h2>Más información</h2>
+        
+            <!-- Si vacanteSeleccionada es null -->
+            <div th:if="${vacanteSeleccionada == null}">
+                <h1>Seleccione una vacante</h1>
+            </div>
+        
+            <!-- Si vacanteSeleccionada es diferente de null -->
+            <div class="vacante-container" th:if="${vacanteSeleccionada != null}">
+                <div class="encabezado">
+                    <img th:if="${vacanteSeleccionada.imagenEmpresa != null}" alt="imagen de vacante" th:src="@{'/img/'+ ${vacanteSeleccionada.imagenEmpresa}}" >
+                    <img th:if="${vacanteSeleccionada.imagenEmpresa == null}" alt="imagen de vacante" th:src="@{/images/imgEmpresa.png}" >
+                    <a th:href="@{/empresas/perfil(idUsuario=${vacanteSeleccionada.idUsuarioEncrypt})}" th:text="${vacanteSeleccionada.nameEmpresa}"></a>
+                </div>
+        
+                <div class="Requerimientos">
+                    <h1 th:text="${vacanteSeleccionada.titulo ?: 'Título no especificado'}"></h1>
+                    <span>
+                        <label th:text="${vacanteSeleccionada.fechaPublicacion ?: 'Fecha no disponible'}"></label>
+                    </span>
+                    <h3>Información de vacante</h3>
+                    <ul>
+                        <li>Cargo: <span th:text="${vacanteSeleccionada.cargo ?: 'Cargo no especificado'}"></span></li>
+                        <li>Modalidad: <span th:text="${vacanteSeleccionada.modalidad ?: 'Modalidad no especificada'}"></span></li>
+                        <li th:if="${vacanteSeleccionada.tipo == 'Vacante'}" >Experiencia: <span th:text="${vacanteSeleccionada.experiencia}"></span></li>
+                        <li th:if="${vacanteSeleccionada.tipo == 'Vacante'}" >Sueldo: <span th:text="${'$'+vacanteSeleccionada.sueldo}"></span></li>
+                        <li>Ubicación: <span th:text="${vacanteSeleccionada.ciudad != null && vacanteSeleccionada.departamento != null ? vacanteSeleccionada.ciudad + ' - ' + vacanteSeleccionada.departamento : 'Ubicación no especificada'}"></span></li>
+                    </ul>
+                    
+                    <!-- boton de postulacion -->
+                    <div  th:replace="~{fragments/forms::error}" />
+                    <form th:if="${#ctx.session.tipo == 'candidato'}" th:action="@{/postulados/add/{nvacantes}(nvacantes=${vacanteSeleccionada.nvacantesEncryt})}" method="post">
+                        <button type="submit">Postular</button>
+                    </form>
+                    <form th:if="${#ctx.session.tipo == 'invitado'}" th:action="@{/usuarios/login}">
+                        <button type="submit">Postular</button>
+                    </form>
+                    
+                </div>
+        
+                <div class="textarea">
+                    <h3>Descripción</h3>
+                    <p th:text="${vacanteSeleccionada.descripcion ?: 'Descripción no disponible'}"></p>
+                </div>
+        
+                
+                <div class="textarea">
+                    <h3>Requisitos de Empleo</h3>
+                    <p th:text="${vacanteSeleccionada.requerimientos ?: 'Requerimientos no disponible'}"></p>
+                </div>
+                
+            </div>
+        </div>
+        
+        
+    </section>
+    
+</body>
+</html>

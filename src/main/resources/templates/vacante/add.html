@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{vacante.add.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            
+            <div th:replace="~{fragments/forms::globalErrors('vacante')}" />
+
+            <form th:action="${requestUri}" method="post">
+                <div class="d-flex flex-wrap mb-4">
+                    <h1 class="flex-grow-1" th:text="@{'Agregar '+ ${vacante.tipo}}"></h1>
+                </div>
+                <div th:replace="~{fragments/forms::inputRow(object='vacante', field='titulo', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='vacante', field='cargo', required=true)}" />
+                <div class="row mb-3"> 
+                    <label class="col-md-2 col-form-label"><span>Modalidad</span></label>
+                    <div class="col-md-10">
+                        <select required class="form-select" th:field="*{vacante.modalidad}" >
+                            <option value="null" selected disabled>Seleccione una opcion</option>
+                            <option value="Presencial">Presencial</option>
+                            <option value="Remota">Remoto</option>
+                        </select>
+                    </div>
+                </div>
+                <div th:if="${vacante.tipo == 'Vacante'}">
+                    <div th:replace="~{fragments/forms::inputRow(object='vacante', field='sueldo',type='number', required=true)}" />
+                    <div th:replace="~{fragments/forms::inputRow(object='vacante', field='experiencia', type='number', required=true)}" />
+                </div>
+                <div th:replace="~{fragments/forms::inputRow(object='vacante', field='ciudad', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='vacante', field='departamento', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='vacante', field='descripcion', type='textarea',required=true)}"></div>
+                <div th:replace="~{fragments/forms::inputRow(object='vacante', field='requerimientos', type='textarea',required=true)}"></div>
+                
+                <!-- campo oculto -->
+                <input type="hidden" name="idUsuario" th:value="${vacante.idUsuario}" />
+                <input type="hidden" name="tipo" th:value="${vacante.tipo}" />
+
+                <input type="submit" th:value="#{vacante.add.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

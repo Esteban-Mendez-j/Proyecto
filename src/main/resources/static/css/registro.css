@@ -1,0 +1,84 @@
+.registro {
+    margin-top: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form {
+    width: 100%;
+    max-width: 800px; 
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    gap: 20px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    border: 5px solid #fff;
+    box-shadow: 0px 0px 30px rgba(133, 189, 215, 0.88);
+}
+
+.flex-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.flex-column {
+    flex: 1;
+}
+
+/* Css para la eleccion de registro */
+.eleccion-registro{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 120px;
+}
+
+.eleccion-registro .container {
+    background: #eef2f3;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+h1 {
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.btn-eleccion {
+    display: block;
+    margin: 1rem auto;
+    padding: 12px 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: var(--primary-color);
+    border-radius: 5px;
+    text-align: center;
+    max-width: 300px;
+    text-decoration: none;
+}
+
+.btn-eleccion:hover {
+    background-color:var(--primary-color);
+}
+
+@media (max-width: 720px) {
+    .form {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .flex-row {
+        flex-direction: column; 
+    }
+}

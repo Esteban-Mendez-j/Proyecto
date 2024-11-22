@@ -1,0 +1,484 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Estilos generales */
+body {
+    background-color: var(--secundary-color);
+    --primary-color: #157fff;
+    --secundary-color: white;
+}
+
+
+/*___________________________________
+
+  Estilos para el encabezado o navbar 
+  ___________________________________
+  */
+
+
+header .container-nav{
+    background-color: var(--primary-color);
+    display: flex;
+    padding: 5px 5%; 
+    align-items: center;
+    justify-content: space-between;
+    height: 60px; 
+    top: 0;
+    font-weight: bold;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+
+.container-nav .logo{
+    display: flex;
+    text-align: center;
+    align-items: center;
+}
+
+/* animacion nombre */
+.container-nav .logo label{
+    font-size: 20px;
+    -webkit-text-stroke: 0.3px var(--secundary-color) ;
+    color: transparent;
+    position: relative;
+}
+
+.container-nav .logo label::before{
+    content: "SearchJobs";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    color: var(--secundary-color);
+    border-right: 2px solid var(--secundary-color);
+    transition: 1s ease-in-out;
+}
+
+.container-nav .logo label:hover::before{
+    -webkit-text-stroke: none;
+    width: 0%;
+    filter: drop-shadow(0 0 25px var(--secundary-color));
+}
+
+.container-user{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+    gap: 10px;
+    width: auto;
+}
+
+
+/* Estilo del <summary> */
+summary {
+    cursor: pointer;
+    list-style: none; /* Quita el icono de lista predeterminado */
+}
+
+/* Diseño del menú */
+.menu-perfil {
+    background-color: white; /* Fondo del menú */
+    border: 1px solid #ccc; /* Borde */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15); /* Sombra para darle profundidad */
+    padding: 10px;
+    right: 0;
+    position: absolute; /* Para que se posicione justo debajo del summary */
+    z-index: 1000; /* Asegura que el menú esté encima de otros elementos */
+    transition: all 1s;
+}
+
+/* Estilo de la lista */
+.menu-perfil ul {
+    list-style: none; /* Sin viñetas */
+    padding: 0;
+    margin: 0;
+}
+
+/* Estilo de las opciones del menú */
+.menu-perfil ul li {
+    padding: 10px;
+    transition: background-color 0.3s ease;
+}
+
+
+/* Estilo de los enlaces */
+.menu-perfil ul li a {
+    text-decoration: none;
+    color: #333;
+    display: block; /* Toda el área del li es clickeable */
+}
+
+.menu-perfil ul li a:hover {
+    color: #007BFF;
+}
+
+
+
+
+/* boton login */
+header .btnlogin, .btnregistro{
+    text-align: center;
+    max-width: 100px;
+    background-color: var(--primary-color);
+    border: 2px solid var(--secundary-color);
+    border-radius: 5px;
+    color: var(--secundary-color);
+    padding: 7px 10px;
+    text-decoration: none;
+}
+
+header .btnlogin:hover,.btnregistro:hover{
+    color: var(--primary-color);
+    background-color: var(--secundary-color);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+.perfil-img{
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
+/* Accion general, aplica a todos los botones */
+button:active {
+    transform: scale(0.92);
+    
+}
+
+
+/* menu hamburguesa */
+header .checkmenu{
+    color: var(--secundary-color);
+}
+
+header #check{display: none;}
+
+
+/* menu de navegacion */
+header .navbar{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+header .navbar li{
+    display: inline;
+    text-align: center;
+    position: relative;
+    list-style: none;
+    padding: 10px 10px;
+    /* revisar lo de abajo   */
+    width: 8.6vw; 
+}
+
+/* animacion navbar borde inferior en movimineto */
+header .navbar li::after{
+    content: '';
+    height: 4px;
+    background-color:var(--secundary-color);
+    position: absolute;
+    transform: translateY(10px);
+    width: 0%;
+    left: 0;
+    bottom: 12px;
+    transition: 0.3s ease-in-out;
+}
+
+header .navbar li:hover::after{
+    width: 100%;
+}
+
+
+
+header .menuitems a {
+    padding: 10px 14px;
+    color:var(--secundary-color);
+    text-decoration: none;
+    cursor: pointer;
+    /* revisar lo de abajo  */
+    width: 8.6vw;
+    text-align: center; 
+} 
+
+
+
+/* Barra de busqueda */
+
+.search-container {
+    margin-top: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: auto;
+    padding: 10px;
+}
+
+.search-input {
+    width: 200px;
+    height: 35px;
+    border: none;
+    border-bottom: 1px solid rgb(112, 110, 110);
+    padding: 10px;
+    transition: 0.5s;
+}
+
+.search-input:focus{
+    border: none;
+    border-bottom: 2px solid var(--primary-color);
+    width: 300px;
+    outline:none; 
+}
+
+.filter-button{border-radius: 0px 15px 15px 0px;}
+.busqueda-button{border-radius: 15px 0px 0px 15px;} 
+
+.filter-button, .busqueda-button {
+    height: 35px;
+    width: 65px;
+    border: none;
+    cursor: pointer;
+    margin: 0px;
+    font-size: 25px;
+    color: var(--primary-color);
+}
+
+.filter-button:hover,
+.busqueda-button:hover { 
+    cursor: pointer;
+    border-bottom: 2px solid var(--primary-color) ;
+} 
+
+
+/*______________________
+
+  Estilos para el Footer 
+  ______________________
+*/ 
+.footer {
+    position: relative;
+    width: 100%;
+    background: var(--primary-color);
+    min-height: 100px;
+    padding: 20px 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+  
+.social-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 10px 5px;
+    flex-wrap: wrap;
+}
+  
+.social-icon li {
+    list-style: none;
+    max-width: 60px;
+}
+  
+.social-icon a {
+    max-width: 50px;
+    color: var(--secundary-color);
+    font-size: 32px;
+    display: inline-block;
+    margin: 0 10px;
+    transition: 0.5s;
+}
+  
+.social-icon a:hover {
+    transform: translateY(-10px);
+}
+  
+.menu {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    align-items: center;
+    margin: 10px 0;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+  
+.menu li {
+    list-style: none;
+    max-width: 100px;
+}
+
+.menu a {
+    color: var(--secundary-color);
+    font-size: 20px;
+    display: inline;
+    text-align: center;
+    text-decoration: none;
+    opacity: 0.5;
+    transition: 0.3s;
+}
+  
+.menu a:hover {
+    opacity: 1;
+}  
+
+.autor {
+    color: var(--secundary-color);
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+
+/* Contenedor principal para los mensajes */
+.message-container {
+    max-width: 500px;
+    font-weight: bold;
+}
+
+.custom-alert {
+    font-size: 1rem;
+    text-align: center;
+}
+
+.custom-alert-success {
+    color: #4caf50;
+}
+
+.custom-alert-info {
+    color: #2196f3;
+}
+
+.custom-alert-danger {
+    color: #f44336;
+}
+
+.sin-resultados{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(70px);
+}
+
+@media (max-width: 720px){
+
+    /* ---------------------------
+
+        DISEÑO PAGINA DE INICIO 
+        (MOBILE)
+
+       ---------------------------
+    */
+    
+    
+    header .navbar ul{
+        position: fixed;
+        width: 100%;
+        height: auto;
+        background-color: var(--primary-color);
+        right: -100%;
+        top: 60px;
+        text-align: center;
+        transition: all .5s;
+        border-top:2px solid var(--secundary-color);
+    }
+
+    header .navbar li{
+        display: flex;
+        height: 80px;
+        width: 100%;
+    }
+
+    header .menuitems a{
+        height: 80px;
+        width: 100%;
+        font-size: 20px;
+    }
+    
+    .btnregistro{display: none;}
+
+    /* Boton de menu animacion */
+    .checkmenu {
+        position: relative;
+        width: 40px;
+        height: 30px;
+        background: transparent;
+        cursor: pointer;
+        display: block;
+        order: 1;
+        color: var(--secundary-color);
+        font-size: 40px;
+    }
+    
+    
+    .checkmenu span {
+        display: block;
+        position: absolute;
+        height: 4px;
+        width: 100%;
+        background: var(--secundary-color);
+        border-radius: 9px;
+        opacity: 1;
+        left: 0;
+        transform: rotate(0deg);
+        transition: .25s ease-in-out;
+    }
+    
+    .checkmenu span:nth-of-type(1) {
+        top: 0px;
+        transform-origin: left center;
+    }
+    
+    .checkmenu span:nth-of-type(2) {
+        top: 50%;
+        transform: translateY(-50%);
+        transform-origin: left center;
+    }
+    
+    .checkmenu span:nth-of-type(3) {
+        top: 100%;
+        transform-origin: left center;
+        transform: translateY(-100%);
+    }
+    
+    #check:checked ~ .checkmenu span:nth-of-type(1) {
+        transform: rotate(45deg);
+        top: 0px;
+        left: 5px;
+    }
+    
+    #check:checked ~ .checkmenu span:nth-of-type(2) {
+        width: 0%;
+        opacity: 0;
+    }
+    
+    #check:checked ~ .checkmenu span:nth-of-type(3) {
+        transform: rotate(-45deg);
+        top: 28px;
+        left: 5px;
+    }
+    
+    
+    #check:checked ~ ul{
+        right: 0;
+    }
+
+
+}

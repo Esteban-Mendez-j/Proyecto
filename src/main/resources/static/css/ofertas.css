@@ -1,0 +1,366 @@
+
+/* ---------------------------
+
+    DISEÑO PAGINA DE OFERTAS
+    (COMPUTADOR)
+
+   ---------------------------
+*/
+
+
+/* Formulario o Filtro de busqueda */
+
+.form-container {
+    background-color: white;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 80%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    margin: 0 auto;
+    position: absolute;
+    top: 20%; 
+    left: 50%;
+    transform: translateX(-50%) scale(0);  
+    transform-origin: center top; 
+    opacity: 0;
+    transition: 0.5s;
+    z-index: 1000;
+}
+
+.form-container.active {
+    transform: translateX(-50%) scale(1); 
+    opacity: 1;
+    pointer-events: auto;
+}
+  
+/* Estilos generales para filas y grupos de formulario */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px; /* Espacio entre filas */
+}
+  
+.form-group {
+    flex: 1;
+    margin-right: 10px;
+}
+  
+/* Elimina el margen derecho en el último grupo */
+.form-group:last-child {
+    margin-right: 0;
+}
+  
+/* Estilos para etiquetas y entradas */
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+  
+.form-container input, select{
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-container input:focus, select:focus{
+    outline:none;
+    border: 2px solid var(--primary-color);
+}
+  
+/* Estilos para los botones */
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px; /* Más espacio entre los botones y los campos */
+}
+  
+.save-btn, .cancel-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+  
+/* Estilos específicos para cada botón */
+.save-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #fff;
+    color: rgb(181, 28, 28);
+    border: 1px solid #ccc;
+    text-decoration: none;
+}
+
+
+
+/* ____________________________________
+
+   Diseño para mostrar ofertas/vacantes
+   ____________________________________
+*/
+
+.ofertas{
+    display: grid;
+    grid-template-columns: 1fr 1.3fr; /* Dos columnas, una más pequeña para la lista y otra más grande para los detalles */
+    gap: 20px; 
+    padding: 15px;
+    background-color: #f5f5f5;
+    height: 80vh;
+}
+
+.ofertas h2{
+    text-align: center;
+    height: 20px;
+}
+
+
+.container-info-ofertas, 
+.container-ofertas{
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    overflow-y: scroll ;
+    padding: 20px;
+}
+
+/* ____________________________________________
+
+    apartado de listado de ofertas  
+   ____________________________________________
+*/
+
+
+.card-ofertas {
+    display: flex;
+    align-items: center;
+    text-align: start;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    padding: 16px;
+    margin: 16px;
+    position: relative; /* Añadido para contener el enlace absolutamente posicionado */
+}
+
+
+.imgen_user {
+    position: relative;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    object-fit: cover; /* Asegura que la imagen se ajuste bien */
+}
+
+.informacion {
+    flex-grow: 1;
+    margin-left: 16px;
+}
+
+
+.card__title {
+    font-size: 1.1rem;
+    color: black;
+    text-decoration: none;  
+}
+
+.card__title:hover, .encabezado a:hover{cursor: pointer;}
+
+.card-ofertas:hover .card__title, .encabezado a:hover {color:  var(--primary-color);}
+
+.card__content {
+    font-size: 0.875rem;
+    color: #666;
+    margin: 8px 0;
+}
+
+.card__date {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.card__link {
+    margin-left: 5px;
+    position: absolute; 
+    right: 16px;
+    bottom: 10px;
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.card-ofertas:hover .card__link{transform:translateX(10px); transition-duration: 1s;}
+
+/* ____________________________________________
+
+    apartado de Mas informacion ofertas  
+   ____________________________________________
+*/
+
+.vacante-container h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.vacante-container ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.vacante-container ul li {
+    margin: 8px 0;
+    font-size: 1 em;
+    color: #555;
+}
+
+
+.encabezado {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    padding: 10px 0px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.encabezado img {
+    width: 80px;
+    height: 80px;
+    margin-right: 5px;
+}
+
+.encabezado a {
+    font-size: 1 em;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+
+
+.Requerimientos{
+    border-bottom: 2px solid var(--primary-color);
+    padding: 10px 0px;
+}
+
+.Requerimientos h1 {
+    font-size: 1.8em;
+    color: #0a0a0a;
+    margin: 10px 0;
+}
+
+.Requerimientos span {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9em;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.Requerimientos button {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+.Requerimientos button:hover {
+    background-color: #195bb8;
+}
+
+.textarea {
+    padding: 20px 0px;
+    text-align: justify;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.textarea p {
+    font-size: 1em;
+    color: #666;
+    line-height: 1.6;
+}
+
+
+
+@media (max-width: 720px){
+    /* ____________________________________________
+
+        ia 
+       ____________________________________________
+    */
+    .search-input {
+        width: 150px;
+    }
+
+    .search-input:focus {
+        width: 250px;
+    }
+
+    .filter-form {
+        width: 90%;
+    }
+
+    .form-row {
+        flex-direction: column; /* Cambia la dirección de la fila a columna en pantallas pequeñas */
+    }
+    
+    .form-group {
+        margin-right: 0; /* Elimina el margen derecho en grupos de formulario */
+        margin-bottom: 15px; /* Agrega espacio entre grupos en vertical */
+    }
+    
+    .form-buttons {
+        flex-direction: column; /* Cambia la dirección a columna para botones en pantallas pequeñas */
+    }
+    
+    .form-buttons .save-btn, 
+    .form-buttons .cancel-btn {
+        width: 100%; /* Asegura que los botones ocupen el 100% del ancho */
+    }
+    
+
+    /* varias  ofertas  */
+
+    .container {
+        flex-direction: row;
+        align-items: center; 
+    }
+
+    .informacion {
+        margin-left: 16px; 
+        margin-top: 0; 
+    }
+
+    .card__link {
+        cursor: pointer;
+        position: absolute;
+        bottom: 10px;
+        right: 16px; 
+    }
+    
+    /* otra cosas  */
+    .ofertas{
+        display: block;
+        margin: 5px;
+    }
+
+    .ofertas .container-info-ofertas{
+        display: block;
+    }
+
+    .ofertas .container-ofertas{
+        width: 100%;
+        height: 100%;
+    }
+}

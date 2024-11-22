@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{empresa.edit.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{empresa.edit.headline}]]</h1>
+            </div>
+            <div th:replace="~{fragments/forms::globalErrors('empresa')}" />
+            <form th:action="${requestUri}" method="post" enctype="multipart/form-data">
+                <div th:replace="~{fragments/forms::inputRow(object='empresa', field='nombre', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='empresa', field='nit', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='empresa', field='correo', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='empresa', field='telefono',required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='empresa', field='sectorEmpresarial', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='empresa', field='descripcion',type= 'textarea')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='empresa', field='sitioWeb')}" />
+
+                <div > 
+                    <label for="imagen" class="col-md-2 col-form-label">Editar imagen:</label>
+                    <input type="file" id="file" name="file" accept=".jpg , .png" />
+                </div>
+
+                
+                <div >
+                    <p class="col-md-2 col-form-label" th:if="${empresa.imagen == null}" >No hay una imagen actual</p>
+                    <p class="col-md-2 col-form-label" th:if="${empresa.imagen != null}">Imagen actual:</p>
+                    <img th:if="${empresa.imagen != null}" th:src="@{'/img/' + ${empresa.imagen}}" alt="Imagen de perfil" style="max-width: 150px;" />
+                </div>
+
+                <!-- campos ocultos -->
+                <input type="hidden" name="idUsuario" th:value="${empresa.idUsuario}" />
+                <!-- <input type="hidden" name="correo" th:value="${empresa.correo}" /> -->
+                <input type="hidden" name="contrasena" th:value="${empresa.contrasena}" />
+                <input type="hidden" name="tipo" th:value="${empresa.tipo}" />
+                <input type="hidden" name="imagen" th:value="${empresa.imagen}" >
+
+                <input type="submit" th:value="#{empresa.edit.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

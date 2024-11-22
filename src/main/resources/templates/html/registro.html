@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:replace="~{fragments/plantilla :: head}"></head>
+    
+    <link rel="stylesheet" th:href="@{/css/login-registro.css}">
+    <link rel="stylesheet" th:href="@{/css/registro.css}">
+
+    <title>Registro</title>
+</head>
+
+<body>
+    <div th:replace="~{fragments/plantilla :: header}"></div>
+
+    <section class="registro">
+        
+        <!-- plantilla de registro para empresa -->
+        <form class="form" th:if="${tipo == 'empresa'}" th:action="${requestUri}" method="post" th:object="${empresa}">
+            <div th:replace="~{fragments/plantilla :: registro(tipo=${tipo})}"></div>
+        </form>
+        
+        <!-- plantilla de registro para candidato -->
+        <form class="form" th:if="${tipo == 'candidato'}" th:action="${requestUri}" method="post" th:object="${candidato}">
+            <div th:replace="~{fragments/plantilla :: registro(tipo=${tipo})}"></div>
+        </form>
+        
+    </section>    
+</body>
+
