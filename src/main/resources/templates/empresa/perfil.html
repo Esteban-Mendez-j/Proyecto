@@ -66,7 +66,7 @@
                         class="card__title" th:text="${vacante.titulo}">
                     </a>
 
-                    <a th:if="${#ctx.session.tipo == 'candidato'}" th:href="@{/vacantes/seleccion/{nvacantes}(nvacantes=${vacante.nvacanteEncrypt})}" 
+                    <a th:if="${#ctx.session.tipo == 'candidato' or #ctx.session.tipo == 'invitado'}" th:href="@{/vacantes/seleccion/{nvacantes}(nvacantes=${vacante.nvacantesEncryt})}" 
                         class="card__title" th:text="${vacante.titulo}">
                     </a>
                     <p class="card__content" th:text="${vacante.cargo}"></p>

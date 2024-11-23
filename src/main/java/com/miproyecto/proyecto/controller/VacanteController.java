@@ -78,8 +78,8 @@ public class VacanteController {
             ( (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) || 
             (filtro.getCiudad() != null && !filtro.getCiudad().isEmpty()) || 
             (filtro.getTipo() != null && !filtro.getTipo().isEmpty()) || 
-            (filtro.getModalidad() != null && !filtro.getModalidad().isEmpty()) )) {
-            
+            (filtro.getModalidad() != null && !filtro.getModalidad().isEmpty()) || 
+            (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty()) )) {
             vacantes = vacanteService.buscarVacantesConFiltros(filtro);
         } else {
             vacantes = vacanteService.findAll();
@@ -113,9 +113,9 @@ public class VacanteController {
 
         VacanteDTO filtro = (VacanteDTO) session.getAttribute("filtro");
         // Buscar vacantes con el filtro aplicado
-        List<VacanteDTO> vacantes = vacanteService.buscarVacantesConFiltros(filtro);
-        model.addAttribute("vacantes", vacantes);
+        List<VacanteDTO> vacantes = vacanteService.findAll();
         
+        model.addAttribute("vacantes", vacantes);
         // Si no se encuentra la vacante, se podría redirigir a la lista de vacantes
         if (vacanteSeleccionada == null) {
             return "redirect:/vacantes/listar"; // Redirigir a la lista de vacantes

@@ -97,18 +97,7 @@ public class EmpresaService {
         return empresaRepository.existsByIdUsuario (idUsuario);
     }
 
-    // para obtener las vacantes relacionadas con el idUsuario
-    public List<Vacante> getVacantesByIdUsuario(final Long idUsuario) {
-        final Empresa empresa = empresaRepository.findById(idUsuario)
-                .orElseThrow(NotFoundException::new);
-        final List<Vacante> idUsuarioVacante = vacanteRepository.findByIdUsuario(empresa);
-        if (idUsuarioVacante != null) {
-            return idUsuarioVacante;   
-        }
-        return null;
-    }
-
-
+    
     public ReferencedWarning getReferencedWarning(final Long idUsuario) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Empresa empresa = empresaRepository.findById(idUsuario)

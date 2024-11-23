@@ -7,6 +7,7 @@ import com.miproyecto.proyecto.repos.UsuarioRepository;
 import com.miproyecto.proyecto.service.EmpresaService;
 import com.miproyecto.proyecto.service.EncryptionService;
 import com.miproyecto.proyecto.service.UsuarioService;
+import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.CustomCollectors;
 import com.miproyecto.proyecto.util.ReferencedWarning;
 import com.miproyecto.proyecto.util.WebUtils;
@@ -38,13 +39,17 @@ public class EmpresaController {
     private final UsuarioRepository usuarioRepository;
     private final EncryptionService encryptionService;
     private final UsuarioService usuarioService;
+    private final VacanteService vacanteService;
 
     public EmpresaController(final EmpresaService empresaService,
-            final UsuarioRepository usuarioRepository,UsuarioService usuarioService) {
+            final UsuarioRepository usuarioRepository,
+            final UsuarioService usuarioService, 
+            final VacanteService vacanteService) {
         this.empresaService = empresaService;
         this.usuarioRepository = usuarioRepository;
         this.encryptionService = new EncryptionService();
         this.usuarioService = usuarioService;
+        this.vacanteService = vacanteService;
     }
 
     @ModelAttribute
@@ -71,7 +76,7 @@ public class EmpresaController {
 
         EmpresaDTO empresaDTO = empresaService.get(idUsuario);
         if (empresaDTO != null) {
-            model.addAttribute("vacantes", empresaService.getVacantesByIdUsuario(idUsuario));
+            model.addAttribute("vacantes", vacanteService.findByIdUsuario(idUsuario));
             model.addAttribute("empresa", empresaDTO);
             return "empresa/perfil"; 
         } else {
