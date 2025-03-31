@@ -9,6 +9,9 @@
             <div class="d-flex flex-wrap mb-4">
                 <h1 class="flex-grow-1">[[#{postulado.list.headline}]]</h1>
             </div>
+            <div th:if="${error}" class="alert alert-danger">
+                <p th:text="${error}"></p>
+            </div>            
             <div th:if="${postulados.isEmpty()}">[[#{postulado.list.empty}]]</div>
             <div th:if="${!postulados.isEmpty()}" class="table-responsive">
                 <table class="table table-striped table-hover align-middle">
@@ -42,7 +45,13 @@
                             <!-- Mostrar los datos del candidato para la empresa -->
                             <td th:if="${#ctx.session.tipo == 'empresa'}">
 
-                                <a th:href="@{/candidatos/perfil(idUsuario=${postulado.idUsuarioEncrypt})}" th:text="${candidatos[postulado.idUsuario].nombre}"></a>
+                                <form th:action="@{/candidatos/perfil}" method="post">
+                                    <input type="hidden" name="nPostulacion" th:value="${postulado.nPostulacionEncrypt}">
+                                    <input type="hidden" name="idUsuario" th:value="${postulado.idUsuarioEncrypt}">
+                                    <button type="submit" th:text="${candidatos[postulado.idUsuario].nombre}"></button>
+                                </form>
+
+                                <!-- <a th:href="@{/candidatos/perfil(idUsuario=${postulado.idUsuarioEncrypt})}" th:text="${candidatos[postulado.idUsuario].nombre}"></a> -->
                             </td>
                             <td th:if="${#ctx.session.tipo == 'empresa'}" th:text="${candidatos[postulado.idUsuario].experiencia}"></td>
                             <td th:if="${#ctx.session.tipo == 'empresa'}" th:text="${candidatos[postulado.idUsuario].correo}"></td>

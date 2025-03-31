@@ -1,12 +1,11 @@
 package com.miproyecto.proyecto.controller;
 
-import com.miproyecto.proyecto.domain.Empresa;
-import com.miproyecto.proyecto.model.UsuarioDTO;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.repos.EmpresaRepository;
 import com.miproyecto.proyecto.service.EncryptionService;
 import com.miproyecto.proyecto.service.VacanteService;
-import com.miproyecto.proyecto.util.CustomCollectors;
+import com.miproyecto.proyecto.util.JwtUtils;
 import com.miproyecto.proyecto.util.ReferencedWarning;
 import com.miproyecto.proyecto.util.WebUtils;
 
@@ -16,7 +15,7 @@ import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,32 +32,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/vacantes")
 public class VacanteController {
 
+    @Autowired
+    private JwtUtils jwtUtils;
     private final VacanteService vacanteService;
-    private final EmpresaRepository empresaRepository;
     private final EncryptionService encryptionService;
 
     public VacanteController(final VacanteService vacanteService,
             final EmpresaRepository empresaRepository) {
         this.vacanteService = vacanteService;
-        this.empresaRepository = empresaRepository;
         this.encryptionService = new EncryptionService();
     }
-
-    @ModelAttribute
-    public void prepareContext(final Model model) {
-        model.addAttribute("idUsuarioValues", empresaRepository.findAll(Sort.by("idUsuario"))
-                .stream()
-                .collect(CustomCollectors.toSortedMap(Empresa::getIdUsuario, Empresa::getIdUsuario)));
-    }
-
-    
 
     @GetMapping
     public String list(final Model model,HttpSession session) {
         // aqui debe ir el id de la session iniciada solo si es empresa
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-
-        Long idUsuario = usuario.getIdUsuario();
+        Long idUsuario = (Long) session.getAttribute("idUsuario");
         model.addAttribute("vacantes", vacanteService.findByIdUsuario(idUsuario));
         return "vacante/list";
     }
@@ -66,8 +54,8 @@ public class VacanteController {
 
     @GetMapping("/listar")
     public String listarVacantes(
-            @ModelAttribute("filtro") VacanteDTO filtro, Model model, HttpSession session,
-            @RequestParam(name = "titulo", required = false) String titulo) {
+            @ModelAttribute VacanteDTO filtro, Model model, HttpSession session,
+            @RequestParam(required = false) String titulo) {
     
         // Guardar el filtro en la sesión
         session.setAttribute("filtro", filtro);
@@ -138,13 +126,17 @@ public class VacanteController {
     public String add(@ModelAttribute("vacante") final VacanteDTO vacanteDTO, 
             HttpSession session,
             @RequestParam("Tipo") String tipo, Model model) {
-        final UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        vacanteDTO.setIdUsuario(usuario.getIdUsuario());
+        String jwtToken = (String) session.getAttribute("jwtToken");
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        vacanteDTO.setIdUsuario(idUsuario);
         vacanteDTO.setTipo(tipo);
         model.addAttribute("Tipo", tipo);
         return "vacante/add";
     }
 
+
+    //ACCESO COMO EMPRESA
     @PostMapping("/add")
     public String add(@ModelAttribute("vacante") @Valid final VacanteDTO vacanteDTO,
             final BindingResult bindingResult, final RedirectAttributes redirectAttributes, Model model) {

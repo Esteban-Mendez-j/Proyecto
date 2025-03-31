@@ -10,7 +10,11 @@ import org.thymeleaf.templateresolver.FileTemplateResolver;
 
 
 /**
- * Load Thymeleaf files from the file system during development, without any caching.
+ * Cargue archivos Thymeleaf desde el sistema de archivos durante el desarrollo, 
+ * sin ningún almacenamiento en caché.
+ * 
+ * Nos permite ver los cambios de los archivos HTML sin reiniciar la app 
+ * (Recomendado solo para el desarrollo)
  */
 @Configuration
 @Profile("local")

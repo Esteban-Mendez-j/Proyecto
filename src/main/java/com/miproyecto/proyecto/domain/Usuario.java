@@ -1,13 +1,20 @@
 package com.miproyecto.proyecto.domain;
 
+import java.util.List;
+
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 
 
 @Entity
@@ -19,13 +26,10 @@ public class Usuario {
     @Column(nullable = false, updatable = false)
     private Long idUsuario;
 
-    @Column(nullable = false, length = 10)
-    private String tipo;
-
     @Column(nullable = false, length = 50)
     private String nombre;
 
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false)
     private String contrasena;
 
     @Column(nullable = false, unique = true, length = 100)
@@ -40,6 +44,18 @@ public class Usuario {
     @Column
     private String imagen;
 
+    
+    @ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.MERGE )
+    @JoinTable(
+        name = "usuario_Rol",
+        joinColumns = @JoinColumn(name = "idUsuario"),
+        inverseJoinColumns = @JoinColumn(name = "Id_rol")
+    )
+    private List<Roles> roles;
+
+
+    public Usuario() {
+    }
 
     public Long getIdUsuario() {
         return idUsuario;
@@ -49,12 +65,12 @@ public class Usuario {
         this.idUsuario = idUsuario;
     }
 
-    public String getTipo() {
-        return tipo;
+    public List<Roles> getRoles() {
+        return roles;
     }
 
-    public void setTipo(final String tipo) {
-        this.tipo = tipo;
+    public void setRoles(List<Roles> roles) {
+        this.roles = roles;
     }
 
     public String getNombre() {
@@ -105,5 +121,11 @@ public class Usuario {
         this.imagen = imagen;
     }
 
+    @Override
+    public String toString() {
+        return "Usuario [idUsuario=" + idUsuario + ", nombre=" + nombre + ", contrasena=" + contrasena + ", correo="
+                + correo + ", telefono=" + telefono + ", descripcion=" + descripcion + ", imagen=" + imagen + ", roles="
+                + roles + "]";
+    }
 
 }

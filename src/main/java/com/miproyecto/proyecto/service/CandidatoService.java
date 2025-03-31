@@ -4,38 +4,47 @@ import com.miproyecto.proyecto.domain.Candidato;
 import com.miproyecto.proyecto.domain.Estudio;
 import com.miproyecto.proyecto.domain.HistorialLaboral;
 import com.miproyecto.proyecto.domain.Postulado;
+import com.miproyecto.proyecto.domain.Roles;
 import com.miproyecto.proyecto.model.CandidatoDTO;
 import com.miproyecto.proyecto.repos.CandidatoRepository;
 import com.miproyecto.proyecto.repos.EstudioRepository;
 import com.miproyecto.proyecto.repos.HistorialLaboralRepository;
 import com.miproyecto.proyecto.repos.PostuladoRepository;
-import com.miproyecto.proyecto.repos.UsuarioRepository;
+import com.miproyecto.proyecto.repos.RolesRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.ReferencedWarning;
 
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 public class CandidatoService{
 
     private final CandidatoRepository candidatoRepository;
     private final PostuladoRepository postuladoRepository;
     private final EstudioRepository estudioRepository;
     private final HistorialLaboralRepository historialLaboralRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RolesRepository rolesRepository;
 
-    public CandidatoService(final CandidatoRepository candidatoRepository,
-            final UsuarioRepository usuarioRepository,
-            final PostuladoRepository postuladoRepository,
-            final EstudioRepository estudioRepository,
-            final HistorialLaboralRepository historialLaboralRepository) {
+   
+
+    public CandidatoService(CandidatoRepository candidatoRepository, PostuladoRepository postuladoRepository,
+            EstudioRepository estudioRepository, HistorialLaboralRepository historialLaboralRepository,
+            PasswordEncoder passwordEncoder, RolesRepository rolesRepository) {
         this.candidatoRepository = candidatoRepository;
         this.postuladoRepository = postuladoRepository;
         this.estudioRepository = estudioRepository;
         this.historialLaboralRepository = historialLaboralRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.rolesRepository = rolesRepository;
     }
-
 
     // busca un candidato por su id
     public CandidatoDTO get(final Long idUsuario) {
@@ -55,15 +64,22 @@ public class CandidatoService{
     // crea y guarda un objeto candidato en la base de datos 
     public void create(final CandidatoDTO candidatoDTO) {
         final Candidato candidato = new Candidato();
-        mapToEntity(candidatoDTO, candidato);
+        List<Roles> roles= new ArrayList<>();
+
+        roles.add(rolesRepository.findByRol("CANDIDATO"));
+        
+        mapToEntity(candidatoDTO, candidato, true);
+        candidato.setRoles(roles);// guarda el rol en la db
+         
         candidatoRepository.save(candidato);
     }
 
+    
     // busca y actualiza un objeto candidato en la base de datos 
     public void update(final Long idUsuario, final CandidatoDTO candidatoDTO) {
         final Candidato candidato = candidatoRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
-        mapToEntity(candidatoDTO, candidato);
+        mapToEntity(candidatoDTO, candidato, false);
         candidatoRepository.save(candidato);
     }
 
@@ -74,7 +90,7 @@ public class CandidatoService{
     // convierte un objeto de tipo candidato a candidatoDTO
     public CandidatoDTO mapToDTO(final Candidato candidato, final CandidatoDTO candidatoDTO) {
         candidatoDTO.setIdUsuario(candidato.getIdUsuario());
-        candidatoDTO.setTipo(candidato.getTipo());
+        candidatoDTO.setRoles(candidato.getRoles());
         candidatoDTO.setNombre(candidato.getNombre());
         candidatoDTO.setContrasena(candidato.getContrasena());
         candidatoDTO.setCorreo(candidato.getCorreo());
@@ -88,11 +104,14 @@ public class CandidatoService{
         return candidatoDTO;
     }
 
-    // convierte un objeto de tipo candidatoDTO a candidato
-    private Candidato mapToEntity(final CandidatoDTO candidatoDTO, final Candidato candidato) {
-        candidato.setTipo(candidatoDTO.getTipo());
+    // convierte un objeto de Roles candidatoDTO a candidato
+    private Candidato mapToEntity(final CandidatoDTO candidatoDTO, final Candidato candidato, boolean crear) {
+        if (crear) {
+            // candidato.setRoles(candidatoDTO.getRoles());
+            candidato.setContrasena(passwordEncoder.encode(candidatoDTO.getContrasena()));
+        }
+        
         candidato.setNombre(candidatoDTO.getNombre());
-        candidato.setContrasena(candidatoDTO.getContrasena());
         candidato.setCorreo(candidatoDTO.getCorreo());
         candidato.setTelefono(candidatoDTO.getTelefono());
         candidato.setDescripcion(candidatoDTO.getDescripcion());

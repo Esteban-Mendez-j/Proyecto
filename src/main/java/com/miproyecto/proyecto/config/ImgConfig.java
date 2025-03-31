@@ -1,17 +1,17 @@
 package com.miproyecto.proyecto.config;
 
 
-import java.nio.file.Paths;
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.nio.file.Path;
 
 
 @Configuration
 public class ImgConfig implements WebMvcConfigurer {
 
-    public static final String UPLOAD_DIR = Paths.get("uploads", "img").toAbsolutePath().toString();
+    public static final String UPLOAD_DIR = Path.of("uploads", "img").toAbsolutePath().toString();
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

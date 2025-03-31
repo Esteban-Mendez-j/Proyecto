@@ -16,16 +16,18 @@
     <title>Iniciar Sesión</title>
 </head>
 <body>
-    <div th:replace="~{fragments/plantilla :: header}"></div>
-    <section class="login" layout:fragment="content" >
-        <form class="form"  method="post" th:action="@{/usuarios/login}" th:object="${usuario}"> <!-- th:object="${empresa}" -->
+    <header>
+        <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    </header>    
+    <section class="login">
+        <form class="form"  method="post" th:action="@{/usuarios/login}"> 
             <h1>Bienvenido</h1>
             <h3>Inicia sesión para continuar</h3>
             <div class="flex-column">
                 <label for="email">Email</label>
                 <div class="inputForm">
                     <ion-icon class="icon" name="mail-outline"></ion-icon>
-                    <input type="email" id="email" name="email" class="input" placeholder="Ingresa tu correo" th:field="*{correo}" required > <!-- th:field="*{correo}" -->
+                    <input type="email" id="email" name="username" class="input" placeholder="Ingresa tu correo" required > <!-- th:field="*{correo}" -->
                 </div>
             </div>
             
@@ -33,7 +35,7 @@
                 <label for="password">Contraseña</label>
                 <div class="inputForm">
                     <ion-icon class="icon" name="lock-closed-outline"></ion-icon>                     
-                    <input type="password" id="password" name="password" class="input" placeholder="Ingresa tu contraseña" th:field="*{contrasena}" required>   <!-- th:field="*{contrasena}" -->
+                    <input type="password" id="password" name="password" class="input" placeholder="Ingresa tu contraseña" required>   <!-- th:field="*{contrasena}" -->
                 </div>
             </div>
             <div  th:replace="~{fragments/forms::error}" />

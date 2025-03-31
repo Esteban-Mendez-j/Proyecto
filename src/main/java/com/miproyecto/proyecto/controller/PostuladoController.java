@@ -1,17 +1,13 @@
 package com.miproyecto.proyecto.controller;
 
-import com.miproyecto.proyecto.domain.Candidato;
-import com.miproyecto.proyecto.domain.Vacante;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.CandidatoDTO;
 import com.miproyecto.proyecto.model.PostuladoDTO;
-import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.model.VacanteDTO;
-import com.miproyecto.proyecto.repos.CandidatoRepository;
-import com.miproyecto.proyecto.repos.VacanteRepository;
 import com.miproyecto.proyecto.service.CandidatoService;
 import com.miproyecto.proyecto.service.EncryptionService;
 import com.miproyecto.proyecto.service.PostuladoService;
-import com.miproyecto.proyecto.util.CustomCollectors;
+import com.miproyecto.proyecto.util.JwtUtils;
 import com.miproyecto.proyecto.util.WebUtils;
 
 import jakarta.servlet.http.HttpSession;
@@ -19,11 +15,10 @@ import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Map;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,34 +29,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/postulados")
 public class PostuladoController {
-
+    @Autowired
+    private JwtUtils jwtUtils;
     private final PostuladoService postuladoService;
-    private final VacanteRepository vacanteRepository;
-    private final CandidatoRepository candidatoRepository;
     private final EncryptionService encryptionService;
     private final CandidatoService candidatoService;
 
     public PostuladoController(final PostuladoService postuladoService,
-            final VacanteRepository vacanteRepository,
-            final CandidatoRepository candidatoRepository,
             final CandidatoService candidatoService) {
         this.postuladoService = postuladoService;
-        this.vacanteRepository = vacanteRepository;
-        this.candidatoRepository = candidatoRepository;
         this.candidatoService = candidatoService;
         this.encryptionService = new EncryptionService();
     }
 
-    @ModelAttribute
-    public void prepareContext(final Model model) {
-        model.addAttribute("nvacanteValues", vacanteRepository.findAll(Sort.by("nvacantes"))
-                .stream()
-                .collect(CustomCollectors.toSortedMap(Vacante::getNvacantes, Vacante::getCargo)));
-        model.addAttribute("idUsuarioValues", candidatoRepository.findAll(Sort.by("idUsuario"))
-                .stream()
-                .collect(CustomCollectors.toSortedMap(Candidato::getIdUsuario, Candidato::getIdUsuario)));
-    }
-
+    
     @GetMapping
     public String list(final Model model) {
         model.addAttribute("postuladoes", postuladoService.findAll());
@@ -90,9 +71,9 @@ public class PostuladoController {
     public String listaByIdUsuario(final Model model, HttpSession session) {
         
         // Sacamos el ID del usuario que inicia sesion
-        final UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-
-        Long IdUsuario = usuario.getIdUsuario();
+        String jwtToken = (String) session.getAttribute("jwtToken");
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long IdUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
         // Obtener el mapa de vacantes por 'nvacante'
         Map<Long, VacanteDTO> vacanteMap = postuladoService.findVacantesByIdUsuario(IdUsuario);
@@ -110,9 +91,7 @@ public class PostuladoController {
         HttpSession session) {
 
         // Sacamos el ID del usuario que inicia sesion
-        final UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-
-        Long idUsuarioId = usuario.getIdUsuario();
+        Long idUsuarioId = (Long) session.getAttribute("idUsuario");
         Long nvacantes = encryptionService.decrypt(nvacantesEncrypt);
        
         if(postuladoService.findByNvacantesAndIdUsuario( nvacantes, idUsuarioId) != null){
@@ -144,7 +123,7 @@ public class PostuladoController {
 
     @PostMapping("/edit/{nPostulacion}")
     public String edit(@PathVariable(name = "nPostulacion") final String nPostulacionEncrypt, 
-        @RequestParam(name = "nuevoEstado") String nuevoEstado, Model model,
+        @RequestParam String nuevoEstado, Model model,
         final RedirectAttributes redirectAttributes) {
         
         Long nPostulacion = encryptionService.decrypt(nPostulacionEncrypt);

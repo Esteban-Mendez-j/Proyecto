@@ -157,12 +157,12 @@
                     
                     <!-- boton de postulacion -->
                     <div  th:replace="~{fragments/forms::error}" />
-                    <form th:if="${#ctx.session.tipo == 'candidato'}" th:action="@{/postulados/add/{nvacantes}(nvacantes=${vacanteSeleccionada.nvacantesEncryt})}" method="post">
+                    <form th:action="@{/postulados/add/{nvacantes}(nvacantes=${vacanteSeleccionada.nvacantesEncryt})}" method="post">
                         <button type="submit">Postular</button>
                     </form>
-                    <form th:if="${#ctx.session.tipo == 'invitado'}" th:action="@{/usuarios/login}">
+                    <!-- <form th:if="${#ctx.session.tipo == 'invitado'}" th:action="@{/usuarios/login}">
                         <button type="submit">Postular</button>
-                    </form>
+                    </form> -->
                     
                 </div>
         

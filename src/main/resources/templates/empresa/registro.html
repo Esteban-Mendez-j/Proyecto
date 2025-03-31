@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:replace="~{fragments/plantilla :: head}"></head>
+    
+    <link rel="stylesheet" th:href="@{/css/login-registro.css}">
+    <link rel="stylesheet" th:href="@{/css/registro.css}">
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+
+    <title>Registro</title>
+</head>
+
+<body>
+    <header>
+        <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    </header>
+    
+    <section class="registro">
+        <form class="form" th:action="@{/empresas/add}" method="post" th:object="${empresa}">
+            <div>
+                <h1>Registro de Empresa</h1>
+                <h3>Registra una cuenta para continuar</h3>
+    
+                <div class="flex-row">
+                    <!-- Campo de nombre de usuario -->
+                    <div class="flex-column">
+                        <label class="label">Nombre de Usuario</label>
+                        <div class="inputForm">
+                            <ion-icon class="icon" name="person-outline"></ion-icon>
+                            <input type="text" class="input" placeholder="Ingresa tu nombre de usuario" th:field="*{nombre}" maxlength="50" required>
+                        </div>
+                        <!-- contenedor de errores -->
+                        <div th:replace="~{fragments/forms:: mostrarErrores('nombre')}" class="text-danger"></div>
+                    </div>
+                </div>
+    
+    
+                <div class="flex-row">
+                    <!-- Campo de identificacion y NIT -->
+                    <div class="flex-column"  >
+                        <label class="label">NIT</label>
+                        <div class="inputForm">
+                            <ion-icon class="icon" name="person-outline"></ion-icon>
+                            <input  type="number" class="input" placeholder="Ingresa el NIT de la empresa" th:field="*{nit}" min="0"  required>
+                        </div>
+                        <div>
+                            <div th:replace="~{fragments/forms:: mostrarErrores('nit')}" class="text-danger"></div>
+                        </div>
+                        
+                    </div> 
+    
+                    <!-- Campo de correo -->
+                    <div class="flex-column">
+                        <label class="label">Email</label>
+                        <div class="inputForm">
+                            <ion-icon class="icon" name="mail-outline"></ion-icon>
+                            <input type="email" class="input" placeholder="Ingresa tu correo" th:field="*{correo}" maxlength="100" required>
+                        </div>
+                        <div th:replace="~{fragments/forms:: mostrarErrores('correo')}" class="text-danger"></div>
+                    </div>
+                </div>
+    
+                <div class="flex-row">
+                    <!-- Campo de contraseña -->
+                    <div class="flex-column">
+                        <label class="label">Contraseña</label>
+                        <p>Debe tener como minimo 4 letras, 4 digitos y una letra mayuscula</p>
+                        <div class="inputForm">
+                            <ion-icon class="icon" name="lock-closed-outline"></ion-icon>
+                            <input type="password" class="input" placeholder="Ingresa tu contraseña" 
+                                th:field="*{contrasena}" maxlength="15"  minlength="8" required pattern="^(?=(.*[A-Za-z]){4,})(?=(.*\d){4,})(?=.*[A-Z])[A-Za-z\d]{8,}$"> 
+                        </div>
+                        
+                        <div th:replace="~{fragments/forms:: mostrarErrores('contrasena')}" class="text-danger"></div>
+                        
+                    </div>
+                </div>
+    
+                <!-- Checkbox de términos y condiciones -->
+                <div class="terminos">
+                    <input type="checkbox" required>
+                    <label>Acepta los <a class="enlace" th:href="@{/usuarios/terminoYcondiciones}">términos y condiciones</a></label> 
+                </div>
+    
+                <div  th:replace="~{fragments/forms::error}" />
+                <!-- Botón de registro -->
+                <button type="submit" class="button-submit">Registrarse</button>
+                <p class="p">¿Ya tienes una cuenta? <a class="enlace" th:href="@{/usuarios/login}" >Inicia sesión</a></p>
+            </div>
+        </form>
+    </section>    
+</body>

@@ -27,6 +27,14 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
+  
+security:
+  jwt:
+    key:
+      private: ${MY_SECRET_KEY}
+    user:
+      generator: SEARCHJOBS-BACKEND
+    expiration: ${JWT_EXPIRATION}
 error:
   handling:
     http-status-in-json-response: true

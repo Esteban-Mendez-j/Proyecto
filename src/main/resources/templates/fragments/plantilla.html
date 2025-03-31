@@ -4,8 +4,6 @@
     <head th:fragment="head">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        <link rel="stylesheet" th:href="@{/css/general.css}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
         
         <!-- Para los mensajes de error -->
@@ -23,11 +21,12 @@
     <title>SearchJobs</title>
 </head>
 
+
 <body>
     <header >
-        <div class="container-nav" th:fragment="header" >
+        <div class="container-nav" th:fragment="headerInvitado" >
             <div class="logo">
-                <img src="/images/logo.png" alt="logo">
+                <img th:src="@{/images/logo.png}" alt="logo">
                 <label>SearchJobs</label>
             </div>
 
@@ -41,39 +40,12 @@
             
                 <ul class="menuitems">
                     <li><a th:href="@{/}">Inicio</a></li>
-                    <li th:if="${#ctx.session.tipo == 'candidato' or #ctx.session.tipo == 'invitado'}"><a th:href="@{/vacantes/listar}">Empleos</a></li>
-                    <li th:if="${#ctx.session.tipo == 'empresa'}" ><a th:href="@{/vacantes}">Empleos</a></li>
+                    <li><a th:href="@{/vacantes/listar}">Empleos</a></li>
                 </ul>    
                 
                 <div class="container-user">
-                    <a th:if="${#ctx.session.login == null}" th:href="@{/usuarios/login}" class="btnlogin">Login</a>
-                    <a th:if="${#ctx.session.login == null}" th:href="@{/usuarios/registro}" class="btnregistro">Registro</a> 
-
-                  
-                    <details th:if="${#ctx.session.login != null}">
-
-                        <!-- imagen para empresa  -->
-                        <summary th:if="${#ctx.session.tipo == 'empresa'}" >
-                            <img class="perfil-img" th:if="${#ctx.session.imagen != null}" alt="imagen de vacante" th:src="@{'/img/'+ ${#ctx.session.imagen}}" >
-                            <img class="perfil-img" th:if="${#ctx.session.imagen == null}" alt="imagen de vacante" th:src="@{/images/imgEmpresa.png}" >
-                        </summary>
-        
-                        <!-- imagen para candidato -->
-                        <summary th:if="${#ctx.session.tipo == 'candidato'}">
-                            <img class="perfil-img" th:if="${#ctx.session.imagen != null}" th:src="@{'/img/' + ${#ctx.session.imagen}}" alt="imagen del perfil" >
-                            <img class="perfil-img" th:if="${#ctx.session.imagen == null}" th:src="@{/images/imgCandidato.png}" alt="imagen del perfil">
-                        </summary>
-                        
-                        <div class="menu-perfil">
-                            <ul>
-                                <!-- debo colocar segun el login -->
-                                <li th:if="${#ctx.session.tipo == 'candidato'}"><a th:href="@{/candidatos/perfil}">Ver Perfil</a></li>
-                                <li th:if="${#ctx.session.tipo == 'empresa'}"><a th:href="@{/empresas/perfil}">Ver Perfil</a></li> 
-                                <li th:if="${#ctx.session.tipo == 'candidato'}"><a th:href="@{/postulados/lista/candidato}">Postulaciones</a></li>
-                                <li><a th:href="@{/usuarios/cerrarSesion}">Cerrar Sesión</a></li>
-                            </ul>
-                        </div>
-                    </details>
+                    <a th:href="@{/usuarios/login}" class="btnlogin">Login</a>
+                    <a th:href="@{/usuarios/registro}" class="btnregistro">Registro</a> 
                 </div>
             </nav>
         </div>

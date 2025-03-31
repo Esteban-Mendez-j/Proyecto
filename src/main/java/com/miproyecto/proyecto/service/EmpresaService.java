@@ -1,31 +1,41 @@
 package com.miproyecto.proyecto.service;
 
 import com.miproyecto.proyecto.domain.Empresa;
+import com.miproyecto.proyecto.domain.Roles;
 import com.miproyecto.proyecto.domain.Vacante;
 import com.miproyecto.proyecto.model.EmpresaDTO;
 import com.miproyecto.proyecto.repos.EmpresaRepository;
-import com.miproyecto.proyecto.repos.UsuarioRepository;
+import com.miproyecto.proyecto.repos.RolesRepository;
 import com.miproyecto.proyecto.repos.VacanteRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.ReferencedWarning;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 public class EmpresaService {
 
     private final EmpresaRepository empresaRepository;
     private final VacanteRepository vacanteRepository;
-    
+    private final PasswordEncoder passwordEncoder;
+    private final RolesRepository rolesRepository;
 
-    public EmpresaService(final EmpresaRepository empresaRepository, final VacanteRepository vacanteRepository, final UsuarioRepository usuarioRepository) {
+  
+    public EmpresaService(EmpresaRepository empresaRepository, VacanteRepository vacanteRepository,
+            PasswordEncoder passwordEncoder, RolesRepository rolesRepository) {
         this.empresaRepository = empresaRepository;
-        this.vacanteRepository = vacanteRepository; 
+        this.vacanteRepository = vacanteRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.rolesRepository = rolesRepository;
     }
 
-     
     public List<EmpresaDTO> findAll() {
         final List<Empresa> empresas = empresaRepository.findAll(Sort.by("idUsuario"));
         return empresas.stream()
@@ -40,12 +50,15 @@ public class EmpresaService {
                 .orElseThrow(NotFoundException::new);
     }
     
-
-
     public void create(final EmpresaDTO empresaDTO) {
         final Empresa empresa = new Empresa();
+        List<Roles> roles= new ArrayList<>();
+
+        roles.add(rolesRepository.findByRol("EMPRESA"));
         mapToEntity(empresaDTO, empresa);
-        empresaRepository.save(empresa).getIdUsuario();
+        empresa.setRoles(roles);// guarda el rol en la db
+        
+        empresaRepository.save(empresa);
     }
 
     public void update(final Long idUsuario, final EmpresaDTO empresaDTO) {
@@ -61,7 +74,7 @@ public class EmpresaService {
 
     private EmpresaDTO mapToDTO(final Empresa empresa, final EmpresaDTO empresaDTO) {  
         empresaDTO.setIdUsuario(empresa.getIdUsuario());
-        empresaDTO.setTipo(empresa.getTipo());
+        empresaDTO.setRoles(empresa.getRoles());
         empresaDTO.setNombre(empresa.getNombre());
         empresaDTO.setContrasena(empresa.getContrasena());
         empresaDTO.setCorreo(empresa.getCorreo());
@@ -75,9 +88,9 @@ public class EmpresaService {
     }
 
     private Empresa mapToEntity(final EmpresaDTO empresaDTO, final Empresa empresa) {
-        empresa.setTipo(empresaDTO.getTipo());
+        empresa.setRoles(empresaDTO.getRoles());
         empresa.setNombre(empresaDTO.getNombre());
-        empresa.setContrasena(empresaDTO.getContrasena());
+        empresa.setContrasena(passwordEncoder.encode(empresaDTO.getContrasena()));
         empresa.setCorreo(empresaDTO.getCorreo());
         empresa.setTelefono(empresaDTO.getTelefono());
         empresa.setDescripcion(empresaDTO.getDescripcion());

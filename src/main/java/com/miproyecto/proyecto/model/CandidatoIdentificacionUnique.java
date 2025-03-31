@@ -21,7 +21,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 
 /**
- * Validate that the identificacion value isn't taken yet.
+ * Validar que el valor de identificación no esté tomado aún.
  */
 @Target({ FIELD, METHOD, ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
@@ -60,10 +60,10 @@ public @interface CandidatoIdentificacionUnique {
             }
             @SuppressWarnings("unchecked") final Map<String, String> pathVariables =
                     ((Map<String, String>)request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE));
-            final String currentId = pathVariables.get("idUsuario");
+            final String dataBaseId = pathVariables.get("idUsuario");
 
-            if (currentId != null){
-                Long idDescrypt = encryptionService.decrypt(currentId);
+            if (dataBaseId != null){
+                Long idDescrypt = encryptionService.decrypt(dataBaseId);
                 
                 if (value.equalsIgnoreCase(candidatoService.get(idDescrypt).getIdentificacion()) ) {
                     // value hasn't changed

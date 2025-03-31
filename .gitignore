@@ -15,6 +15,9 @@ application-local.yml
 ## VS Code
 .vscode/
 
+## variables de entorno
+.env
+
 ## STS
 .apt_generated
 .classpath

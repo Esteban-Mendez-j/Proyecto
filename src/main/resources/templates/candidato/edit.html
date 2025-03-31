@@ -11,7 +11,7 @@
             </div>
             <div th:replace="~{fragments/forms::globalErrors('candidato')}" />
             
-            <form th:action="@{/candidatos/edit/{idUsuario}(idUsuario=${candidato.idUsuarioEncrypt})}" method="post" enctype="multipart/form-data">
+            <form th:action="@{/candidatos/edit}" method="post" enctype="multipart/form-data">
                 <div th:replace="~{fragments/forms::inputRow(object='candidato', field='nombre', required=true)}" />
                 <div th:replace="~{fragments/forms::inputRow(object='candidato', field='apellido', required=true)}" />
                 <div th:replace="~{fragments/forms::inputRow(object='candidato', field='identificacion', required=true)}" />
@@ -35,11 +35,7 @@
                 </div>
 
                 <!-- campos ocultos -->
-                <input type="hidden" name="idUsuario" th:value="${candidato.idUsuario}" />
-                <!-- <input type="hidden" name="correo" th:value="${candidato.correo}" /> -->
-                <input type="hidden" name="contrasena" th:value="${candidato.contrasena}" />
-                <input type="hidden" name="tipo" th:value="${candidato.tipo}" />
-                <!-- <input type="hidden" name="identificacion" th:value="${candidato.identificacion}" /> -->
+                <input type="hidden" name="idUsuario" th:value="${candidato.idUsuarioEncrypt}" />
                 <input type="hidden" name="imagen" th:value="${candidato.imagen}" />
 
                 

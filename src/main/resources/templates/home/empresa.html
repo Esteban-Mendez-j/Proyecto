@@ -12,26 +12,59 @@
     
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+   
+    <header >
+        <div class="container-nav" th:fragment="header" >
+            <div class="logo">
+                <img th:src="@{/images/logo.png}" alt="logo">
+                <label>SearchJobs</label>
+            </div>
+
+            <nav class="navbar">
+                <input type="checkbox" id="check">
+                <label class="checkmenu" for="check">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </label>
+            
+                <ul class="menuitems">
+                    <li><a th:href="@{/empresa/home}">Inicio</a></li>
+                    <li><a th:href="@{/vacantes}">Empleos</a></li>
+                </ul>    
+                
+                <div class="container-user">
+                    <details>
+
+                        <summary>
+                            <img class="perfil-img" th:if="${#ctx.session.imagen != null}" alt="imagen de vacante" th:src="@{'/img/'+ ${#ctx.session.imagen}}" >
+                            <img class="perfil-img" th:if="${#ctx.session.imagen == null}" alt="imagen de vacante" th:src="@{/images/imgEmpresa.png}" >
+                        </summary>
+        
+                        
+                        <div class="menu-perfil">
+                            <ul>
+                                <li><a th:href="@{/empresas/perfil}">Ver Perfil</a></li> 
+                                <li><a th:href="@{/usuarios/cerrarSesion}">Cerrar Sesión</a></li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </nav>
+        </div>
     </header>
 
     <!-- Main Content -->
-    
     <main>
         <section class="hero">
             <div class="imagen-hero">
                 <img th:src="@{/images/hero.png}" alt="hero">
             </div>
             <div class="container">
-                <!-- mensaje para invitado  -->
-                <h1>El Empleo que sueñas está a un paso</h1>
-                <a th:href="@{/vacantes/listar}"><span class="hola">¡Búscalo Ya!</span></a>
+                <h1>Encuentra al talento perfecto para tu empresa</h1>
+                <a th:href="@{/vacantes}"><span class="hola">¡Búscalo Ya!</span></a>
             </div>
         </section>
 
@@ -61,23 +94,5 @@
 
     <!-- Footer -->
     <div th:replace="~{fragments/plantilla :: footer(tipo=${tipo})}"></div>
-    <script th:if="${param.logout}">
-        Swal.fire({
-            title: 'Sesión Cerrada',
-            text: 'Has cerrado sesión correctamente.',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
-    </script>
-    
-    <script th:if="${param.expired}">
-        Swal.fire({
-            title: 'Sesión Expirada',
-            text: 'Tu sesión ha expirado, por favor inicia sesión nuevamente.',
-            icon: 'warning',
-            confirmButtonText: 'OK'
-        });
-    </script>
-    
 </body>
 </html>

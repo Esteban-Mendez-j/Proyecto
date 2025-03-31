@@ -1,17 +1,17 @@
 package com.miproyecto.proyecto.controller;
 
-import com.miproyecto.proyecto.domain.Candidato;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.HistorialLaboralDTO;
-import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.repos.CandidatoRepository;
 import com.miproyecto.proyecto.service.EncryptionService;
 import com.miproyecto.proyecto.service.HistorialLaboralService;
-import com.miproyecto.proyecto.util.CustomCollectors;
+import com.miproyecto.proyecto.util.JwtUtils;
 import com.miproyecto.proyecto.util.WebUtils;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Sort;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,23 +26,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/historialLaborals")
 public class HistorialLaboralController {
-
+    @Autowired
+    private JwtUtils jwtUtils;
     private final HistorialLaboralService historialLaboralService;
-    private final CandidatoRepository candidatoRepository;
     private final EncryptionService encryptionService;
 
     public HistorialLaboralController(final HistorialLaboralService historialLaboralService,
             final CandidatoRepository candidatoRepository) {
         this.historialLaboralService = historialLaboralService;
-        this.candidatoRepository = candidatoRepository;
         this.encryptionService = new EncryptionService();
-    }
-
-    @ModelAttribute
-    public void prepareContext(final Model model) {
-        model.addAttribute("idUsuarioValues", candidatoRepository.findAll(Sort.by("idUsuario"))
-                .stream()
-                .collect(CustomCollectors.toSortedMap(Candidato::getIdUsuario, Candidato::getIdUsuario)));
     }
 
     @GetMapping
@@ -54,8 +46,10 @@ public class HistorialLaboralController {
     @GetMapping("/add")
     public String add(@ModelAttribute("historialLaboral") final HistorialLaboralDTO historialLaboralDTO, 
             HttpSession session) {
-        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        historialLaboralDTO.setIdUsuario(usuario.getIdUsuario());
+        String jwtToken = (String) session.getAttribute("jwtToken");
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        historialLaboralDTO.setIdUsuario(idUsuario);
         return "historialLaboral/add";
     }
 

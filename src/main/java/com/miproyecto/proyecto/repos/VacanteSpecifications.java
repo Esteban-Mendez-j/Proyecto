@@ -50,7 +50,6 @@ public class VacanteSpecifications {
             // Filtro para tipo de vacante (Voluntariado o Vacante)
 
             if ("null".equals(filtro.getTipo())) {
-                System.out.println("");
                 predicates.add(criteriaBuilder.or(
                     criteriaBuilder.equal(root.get("tipo"), "Voluntariado"),
                     criteriaBuilder.equal(root.get("tipo"), "Vacante")

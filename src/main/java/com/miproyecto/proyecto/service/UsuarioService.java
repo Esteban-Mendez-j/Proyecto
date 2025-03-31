@@ -11,7 +11,6 @@ import com.miproyecto.proyecto.util.ReferencedWarning;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.io.IOException;
@@ -31,9 +30,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final CandidatoRepository candidatoRepository;
     private final EmpresaRepository empresaRepository;
-    // private static final String UPLOAD_DIR = "C:/Users/Asus/Desktop/Proyecto/uploads/img/";
-    // private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Proyecto/uploads/img/";
-    public static final String UPLOAD_DIR = Paths.get("uploads", "img").toAbsolutePath().toString();
+    public static final String UPLOAD_DIR = Path.of("uploads", "img").toAbsolutePath().toString();
 
 
     public UsuarioService(final UsuarioRepository usuarioRepository,
@@ -51,6 +48,11 @@ public class UsuarioService {
                 .toList();
     }
 
+    public Long findIdByCorreo(String correo){
+        Usuario usuario = usuarioRepository.getByCorreo(correo)
+            .orElseThrow(NotFoundException::new);
+        return usuario.getIdUsuario();
+    }
 
     public UsuarioDTO get(final Long idUsuario) {
         return usuarioRepository.findById(idUsuario)
@@ -88,13 +90,13 @@ public class UsuarioService {
 
 
     public String guardarImagen(MultipartFile file, Long idUsuario) throws IOException {
-        // Validar tipo de archivo
+        // Validar Roles de archivo
         if (!file.getContentType().startsWith("image/")) {
             throw new IllegalArgumentException("Solo se permiten archivos de imagen.");
         }
 
         // Crear directorio si no existe
-        Path uploadPath = Paths.get(UPLOAD_DIR);
+        Path uploadPath = Path.of(UPLOAD_DIR);
         Files.createDirectories(uploadPath); // Crear directorios si no existen
         // Generar un nombre único para el archivo
         String nombreArchivo = idUsuario + "_" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
@@ -111,7 +113,7 @@ public class UsuarioService {
 
     public void eliminarImagen(String fileName) throws IOException {
         // Construir la ruta completa del archivo usando el nombre de la imagen
-        Path filePath = Paths.get(UPLOAD_DIR, fileName);
+        Path filePath = Path.of(UPLOAD_DIR, fileName);
 
         // Verificar si el archivo existe antes de eliminarlo
         if (Files.exists(filePath)) {
@@ -123,7 +125,7 @@ public class UsuarioService {
 
     private UsuarioDTO mapToDTO(final Usuario usuario, final UsuarioDTO usuarioDTO) {
         usuarioDTO.setIdUsuario(usuario.getIdUsuario());
-        usuarioDTO.setTipo(usuario.getTipo());
+        usuarioDTO.setRoles(usuario.getRoles());
         usuarioDTO.setNombre(usuario.getNombre());
         usuarioDTO.setContrasena(usuario.getContrasena());
         usuarioDTO.setCorreo(usuario.getCorreo());
@@ -134,7 +136,7 @@ public class UsuarioService {
     }
 
     private Usuario mapToEntity(final UsuarioDTO usuarioDTO, final Usuario usuario) {
-        usuario.setTipo(usuarioDTO.getTipo());
+        usuario.setRoles(usuarioDTO.getRoles());
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setContrasena(usuarioDTO.getContrasena());
         usuario.setCorreo(usuarioDTO.getCorreo());

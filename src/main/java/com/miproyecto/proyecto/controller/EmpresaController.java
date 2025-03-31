@@ -1,14 +1,13 @@
 package com.miproyecto.proyecto.controller;
 
-import com.miproyecto.proyecto.domain.Usuario;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.EmpresaDTO;
-import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.repos.UsuarioRepository;
 import com.miproyecto.proyecto.service.EmpresaService;
 import com.miproyecto.proyecto.service.EncryptionService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.service.VacanteService;
-import com.miproyecto.proyecto.util.CustomCollectors;
+import com.miproyecto.proyecto.util.JwtUtils;
 import com.miproyecto.proyecto.util.ReferencedWarning;
 import com.miproyecto.proyecto.util.WebUtils;
 
@@ -17,7 +16,7 @@ import jakarta.validation.Valid;
 
 import java.io.IOException;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,8 +34,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/empresas")
 public class EmpresaController {
 
+    @Autowired
+    private JwtUtils jwtUtils;
+
     private final EmpresaService empresaService;
-    private final UsuarioRepository usuarioRepository;
     private final EncryptionService encryptionService;
     private final UsuarioService usuarioService;
     private final VacanteService vacanteService;
@@ -46,48 +47,36 @@ public class EmpresaController {
             final UsuarioService usuarioService, 
             final VacanteService vacanteService) {
         this.empresaService = empresaService;
-        this.usuarioRepository = usuarioRepository;
         this.encryptionService = new EncryptionService();
         this.usuarioService = usuarioService;
         this.vacanteService = vacanteService;
     }
 
-    @ModelAttribute
-    public void prepareContext(final Model model) {
-        model.addAttribute("idUsuarioValues", usuarioRepository.findAll(Sort.by("idUsuario"))
-                .stream()
-                .collect(CustomCollectors.toSortedMap(Usuario::getIdUsuario, Usuario::getTipo)));
-        model.addAttribute("tipo", "empresa");
-    }
-
 
     @GetMapping("/perfil")
-    public String mostrarPerfil(HttpSession session, Model model,
-            @RequestParam(value = "idUsuario", required = false) String idUsuarioEncrypt) {
-
-        final UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuario");
-        
+    public String mostrarPerfil( Model model,HttpSession session,
+            @RequestParam(value = "idUsuario", required = false) String idUsuarioEncrypt) {        
         Long idUsuario;
         if (idUsuarioEncrypt == null) {
-            idUsuario = usuario.getIdUsuario();
+            // Sacamos el ID del usuario que inicia sesion
+            String jwtToken = (String) session.getAttribute("jwtToken");
+            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+            idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         } else{
             idUsuario = encryptionService.decrypt(idUsuarioEncrypt);
         }
 
-        EmpresaDTO empresaDTO = empresaService.get(idUsuario);
-        if (empresaDTO != null) {
-            model.addAttribute("vacantes", vacanteService.findByIdUsuario(idUsuario));
-            model.addAttribute("empresa", empresaDTO);
-            return "empresa/perfil"; 
-        } else {
-            return "redirect:/usuarios/login";
-        }
+        EmpresaDTO empresaDTO = empresaService.get(idUsuario);        
+        if (empresaDTO == null) {return "redirect:/usuarios/login";} 
+        model.addAttribute("vacantes", vacanteService.findByIdUsuario(idUsuario));
+        model.addAttribute("empresa", empresaDTO);
+        return "empresa/perfil"; 
     }
 
 
     @GetMapping("/add")
     public String add(@ModelAttribute("empresa") final EmpresaDTO empresaDTO) {
-        return "html/registro";
+        return "empresa/registro";
     }
 
     @PostMapping("/add")
@@ -95,15 +84,12 @@ public class EmpresaController {
             final BindingResult bindingResult, final RedirectAttributes redirectAttributes, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute(WebUtils.MSG_ERROR, "Hubo un problema al registrar el candidato.");
-            return "html/registro";
+            return "empresa/registro";
         }    
         empresaService.create(empresaDTO);
         redirectAttributes.addFlashAttribute(WebUtils.MSG_SUCCESS, WebUtils.getMessage("empresa.create.success"));
         return "redirect:/usuarios/login";
     }
-
-    
-
 
     @GetMapping("/edit/{idUsuario}")
     public String edit(@PathVariable(name = "idUsuario") final String idUsuarioEncrypt, final Model model) {
@@ -111,8 +97,6 @@ public class EmpresaController {
         model.addAttribute("empresa", empresaService.get(idUsuario));
         return "empresa/edit";
     }
-
-    
 
     @PostMapping("/edit/{idUsuario}")
     public String editempresa(@PathVariable(name = "idUsuario") final String idUsuarioEncrypt,

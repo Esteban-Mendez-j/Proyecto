@@ -1,5 +1,9 @@
 package com.miproyecto.proyecto.model;
 
+
+import java.util.List;
+
+import com.miproyecto.proyecto.domain.Roles;
 import com.miproyecto.proyecto.service.EncryptionService;
 
 import jakarta.validation.constraints.NotNull;
@@ -7,18 +11,16 @@ import jakarta.validation.constraints.Size;
 
 
 public class UsuarioDTO {
-
+    
     String idUsuario;
 
-    @NotNull
-    @Size(max = 10)
-    private String tipo;
+    private List<Roles> roles;
 
     @NotNull
     @Size(max = 50)
     private String nombre;
 
-    @NotNull
+    @NotNull(groups = ValidationGroups.OnCreate.class)
     @Size(max = 15)
     private String contrasena;
 
@@ -56,14 +58,14 @@ public class UsuarioDTO {
         this.idUsuario = encryptionService.encrypt(idUsuario);
     }
 
-    public String getTipo() {
-        return tipo;
+    public List<Roles> getRoles() {
+        return roles;
     }
 
-    public void setTipo(final String tipo) {
-        this.tipo = tipo;
+    public void setRoles(List<Roles> roles) {
+        this.roles = roles;
     }
-
+   
     public String getNombre() {
         return nombre;
     }
@@ -114,8 +116,9 @@ public class UsuarioDTO {
 
     @Override
     public String toString() {
-        return "UsuarioDTO [tipo=" + tipo + ", nombre=" + nombre + ", contrasena=" + contrasena + ", correo=" + correo
-                + ", telefono=" + telefono + ", descripcion=" + descripcion + ", imagen=" + imagen + "]";
+        return "UsuarioDTO [idUsuario=" + idUsuario + ", roles=" + roles + ", nombre=" + nombre + ", contrasena="
+                + contrasena + ", correo=" + correo + ", telefono=" + telefono + ", descripcion=" + descripcion
+                + ", imagen=" + imagen + ", encryptionService=" + encryptionService + "]";
     }
 
 }
