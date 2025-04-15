@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head>
+        <title layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE">[[#{app.title}]]</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet" />
+        <link th:href="@{/webjars/flatpickr/4.6.13/dist/flatpickr.min.css}" rel="stylesheet" />
+        <link th:href="@{/css/general.css}" rel="stylesheet" />
+        <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}" defer></script>
+        <script th:src="@{/webjars/flatpickr/4.6.13/dist/flatpickr.min.js}" defer></script>
+        
+        <script th:src="@{/js/app.js}" defer></script>
+    </head>
+    <body>
+        <header >
+            <div class="container-nav" th:fragment="header" style="position: relative; min-width: 100% ;">
+                <div class="logo">
+                    <img src="/images/logo.png" alt="logo">
+                    <label>SearchJobs</label>
+                </div>
+    
+                <nav class="navbar" >
+                    <input type="checkbox" id="check">
+                    <label class="checkmenu" for="check">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </label>
+                
+                    <ul class="menuitems" style="align-items: center; color: white; margin: 0%;">
+                        <li><a th:href="@{/}">Inicio</a></li>
+                        <li th:if="${#ctx.session.tipo == 'candidato' or #ctx.session.tipo == 'invitado'}"><a th:href="@{/vacantes/listar}">Empleos</a></li>
+                        <li th:if="${#ctx.session.tipo == 'empresa'}" ><a th:href="@{/vacantes}">Empleos</a></li>
+                    </ul>    
+                    
+                    <div class="container-user">
+                        <a th:if="${#ctx.session.login == null}" th:href="@{/usuarios/login}" class="btnlogin">Login</a> <!-- th:href="@{/candidatoss/login}" -->
+                        <a th:if="${#ctx.session.login == null}" th:href="@{/usuarios/registro}" class="btnregistro">Registro</a> <!-- @{/candidatoss} -->
+    
+                      
+                        <details th:if="${#ctx.session.login != null}">
+                            <!-- imagen para empresa  -->
+                            <summary th:if="${#ctx.session.tipo == 'empresa'}" >
+                                <img class="perfil-img" th:if="${#ctx.session.imagen != null}" alt="imagen de vacante" th:src="@{'/img/'+ ${#ctx.session.imagen}}" >
+                                <img class="perfil-img" th:if="${#ctx.session.imagen == null}" alt="imagen de vacante" th:src="@{/images/imgEmpresa.png}" >
+                            </summary>
+            
+                            <!-- imagen para candidato -->
+                            <summary th:if="${#ctx.session.tipo == 'candidato'}">
+                                <img class="perfil-img" th:if="${#ctx.session.imagen != null}" th:src="@{'/img/' + ${#ctx.session.imagen}}" alt="imagen del perfil" >
+                                <img class="perfil-img" th:if="${#ctx.session.imagen == null}" th:src="@{/images/imgCandidato.png}" alt="imagen del perfil">
+                            </summary>
+                            <div class="menu-perfil" style="min-width: 150px; right: -50px;">
+                                <ul>
+                                    <li th:if="${#ctx.session.tipo == 'candidato'}"><a th:href="@{/candidatos/perfil}">Ver Perfil</a></li>
+                                    <li th:if="${#ctx.session.tipo == 'empresa'}"><a th:href="@{/empresas/perfil}">Ver Perfil</a></li> 
+                                    <li th:if="${#ctx.session.tipo == 'candidato'}"><a th:href="@{/postulados/lista/candidato}">Postulaciones</a></li>
+                                    <li><a th:href="@{/usuarios/cerrarSesion}">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main class="my-5">
+            <div class="container">
+                <p th:if="${MSG_SUCCESS}" class="alert alert-success mb-4" role="alert">[[${MSG_SUCCESS}]]</p>
+                <p th:if="${MSG_INFO}" class="alert alert-info mb-4" role="alert">[[${MSG_INFO}]]</p>
+                <p th:if="${MSG_ERROR}" class="alert alert-danger mb-4" role="alert">[[${MSG_ERROR}]]</p>
+                <div layout:fragment="content" />
+            </div>
+        </main>
+    </body>
+</html>
+
+
+
+

@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{postulado.list.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{postulado.list.headline}]]</h1>
+            </div>
+            <div th:if="${error}" class="alert alert-danger">
+                <p th:text="${error}"></p>
+            </div>            
+            <div th:if="${postulados.isEmpty()}">[[#{postulado.list.empty}]]</div>
+            <div th:if="${!postulados.isEmpty()}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <!-- columnas para candidato -->
+                            <th th:if="${#ctx.session.tipo == 'candidato'}"scope="col"> Titulo </th>
+                            <th th:if="${#ctx.session.tipo == 'candidato'}"scope="col"> Cargo </th>
+                            <th th:if="${#ctx.session.tipo == 'candidato'}"scope="col"> Experiencia </th>
+
+                            <!-- columnas para empresa -->
+                            <th th:if="${#ctx.session.tipo == 'empresa'}"scope="col">[[#{candidato.nombre.label}]]</th>
+                            <th th:if="${#ctx.session.tipo == 'empresa'}"scope="col">[[#{candidato.experiencia.label}]]</th>
+                            <th th:if="${#ctx.session.tipo == 'empresa'}"scope="col">[[#{candidato.correo.label}]]</th>
+
+                            <th scope="col">[[#{postulado.fechaPostulacion.label}]]</th>
+                            <th scope="col">[[#{postulado.estado.label}]]</th>
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="postulado : ${postulados}" th:if="${#ctx.session.tipo == 'empresa' ? postulado.estado != 'Rechazado' : true}">
+
+                            <!-- Mostrar los datos de la vacante para el candidato  -->
+                            <td th:if="${#ctx.session.tipo == 'candidato'}">
+                                <a th:href="@{/vacantes/seleccion/{nvacantes}(nvacantes=${postulado.nvacanteEncrypt})}" th:text="${vacante[postulado.nvacante].titulo}"></a>
+                            </td>
+                            <td th:if="${#ctx.session.tipo == 'candidato'}" th:text="${vacante[postulado.nvacante].cargo}"></td>
+                            <td th:if="${#ctx.session.tipo == 'candidato'}" th:text="${vacante[postulado.nvacante].experiencia}"></td>
+
+                            <!-- Mostrar los datos del candidato para la empresa -->
+                            <td th:if="${#ctx.session.tipo == 'empresa'}">
+
+                                <form th:action="@{/candidatos/perfil}" method="post">
+                                    <input type="hidden" name="nPostulacion" th:value="${postulado.nPostulacionEncrypt}">
+                                    <input type="hidden" name="idUsuario" th:value="${postulado.idUsuarioEncrypt}">
+                                    <button type="submit" th:text="${candidatos[postulado.idUsuario].nombre}"></button>
+                                </form>
+
+                                <!-- <a th:href="@{/candidatos/perfil(idUsuario=${postulado.idUsuarioEncrypt})}" th:text="${candidatos[postulado.idUsuario].nombre}"></a> -->
+                            </td>
+                            <td th:if="${#ctx.session.tipo == 'empresa'}" th:text="${candidatos[postulado.idUsuario].experiencia}"></td>
+                            <td th:if="${#ctx.session.tipo == 'empresa'}" th:text="${candidatos[postulado.idUsuario].correo}"></td>
+
+                            <td>[[${postulado.fechaPostulacion}]]</td>
+                            <td>[[${postulado.estado}]]</td>
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <form th:if="${#ctx.session.tipo == 'empresa'}" th:action="@{/postulados/edit/{nPostulacion}(nPostulacion=${postulado.nPostulacionEncrypt})}" method="post">
+                                        <!-- Botón para aceptar -->
+                                        <button type="submit" name="nuevoEstado" th:value="Aceptado" class="btn btn-sm btn-secondary">
+                                            Aceptar
+                                        </button>
+                        
+                                        <!-- Botón para rechazar -->
+                                        <button type="submit" name="nuevoEstado" th:value="Rechazado" class="btn btn-sm btn-secondary">
+                                            Rechazar
+                                        </button>
+                                    </form>
+                            
+                                    <form th:if="${#ctx.session.tipo == 'candidato'}" th:action="@{/postulados/delete/{nPostulacion}(nPostulacion=${postulado.nPostulacionEncrypt})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button type="submit" class="btn btn-sm btn-secondary">[[#{postulado.list.delete}]]</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
+
+

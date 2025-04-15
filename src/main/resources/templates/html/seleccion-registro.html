@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Tipo de Registro</title>
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/Registro.css}">
+</head>
+<body>
+    <header>
+        <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    </header>
+    <section class="eleccion-registro">
+        <div class="container">
+            <h1>¿Cómo deseas registrarte?</h1>
+            <a th:href="@{/candidatos/add}" class="btn-eleccion">Registrarse como Candidato</a>
+            <a th:href="@{/empresas/add}" class="btn-eleccion">Registrarse como Empresa</a>
+        </div>
+    </section>
+</body>
+</html>

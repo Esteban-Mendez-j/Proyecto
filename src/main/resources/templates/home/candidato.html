@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>SearchJobs</title>
+    
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css}">
+    
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <header >
+        <div class="container-nav">
+            <div class="logo">
+                <img src="/images/logo.png" alt="logo">
+                <label>SearchJobs</label>
+            </div>
+
+            <nav class="navbar">
+                <input type="checkbox" id="check">
+                <label class="checkmenu" for="check">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </label>
+            
+                <ul class="menuitems">
+                    <li><a th:href="@{/candidato/home}">Inicio</a></li>
+                    <li><a th:href="@{/vacantes/listar}">Empleos</a></li>
+                </ul>    
+                
+                <div class="container-user">
+                  
+                    <details>
+                        <summary>
+                            <img class="perfil-img" th:if="${#ctx.session.imagen != null}" th:src="@{'/img/' + ${#ctx.session.imagen}}" alt="imagen del perfil" >
+                            <img class="perfil-img" th:if="${#ctx.session.imagen == null}" th:src="@{/images/imgCandidato.png}" alt="imagen del perfil">
+                        </summary>
+                        
+                        <div class="menu-perfil">
+                            <ul>
+                                <li><a th:href="@{/candidatos/perfil}">Ver Perfil</a></li>
+                                <li><a th:href="@{/postulados/lista/candidato}">Postulaciones</a></li>
+                                <li><a th:href="@{/usuarios/cerrarSesion}">Cerrar Sesión</a></li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="hero">
+            <div class="imagen-hero">
+                <img th:src="@{/images/hero.png}" alt="hero">
+            </div>
+            <div class="container">
+                <!-- mensaje para candidato o invitado  -->
+                <h1>El Empleo que sueñas está a un paso</h1>
+                <a th:href="@{/vacantes/listar}"><span class="hola">¡Búscalo Ya!</span></a>
+            </div>
+        </section>
+
+        <!-- Información -->
+        <section id="informacion">
+            <div class="container">
+                <div class="content">
+                    <img th:src="@{/images/search.png}" alt="búsqueda">
+                    <h3>Búsqueda Eficiente de Empleo</h3>
+                    <p>Encuentra empleo de manera rápida y sencilla. Nuestra plataforma está diseñada para que puedas filtrar las ofertas de trabajo según tu perfil, ubicación, y tipo de empleo, conectándote directamente con las empresas que están buscando talento.</p>
+                </div>
+                
+                <div class="content">
+                    <img th:src="@{/images/grupo-Trabajo.jpg}" alt="grupo de trabajo">
+                    <h3>Oportunidades para Todos</h3>
+                    <p>Ofrecemos oportunidades para todo tipo de profesionales, desde recién graduados hasta expertos con años de experiencia. Nuestra amplia base de datos de empleadores garantiza que siempre encontrarás opciones que se ajusten a tus habilidades y metas profesionales.</p>
+                </div>
+
+                <div class="content">
+                    <img th:src="@{/images/seguridad1.webp}" alt="seguridad">
+                    <h3>Postulación Rápida y Segura</h3>
+                    <p>Con nuestra herramienta de postulación rápida, puedes aplicar a las ofertas de trabajo con un solo clic. Además, tu información está completamente protegida, garantizando la seguridad de tus datos personales y profesionales.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/plantilla :: footer(tipo=${tipo})}"></div>
+</body>
+</html>

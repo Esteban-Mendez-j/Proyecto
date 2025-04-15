@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/perfil.css}">
+
+    <!-- para agregar los iconos -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <title>Perfil</title>
+    
+</head>
+<body>
+    <div th:replace="~{fragments/plantilla :: header}"></div>
+
+    
+    <div class="container-perfil">
+        <div class="profile-header">
+            <div class="container-img">
+                <img th:if="${candidato.imagen != null}"  th:src="@{'/img/' + ${candidato.imagen}}" alt="imagen del perfil" >
+                <img th:if="${candidato.imagen == null}" th:src="@{/images/imgCandidato.png}" alt="imagen del perfil">
+            </div>
+            <div class="info-header">
+                <h1>
+                    <span th:text="${candidato.nombre} + ' ' + ${candidato.apellido}"></span>
+                    <a  th:href="@{/candidatos/edit/{idUsuario}(idUsuario=${candidato.idUsuarioEncrypt})}"><ion-icon name="create-outline"></ion-icon></a>
+                </h1>
+        
+                <!-- <p th:if="${candidato.experiencia != null}" th:text="${candidato.experiencia} + ' años de experiencia'"></p> -->
+            </div>
+           
+        </div>
+    
+        <div class="about-me">
+            <h3>Sobre Mí</h3>
+            <p th:if="${candidato.descripcion == null}" th:text="'Descripción no disponible'"></p>
+            <p th:if="${candidato.descripcion != null}" th:text="${candidato.descripcion}"></p>
+        </div>
+    
+        <div class="contact">
+            <h3>Contacto</h3>
+            <p> 
+                <span class="iconos"><ion-icon name="call-outline"></ion-icon></span> 
+                <span th:if="${candidato.telefono == null}" th:text="'Teléfono no disponible'"></span>
+                <span th:if="${candidato.telefono != null}" th:text="${candidato.telefono}"></span>
+            </p>
+            <p> 
+                <span class="iconos"><ion-icon name="mail-outline"></ion-icon></span> 
+                <span th:text="${candidato.correo}"></span>
+            </p>
+        </div>
+
+        <div class="detalles">
+            <h3>Detalles</h3>
+            <p><strong>Experiencia: </strong> <span th:text="${candidato.experiencia != null ? candidato.experiencia : 'No disponible' }" ></span></p>
+            <p><strong>Currículo: </strong> 
+                <a th:href="${candidato.curriculo != null ? candidato.curriculo : '#'}" 
+                   th:text="${candidato.curriculo != null ? 'Ver Currículo' : 'No disponible'}"></a>
+            </p>            
+        </div>
+
+        <div class="education">
+            <h3>Estudios</h3>
+
+            <div th:if="${estudios.empty}">
+                <p>No hay estudios registrados</p>
+            </div>
+
+            <div th:if="${!estudios.empty}" th:each="estudio : ${estudios}" class="container">
+                <div class="elementos">
+                    <p><strong th:text="${estudio.titulo}"></strong></p>
+                    <p th:text="${estudio.academia}"></p>
+                </div>
+            
+                
+                <div  class="botones">
+                
+                    <a class="btn-perfil" th:href="@{/estudios/edit/{idEstudio}(idEstudio=${estudio.idEstudioEncrypt})}" >[[#{estudio.list.edit}]]</a>
+                    <form th:action="@{/estudios/delete/{idEstudio}(idEstudio=${estudio.idEstudioEncrypt})}"
+                            th:data-confirm-message="#{delete.confirm}" method="post"  >
+                        <button class="btn-perfil" type="submit" >[[#{estudio.list.delete}]]</button>
+                    </form>
+                </div>
+
+            </div><br>
+            <div >
+                <a class="btn-perfil" th:href="@{/estudios/add}" >[[#{estudio.list.createNew}]]</a>
+            </div>
+           
+            
+        </div>
+
+        <div class="work-history">
+            <h3>Historial Laboral</h3>
+            <div th:if="${historialLaboral.empty}">
+                <p>No hay Historial Laboral registrado</p>
+            </div>
+
+            <div th:if="${!historialLaboral.empty}" th:each="historial : ${historialLaboral}" class="container">
+                <div class="elementos">
+                    <p><strong th:text="${historial.titulo}"></strong></p>
+                    <p th:text="${historial.empresa}"></p>
+                </div>
+
+                <div  class="botones">
+                    <a th:href="@{/historialLaborals/edit/{iDHistorial}(iDHistorial=${historial.idHistorialEncrypt})}" class="btn-perfil">[[#{historialLaboral.list.edit}]]</a>
+                    <form th:action="@{/historialLaborals/delete/{iDHistorial}(iDHistorial=${historial.idHistorialEncrypt})}"
+                            th:data-confirm-message="#{delete.confirm}" method="post">
+                        <button type="submit" class="btn-perfil">[[#{historialLaboral.list.delete}]]</button>
+                    </form>
+                </div>
+                
+            </div><br>
+            <div >
+                <a class="btn-perfil" th:href="@{/historialLaborals/add}">[[#{historialLaboral.list.createNew}]]</a>
+            </div>
+        </div>
+        
+    </div>
+    
+    
+</body>
+</html>

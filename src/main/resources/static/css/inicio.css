@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+
+/* ---------------------------
+
+    DISEÑO PAGINA DE INICIO 
+    (COMPUTADOR)
+
+   ---------------------------
+*/
+.hero{
+    display: flex;
+    flex-direction: row;
+    margin-top: 60px;
+    height: 90vh;
+    font-family: "Fredoka", Arial, sans-serif;
+    background: #0575E6;  
+    background: -webkit-linear-gradient(to top, #021B79, #0575E6);  
+    background: linear-gradient(to top, #021B79, #0575E6); 
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.8);
+}
+
+.imagen-hero img{
+    clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%);
+    height: 100%;
+    width: 100%;
+    
+}
+
+.imagen-hero{
+    height: 100%;
+    width: 50%;
+    filter:  drop-shadow(15px 0px 10px rgba(0, 0, 0, 0.5));
+}
+
+
+.hero .container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+    color:white;
+    padding: 30px;
+    width: 50%;   
+}
+
+.hero h1{
+    font-size: 3em;
+    margin-bottom: 30px;
+}
+
+/* animacion del boton de inicio  */
+.hero a{
+    text-decoration: none;
+    border: 2px solid rgb(255, 255, 255);
+    height: 40px;
+    width: 150px;
+    padding: 10px;
+    color: rgb(255, 255, 255);
+    position: relative;
+    font-weight: bold;
+    border-radius: 3px;
+    transition:0.5s ;
+}
+
+.hero a::after{
+    content: "";
+    position: absolute;
+    height: 36px;
+    width: 0;
+    background-color: white;
+    transition: 0.5s ease-in-out;
+    left: -2px;
+    bottom: 0;
+    z-index: 0;
+}
+
+.hero a:hover::after, a{
+    width: 150px;
+}
+
+.hero a:hover .hola{
+    color: var(--primary-color);
+    position: relative;
+    z-index: 100;
+}
+
+.hero a:hover{
+    /* transform: translateY(-7px); */
+    transform: scale(1.2);
+}
+
+
+
+/*_______________________________
+
+  Estilos para el texto de inicio 
+  _______________________________
+*/
+
+#informacion .container{
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    flex-wrap: wrap;
+    gap: 50px;
+    min-height: 120vh ;
+    height: auto;
+}
+
+#informacion img{
+    width: 100%;
+    height: 250px;
+}
+
+.content{
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    width: auto;
+    max-width: 350px;
+    padding: 10px;
+}
+
+.content h3{
+    font-size: 1.4em;
+    margin: 15px 0;
+}
+
+.content p{
+    padding: 0 15px 15px;
+    color: #333;
+    text-align: justify;
+    text-align-last: left;
+    hyphens: auto;
+}
+
+
+
+
+@media (max-width: 720px){
+    /* hero */
+
+    #informacion .container{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero h1{font-size: 5vw; margin-bottom: 10px;}
+
+    
+    .hero {height: 35vh; margin-bottom: 20px;}
+
+    .hero a::after{
+        height: 26px;
+    }
+
+    .hero a:hover::after, a{
+        width: 120px;
+    }
+
+    .hero a{
+        padding: 5px;
+        font-size: 14px;
+        height: 30px;
+        width: 120px;
+    }
+    
+
+
+}

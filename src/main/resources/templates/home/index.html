@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>SearchJobs</title>
+    
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css}">
+    
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    </header>
+
+    <!-- Main Content -->
+    
+    <main>
+        <section class="hero">
+            <div class="imagen-hero">
+                <img th:src="@{/images/hero.png}" alt="hero">
+            </div>
+            <div class="container">
+                <!-- mensaje para invitado  -->
+                <h1>El Empleo que sueñas está a un paso</h1>
+                <a th:href="@{/vacantes/listar}"><span class="hola">¡Búscalo Ya!</span></a>
+            </div>
+        </section>
+
+        <!-- Información -->
+        <section id="informacion">
+            <div class="container">
+                <div class="content">
+                    <img th:src="@{/images/search.png}" alt="búsqueda">
+                    <h3>Búsqueda Eficiente de Empleo</h3>
+                    <p>Encuentra empleo de manera rápida y sencilla. Nuestra plataforma está diseñada para que puedas filtrar las ofertas de trabajo según tu perfil, ubicación, y tipo de empleo, conectándote directamente con las empresas que están buscando talento.</p>
+                </div>
+                
+                <div class="content">
+                    <img th:src="@{/images/grupo-Trabajo.jpg}" alt="grupo de trabajo">
+                    <h3>Oportunidades para Todos</h3>
+                    <p>Ofrecemos oportunidades para todo tipo de profesionales, desde recién graduados hasta expertos con años de experiencia. Nuestra amplia base de datos de empleadores garantiza que siempre encontrarás opciones que se ajusten a tus habilidades y metas profesionales.</p>
+                </div>
+
+                <div class="content">
+                    <img th:src="@{/images/seguridad1.webp}" alt="seguridad">
+                    <h3>Postulación Rápida y Segura</h3>
+                    <p>Con nuestra herramienta de postulación rápida, puedes aplicar a las ofertas de trabajo con un solo clic. Además, tu información está completamente protegida, garantizando la seguridad de tus datos personales y profesionales.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/plantilla :: footer(tipo=${tipo})}"></div>
+    <script>
+        Swal.fire({
+            title: 'Sesión Cerrada',
+            text: 'Has cerrado sesión correctamente.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    </script>
+    
+    <!-- <script th:if="${tipo == 2} ">
+        Swal.fire({
+            title: 'Sesión Expirada',
+            text: 'Tu sesión ha expirado, por favor inicia sesión nuevamente.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+    </script> -->
+    
+</body>
+</html>

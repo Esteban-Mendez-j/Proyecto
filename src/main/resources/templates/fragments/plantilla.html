@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:fragment="head">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        
+        <!-- Para los mensajes de error -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        
+        <!-- Para los iconos -->
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+        <!-- Agregar archivo JavaScript -->
+        <script th:src="@{/js/app.js}"></script>
+    </head>
+  
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <title>SearchJobs</title>
+</head>
+
+
+<body>
+    <header >
+        <div class="container-nav" th:fragment="headerInvitado" >
+            <div class="logo">
+                <img th:src="@{/images/logo.png}" alt="logo">
+                <label>SearchJobs</label>
+            </div>
+
+            <nav class="navbar">
+                <input type="checkbox" id="check">
+                <label class="checkmenu" for="check">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </label>
+            
+                <ul class="menuitems">
+                    <li><a th:href="@{/}">Inicio</a></li>
+                    <li><a th:href="@{/vacantes/listar}">Empleos</a></li>
+                </ul>    
+                
+                <div class="container-user">
+                    <a th:href="@{/usuarios/login}" class="btnlogin">Login</a>
+                    <a th:href="@{/usuarios/registro}" class="btnregistro">Registro</a> 
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section>
+        <div th:fragment="registro(tipo)" >
+            <h1 th:text="'Registro de '+ ${tipo} "></h1>
+            <h3>Registra una cuenta para continuar</h3>
+
+            <div class="flex-row">
+                <!-- Campo de nombre de usuario -->
+                <div class="flex-column">
+                    <label class="label">Nombre de Usuario</label>
+                    <div class="inputForm">
+                        <ion-icon class="icon" name="person-outline"></ion-icon>
+                        <input type="text" class="input" placeholder="Ingresa tu nombre de usuario" th:field="*{nombre}" maxlength="50" required>
+                    </div>
+                    <!-- contenedor de errores -->
+                    <div th:replace="~{fragments/forms:: mostrarErrores('nombre')}" class="text-danger"></div>
+                </div>
+
+                <!-- Campo de Apellido -->
+                <div class="flex-column" th:if="${tipo == 'candidato'}">
+                    <label class="label">Apellido</label>
+                    <div class="inputForm">
+                        <ion-icon class="icon" name="person-outline"></ion-icon>
+                        <input type="text" class="input" placeholder="Ingresa tu Apellido" th:field="*{apellido}"  maxlength="20" required>
+                    </div>
+                    <div th:replace="~{fragments/forms:: mostrarErrores('apellido')}" class="text-danger"></div>
+                    
+                </div>
+            </div>
+
+
+            <div class="flex-row">
+                <!-- Campo de identificacion y NIT -->
+                <div class="flex-column"  >
+                    <label class="label" th:text="${tipo == 'candidato' ? 'Identificacion' : 'NIT'}" ></label>
+
+                    <div class="inputForm" th:if="${tipo == 'candidato'}">
+                        <ion-icon class="icon" name="person-outline"></ion-icon>
+                        <input type="number" class="input" placeholder="Ingresa tu numero de identificacion" th:field="*{identificacion}" min="0" max="99999999999" required>
+                    </div>
+                    <div th:if="${tipo == 'candidato'}"  >
+                        <div th:replace="~{fragments/forms:: mostrarErrores('identificacion')}" class="text-danger"></div>
+                    </div>
+                    
+                    <div class="inputForm" th:if="${tipo == 'empresa'}">
+                        <ion-icon class="icon" name="person-outline"></ion-icon>
+                        <input  type="number" class="input" placeholder="Ingresa el NIT de la empresa" th:field="*{nit}" min="0"  required>
+                    </div>
+                    <div th:if="${tipo == 'empresa'}" >
+                        <div th:replace="~{fragments/forms:: mostrarErrores('nit')}" class="text-danger"></div>
+                    </div>
+                    
+                </div> 
+
+              
+
+                <!-- Campo de correo -->
+                <div class="flex-column">
+                    <label class="label">Email</label>
+                    <div class="inputForm">
+                        <ion-icon class="icon" name="mail-outline"></ion-icon>
+                        <input type="email" class="input" placeholder="Ingresa tu correo" th:field="*{correo}" maxlength="100" required>
+                    </div>
+                    <div th:replace="~{fragments/forms:: mostrarErrores('correo')}" class="text-danger"></div>
+                </div>
+            </div>
+
+            <div class="flex-row">
+                <!-- Campo de contraseña -->
+                <div class="flex-column">
+                    <label class="label">Contraseña</label>
+                    <p>Debe tener como minimo 4 letras, 4 digitos y una letra mayuscula</p>
+                    <div class="inputForm">
+                        <ion-icon class="icon" name="lock-closed-outline"></ion-icon>
+                        <input type="password" class="input" placeholder="Ingresa tu contraseña" 
+                            th:field="*{contrasena}" maxlength="15"  minlength="8" required pattern="^(?=(.*[A-Za-z]){4,})(?=(.*\d){4,})(?=.*[A-Z])[A-Za-z\d]{8,}$"> 
+                    </div>
+                    
+                    <div th:replace="~{fragments/forms:: mostrarErrores('contrasena')}" class="text-danger"></div>
+                    
+                </div>
+
+                <input type="hidden" name="tipo" th:value="${tipo}" />
+            </div>
+
+            <!-- Checkbox de términos y condiciones -->
+            <div class="terminos">
+                <input type="checkbox" required>
+                <label>Acepta los <a class="enlace" th:href="@{/usuarios/terminoYcondiciones}">términos y condiciones</a></label> 
+            </div>
+
+            <div  th:replace="~{fragments/forms::error}" />
+            <!-- Botón de registro -->
+            <button type="submit" class="button-submit">Registrarse</button>
+            <p class="p">¿Ya tienes una cuenta? <a class="enlace" th:href="@{/usuarios/login}" >Inicia sesión</a></p>
+        </div>
+    </section>
+    
+
+    <div class="footer" th:fragment="footer">
+        <ul class="social-icon">
+            <li><a href="https://www.facebook.com/"><ion-icon name="logo-facebook"></ion-icon></a></li>
+            <li><a href="https://www.instagram.com/"><ion-icon name="logo-instagram"></ion-icon></a></li>
+            <li><a href="https://x.com/"><ion-icon name="logo-twitter"></ion-icon></a></li>
+            <li><a href="https://www.youtube.com/"><ion-icon name="logo-youtube"></ion-icon></a></li>
+        </ul>
+        <ul class="menu">
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li th:if="${#ctx.session.tipo == 'candidato' or #ctx.session.tipo == 'invitado'}"><a th:href="@{/vacantes/listar}">Empleos</a></li>
+            <li th:if="${#ctx.session.tipo == 'empresa'}" ><a th:href="@{/vacantes}">Empleos</a></li>
+        </ul>
+        <p class="autor">&copy; <span>SearchJobs</span> | Todos los derechos reservados</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" th:href="@{/css/login-registro.css}">
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+
+    <!-- para agregar los iconos -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+
+    <title>Iniciar Sesión</title>
+</head>
+<body>
+    <header>
+        <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    </header>    
+    <section class="login">
+        <form class="form"  method="post" th:action="@{/usuarios/login}"> 
+            <h1>Bienvenido</h1>
+            <h3>Inicia sesión para continuar</h3>
+            <div class="flex-column">
+                <label for="email">Email</label>
+                <div class="inputForm">
+                    <ion-icon class="icon" name="mail-outline"></ion-icon>
+                    <input type="email" id="email" name="username" class="input" placeholder="Ingresa tu correo" required > <!-- th:field="*{correo}" -->
+                </div>
+            </div>
+            
+            <div class="flex-column">
+                <label for="password">Contraseña</label>
+                <div class="inputForm">
+                    <ion-icon class="icon" name="lock-closed-outline"></ion-icon>                     
+                    <input type="password" id="password" name="password" class="input" placeholder="Ingresa tu contraseña" required>   <!-- th:field="*{contrasena}" -->
+                </div>
+            </div>
+            <div  th:replace="~{fragments/forms::error}" />
+            <button type="submit" class="button-submit">Inicia sesión</button>
+            <p class="p">¿No tienes una cuenta? <a class="enlace" th:href="@{/usuarios/registro}">Regístrate</a></p>
+        </form>
+    </section>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{vacante.list.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{vacante.list.headline}]]</h1>
+                <div>
+                    <a th:href="@{/vacantes/add(Tipo=${'Voluntariado'})}" class="btn btn-primary ms-2">Agregar Voluntariado</a>
+                    <a th:href="@{/vacantes/add(Tipo=${'Vacante'})}"class="btn btn-primary ms-2">[[#{vacante.list.createNew}]]</a>
+                </div>
+            </div>
+            <div th:if="${vacantes.empty}">[[#{vacante.list.empty}]]</div>
+            <div th:if="${!vacantes.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">[[#{vacante.titulo.label}]]</th>
+                            <th scope="col">[[#{vacante.tipo.label}]]</th>
+                            <th scope="col">[[#{vacante.fechaPublicacion.label}]]</th>
+                            <th scope="col">[[#{vacante.modalidad.label}]]</th>
+                            <th scope="col">[[#{vacante.ciudad.label}]]</th>
+                            <th scope="col">[[#{vacante.departamento.label}]]</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="vacante : ${vacantes}">
+                            <td>[[${vacante.titulo}]]</td>
+                            <td>[[${vacante.tipo}]]</td>
+                            <td>[[${vacante.fechaPublicacion}]]</td>
+                            <td>[[${vacante.modalidad}]]</td>
+                            <td>[[${vacante.ciudad}]]</td>
+                            <td>[[${vacante.departamento}]]</td>
+
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/postulados/lista/{nvacantes}(nvacantes=${vacante.nvacantesEncryt})}" class="btn btn-sm btn-secondary">Postulados</a>
+                                    <a th:href="@{/vacantes/edit/{nvacantes}(nvacantes=${vacante.nvacantesEncryt})}" class="btn btn-sm btn-secondary">[[#{vacante.list.edit}]]</a>
+                                    <form th:action="@{/vacantes/delete/{nvacantes}(nvacantes=${vacante.nvacantesEncryt})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button type="submit" class="btn btn-sm btn-secondary">[[#{vacante.list.delete}]]</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

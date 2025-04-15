@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{usuario.edit.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{usuario.edit.headline}]]</h1>
+                <div>
+                    <a th:href="@{/usuarios}" class="btn btn-secondary">[[#{usuario.edit.back}]]</a>
+                </div>
+            </div>
+            <div th:replace="~{fragments/forms::globalErrors('usuario')}" />
+            <form th:action="${requestUri}" method="post">
+                <div th:replace="~{fragments/forms::inputRow(object='usuario', field='idUsuario', disabled=true, type='number')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='usuario', field='tipo', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='usuario', field='nombre', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='usuario', field='contrasena', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='usuario', field='correo', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='usuario', field='telefono')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='usuario', field='descripcion')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='usuario', field='imagen')}" />
+                <input type="submit" th:value="#{usuario.edit.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

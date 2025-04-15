@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{postulado.add.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{postulado.add.headline}]]</h1>
+            </div>
+            <div th:replace="~{fragments/forms::globalErrors('postulado')}" />
+            <form th:action="${requestUri}" method="post">
+                <div th:replace="~{fragments/forms::inputRow(object='postulado', field='fechaPostulacion', required=true, inputClass='js-datetimepicker')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='postulado', field='estado', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='postulado', field='nvacante', required=true, type='select')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='postulado', field='idUsuario', type='select')}" />
+                <input type="submit" th:value="#{postulado.add.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

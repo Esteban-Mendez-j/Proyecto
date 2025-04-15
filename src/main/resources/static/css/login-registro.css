@@ -1,0 +1,88 @@
+h1 {
+    text-align: center;
+    font-weight: bold;
+    font-size: 40px;
+}
+
+h3 {
+    color: #6d6767e0;
+    font-size: 16px;
+}
+
+.flex-column label {
+    color: #151717;
+    font-weight: 600;
+}
+
+.inputForm {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid #ecedec;
+    border-radius: 10px;
+    height: 50px;
+    padding-left: 10px;
+    transition: 0.2s ease-in-out;
+    font-size: 25px;
+    gap: 10px;
+}
+
+.input {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    height: 100%;
+}
+
+.input:focus {
+    outline: none;   
+}
+
+.inputForm:focus-within {
+    border-color: var(--primary-color);
+
+    .icon{
+        transition: 0.2s;
+        color: var(--primary-color);
+    }
+}
+
+.enlace {
+    font-size: 14px;
+    color: var(--primary-color);
+    font-weight: 500;
+    cursor: pointer;
+    margin: auto 5px;
+    text-decoration: none;
+}
+
+.button-submit {
+    margin: 20px 0 10px 0;
+    background-color: var(--primary-color);
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 10px;
+    height: 50px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.button-submit:hover {
+    background-color: #252727;
+}
+
+.p {
+    text-align: center;
+    color: black;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+@media (max-width: 720px) {
+    .form {
+        width: 90%;
+        padding: 20px;
+    }
+
+}

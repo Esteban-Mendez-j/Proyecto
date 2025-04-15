@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/general.css">
+    <link rel="stylesheet" href="/css/contactos.css">
+    <title>Formulario de Contacto</title>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="/images/logo.png" alt="logo">
+                <label >SearchJobs</label>
+            </div>
+
+            <nav class="navbar">
+                <input type="checkbox" id="check">
+                <label class="checkmenu" for="check">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </label>
+            
+                <ul class="menuitems">
+                    <li><a href="/index.html">Inicio</a></li>
+                    <li><a href="/html/ofertas.html">Empleos</a></li>
+                    <li><a href="/html/contacto.html">Contactos</a></li>    
+                </ul>    
+                
+                <div>
+                    <a href="/html/login.html" class="btnlogin">Login</a>
+                    <a href="/html/registro.html" class="btnregistro">Registro</a>
+                </div>
+            </nav>
+        </div>
+        
+    </header>
+
+    <div class="form-container">
+        <h2>Contacto</h2>
+        <form>
+            <div class="form-group">
+                <label for="name">Nombre</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="subject">Asunto</label>
+                <input type="text" id="subject" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Mensaje</label>
+                <textarea id="message" rows="5" required></textarea>
+            </div>
+            
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+    <div class="img-contacto">
+        
+    </div>
+</body>
+</html>

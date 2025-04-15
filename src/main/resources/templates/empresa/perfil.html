@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/perfil.css}">
+
+    <!-- para agregar los iconos -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <title>Perfil</title>
+</head>
+<body>
+    <div th:replace="~{fragments/plantilla :: header}"></div>
+
+    <div class="container-perfil">
+        <div class="profile-header">
+            <div class="container-img">
+                <img th:if="${empresa.imagen != null}" alt="imagen de vacante" th:src="@{'/img/'+ ${empresa.imagen}}" >
+                <img th:if="${empresa.imagen == null}" alt="imagen de vacante" th:src="@{/images/imgEmpresa.png}" >
+            </div>
+            <div class="info-header">
+                <h1>
+                    <span th:text="${empresa.nombre}"></span>
+                    <a th:if="${#ctx.session.tipo == 'empresa'}" th:href="@{/empresas/edit/{idUsuario}(idUsuario=${empresa.idUsuarioEncrypt})}"><ion-icon name="create-outline"></ion-icon></a>
+                </h1>
+            </div>
+        </div>
+
+        <div class="about-me">
+            <h3>Sobre Mi</h3>
+            <p th:text="${empresa.descripcion != null ? empresa.descripcion : 'No disponible'}"></p>
+        </div>
+
+        <div class="contact">
+            <h3>Contacto</h3>
+            <p> 
+                <span class="iconos"><ion-icon name="call-outline"></ion-icon></span> 
+                <span th:text="${empresa.telefono != null ? empresa.telefono : 'No disponible'}"></span>
+            </p>
+            <p>
+                <span class="iconos"><ion-icon name="mail-outline"></ion-icon></span> 
+                <span th:text="${empresa.correo}"></span>
+            </p>
+        </div>
+
+        <div class="detalles">
+            <h3>Detalles</h3>
+            <p><strong>Sector:</strong> <span th:text="${empresa.sectorEmpresarial != null ? empresa.sectorEmpresarial : 'No disponible'}"></span></p>
+            <p><strong>Sitio web:</strong> <a th:href="${empresa.sitioWeb != null ? empresa.sitioWeb : '#'}" th:text="${empresa.sitioWeb != null ? empresa.sitioWeb : 'No disponible'}"></a></p>
+            <p><strong>NIT:</strong> <span th:text="${empresa.nit != null ? empresa.nit : 'No disponible'}"></span></p>
+        </div>
+
+        <div class="vacantes">
+            <h3>Empleos</h3>
+
+            <div class="contenedor" >
+                <div th:if="${vacantes.empty}">
+                    <p>No hay vacantes disponibles</p>
+                </div>
+                <div class="informacion" th:if="${!vacantes.empty}" th:each="vacante : ${vacantes}">
+                    <a th:if="${#ctx.session.tipo == 'empresa'}" th:href="@{/vacantes}" 
+                        class="card__title" th:text="${vacante.titulo}">
+                    </a>
+
+                    <a th:if="${#ctx.session.tipo == 'candidato' or #ctx.session.tipo == 'invitado'}" th:href="@{/vacantes/seleccion/{nvacantes}(nvacantes=${vacante.nvacantesEncryt})}" 
+                        class="card__title" th:text="${vacante.titulo}">
+                    </a>
+                    <p class="card__content" th:text="${vacante.cargo}"></p>
+                    <p class="card__content" th:text="${vacante.ciudad+ ' - ' + vacante.departamento}"></p>
+                    <div class="card__date" th:text="${vacante.fechaPublicacion}"></div>
+                    
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>
+

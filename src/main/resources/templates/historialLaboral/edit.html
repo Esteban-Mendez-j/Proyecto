@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{historialLaboral.edit.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{historialLaboral.edit.headline}]]</h1>
+            </div>
+            <div th:replace="~{fragments/forms::globalErrors('historialLaboral')}" />
+            <form th:action="${requestUri}" method="post">
+                <!-- campos ocultos -->
+                <input type="hidden" name="iDHistorial" th:value="${historialLaboral.iDHistorial}" />
+                <input type="hidden" name="idUsuario" th:value="${historialLaboral.idUsuario}" />
+
+                <!-- campos modificables -->
+                <div th:replace="~{fragments/forms::inputRow(object='historialLaboral', field='titulo', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='historialLaboral', field='empresa', required=true)}" />
+                <input type="submit" th:value="#{historialLaboral.edit.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

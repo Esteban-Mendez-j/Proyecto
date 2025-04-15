@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{candidato.edit.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{candidato.edit.headline}]]</h1>
+            </div>
+            <div th:replace="~{fragments/forms::globalErrors('candidato')}" />
+            
+            <form th:action="@{/candidatos/edit}" method="post" enctype="multipart/form-data">
+                <div th:replace="~{fragments/forms::inputRow(object='candidato', field='nombre', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='candidato', field='apellido', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='candidato', field='identificacion', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='candidato', field='correo', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='candidato', field='telefono', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='candidato', field='experiencia', type='number')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='candidato', field='descripcion')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='candidato', field='curriculo')}" />
+                
+                
+                <div > 
+                    <label for="imagen" class="col-md-2 col-form-label">Editar imagen:</label>
+                    <input type="file" id="file" name="file" accept=".jpg , .png" />
+                </div>
+
+                
+                <div >
+                    <p class="col-md-2 col-form-label" th:if="${candidato.imagen == null}" >No hay una imagen actual</p>
+                    <p class="col-md-2 col-form-label" th:if="${candidato.imagen != null}">Imagen actual:</p>
+                    <img th:if="${candidato.imagen != null}" th:src="@{'/img/' + ${candidato.imagen}}" alt="Imagen de perfil" style="max-width: 150px;" />
+                </div>
+
+                <!-- campos ocultos -->
+                <input type="hidden" name="idUsuario" th:value="${candidato.idUsuarioEncrypt}" />
+                <input type="hidden" name="imagen" th:value="${candidato.imagen}" />
+
+                
+                <input type="submit" th:value="#{candidato.edit.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

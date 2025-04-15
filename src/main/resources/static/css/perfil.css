@@ -1,0 +1,211 @@
+
+.container-perfil{
+    max-width: 800px;
+    margin: 80px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    padding: 0px 0px 10px 0px;
+    border-bottom: 2px solid var(--primary-color);
+    text-align: center;
+}
+
+.container-img{
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(/images/fondo-perfil.png);
+    background-position: center center;
+    height: 200px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    border-radius: 5px;
+}
+
+.container-img img{
+    border-radius: 50%;
+    border: 6px solid #959ba4;
+    width: 120px;
+    height: 120px;
+    position: relative;
+    transform: translateY(40px);
+    background-color: white;
+}
+
+.profile-header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.edit-button{
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    position: absolute;
+    transform: translateX(10px);
+}
+
+.profile-header h2 {
+    font-size: 15px;
+    color: #666;
+}
+
+.profile-header p {
+    text-align: center;
+    font-size: 16px;
+    color: #999;
+}
+
+.iconos, .edit-button{
+    font-size: 25px;
+    color: var(--primary-color);
+}
+
+
+.btn-perfil{
+    text-align: center;
+    max-width: 100px;
+    background-color: var(--secundary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 5px;
+    color: var(--primary-color);
+    margin: 5px;
+    padding: 7px 10px;
+    text-decoration: none;
+}
+
+.btn-perfil:hover{
+    color: var(--secundary-color);
+    background-color: var(--primary-color);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.about-me,
+.contact,
+.education,
+.work-history,
+.detalles {
+    padding: 20px;
+    border-bottom:2px solid var(--primary-color);
+}
+
+.education .container,
+.work-history .container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.elementos {
+    display: grid;
+    grid-template-rows: auto auto;
+    flex-grow: 1; /* Asegura que ocupe todo el espacio disponible */
+    border-bottom: 1px solid gray;
+}
+
+.botones {
+    display: flex;
+    flex-direction: column; 
+    margin-left: auto; 
+    border-bottom: 1px solid gray;
+}
+
+
+
+.work-history {border: none;}
+
+.contact p{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+h3 {
+    padding-bottom: 5px;
+    font-size: 18px;
+}
+
+p {
+    text-align: justify;
+    line-height: 1.6;
+    color: #333;
+}
+
+.vacantes, .contenedor {
+    margin-top: 10px;
+    padding: 10px;
+}
+
+.vacantes .contenedor{
+    overflow-y: scroll;
+    background-color: #dcd9d9;
+    max-height: 400px;
+}
+
+.informacion {
+    background-color: white; /* Fondo claro para las tarjetas de empleos */
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5); /* Sombra suave */
+    margin-bottom: 10px;
+}
+
+.card__title {
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    text-decoration: none; /* Sin subrayado */
+    transition: color 0.3s ease; /* Transición suave para hover */
+}
+
+.card__title:hover {
+    color: var(--primary-color); /* Color al pasar el ratón */
+}
+
+.card__content {
+    font-size: 14px;
+    color: #333; /* Color secundario */
+    margin: 5px 0; /* Espaciado */
+}
+
+.card__date {
+    font-size: 12px;
+    color: #333; /* Color de fecha */
+}
+
+
+
+@media (max-width: 720px) {
+    .container {
+        padding: 15px;
+    }
+    .container-img{
+        height: 120px;
+    }
+
+    .profile-header h1 {
+        font-size: 25px;
+    }
+
+    .profile-header h2 {
+        font-size: 16px;
+    }
+
+    h3 {
+        font-size: 18px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+}

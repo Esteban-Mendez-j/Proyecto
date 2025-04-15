@@ -1,0 +1,131 @@
+package com.miproyecto.proyecto.domain;
+
+import java.util.List;
+
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+
+
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Usuario {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
+    private Long idUsuario;
+
+    @Column(nullable = false, length = 50)
+    private String nombre;
+
+    @Column(nullable = false)
+    private String contrasena;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String correo;
+
+    @Column(unique = true, length = 15)
+    private String telefono;
+
+    @Column(length = 400)
+    private String descripcion;
+
+    @Column
+    private String imagen;
+
+    
+    @ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.MERGE )
+    @JoinTable(
+        name = "usuario_Rol",
+        joinColumns = @JoinColumn(name = "idUsuario"),
+        inverseJoinColumns = @JoinColumn(name = "Id_rol")
+    )
+    private List<Roles> roles;
+
+
+    public Usuario() {
+    }
+
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(final Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public List<Roles> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Roles> roles) {
+        this.roles = roles;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(final String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(final String contrasena) {
+        this.contrasena = contrasena;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(final String correo) {
+        this.correo = correo;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(final String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(final String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(final String imagen) {
+        this.imagen = imagen;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario [idUsuario=" + idUsuario + ", nombre=" + nombre + ", contrasena=" + contrasena + ", correo="
+                + correo + ", telefono=" + telefono + ", descripcion=" + descripcion + ", imagen=" + imagen + ", roles="
+                + roles + "]";
+    }
+
+}
