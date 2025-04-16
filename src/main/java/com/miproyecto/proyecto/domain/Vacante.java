@@ -56,8 +56,13 @@ public class Vacante {
     @Column(length = 400)
     private String requerimientos;
 
+    @Column
+    private String estado;
 
-    
+    @Column
+    private String comentarioAdmin;
+
+
     @OneToMany(mappedBy = "nvacante")
     private Set<Postulado> litarpostulados;
 
@@ -176,6 +181,22 @@ public class Vacante {
 
     public void setIdUsuario(final Empresa idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getComentarioAdmin() {
+        return comentarioAdmin;
+    }
+
+    public void setComentarioAdmin(String comentarioAdmin) {
+        this.comentarioAdmin = comentarioAdmin;
     }
 
 }

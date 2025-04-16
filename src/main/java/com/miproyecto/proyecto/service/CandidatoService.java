@@ -16,6 +16,7 @@ import com.miproyecto.proyecto.util.ReferencedWarning;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class CandidatoService{
         List<Roles> roles= new ArrayList<>();
 
         roles.add(rolesRepository.findByRol("CANDIDATO"));
-        
+        candidatoDTO.setIsActive(true);
         mapToEntity(candidatoDTO, candidato, true);
         candidato.setRoles(roles);// guarda el rol en la db
          
@@ -90,7 +91,6 @@ public class CandidatoService{
     // convierte un objeto de tipo candidato a candidatoDTO
     public CandidatoDTO mapToDTO(final Candidato candidato, final CandidatoDTO candidatoDTO) {
         candidatoDTO.setIdUsuario(candidato.getIdUsuario());
-        candidatoDTO.setRoles(candidato.getRoles());
         candidatoDTO.setNombre(candidato.getNombre());
         candidatoDTO.setContrasena(candidato.getContrasena());
         candidatoDTO.setCorreo(candidato.getCorreo());
@@ -101,6 +101,14 @@ public class CandidatoService{
         candidatoDTO.setCurriculo(candidato.getCurriculo());
         candidatoDTO.setExperiencia(candidato.getExperiencia());
         candidatoDTO.setIdentificacion(candidato.getIdentificacion());
+        candidatoDTO.setIsActive(candidato.getIsActive());
+        candidatoDTO.setComentarioAdmin(candidato.getComentarioAdmin());
+
+        candidatoDTO.setRoles(
+            candidato.getRoles().stream()
+                    .map(roles -> roles.getRol())
+                    .collect(Collectors.toList())
+        );
         return candidatoDTO;
     }
 
@@ -120,6 +128,8 @@ public class CandidatoService{
         candidato.setCurriculo(candidatoDTO.getCurriculo());
         candidato.setExperiencia(candidatoDTO.getExperiencia());
         candidato.setIdentificacion(candidatoDTO.getIdentificacion());
+        candidato.setIsActive(candidatoDTO.getIsActive());
+        candidato.setComentarioAdmin(candidatoDTO.getComentarioAdmin());
         return candidato;
     }
 

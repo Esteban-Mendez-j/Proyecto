@@ -13,7 +13,6 @@ import com.miproyecto.proyecto.util.ReferencedWarning;
 import java.util.List;
 
 
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,9 +34,9 @@ public class VacanteService {
         this.postuladoRepository = postuladoRepository;
     }
 
-    // listado de todas las vacantes 
-    public List<VacanteDTO> findAll() {
-        final List<Vacante> vacantes = vacanteRepository.findAll(Sort.by("nvacantes"));
+    // listado de todas las vacantes activas
+    public List<VacanteDTO> findAllByEstado(String estado) {
+        final List<Vacante> vacantes = vacanteRepository.findByEstado(estado);
         return vacantes.stream()
                 .map(vacante -> mapToDTO(vacante, new VacanteDTO()))
                 .toList();
@@ -77,6 +76,7 @@ public class VacanteService {
     public Long create(final VacanteDTO vacanteDTO) {
         final Vacante vacante = new Vacante();
         mapToEntity(vacanteDTO, vacante);
+        vacante.setEstado("activa");
         return vacanteRepository.save(vacante).getNvacantes();
     }
 
@@ -105,6 +105,8 @@ public class VacanteService {
         vacanteDTO.setTipo(vacante.getTipo());
         vacanteDTO.setDescripcion(vacante.getDescripcion());
         vacanteDTO.setRequerimientos(vacante.getRequerimientos());
+        vacanteDTO.setEstado(vacante.getEstado());
+        vacanteDTO.setComentarioAdmin(vacante.getComentarioAdmin());
         vacanteDTO.setIdUsuario(vacante.getIdUsuario() == null ? null : vacante.getIdUsuario().getIdUsuario());
         vacanteDTO.setNameEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getNombre() : "Empresa Desconocida");
         vacanteDTO.setImagenEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getImagen() : "null");
@@ -124,6 +126,8 @@ public class VacanteService {
         vacante.setTipo(vacanteDTO.getTipo());
         vacante.setDescripcion(vacanteDTO.getDescripcion());
         vacante.setRequerimientos(vacanteDTO.getRequerimientos());
+        vacante.setEstado(vacanteDTO.getEstado());
+        vacante.setComentarioAdmin(vacanteDTO.getComentarioAdmin());
         final Empresa idUsuario = vacanteDTO.getIdUsuario() == null ? null : empresaRepository.findById(vacanteDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         vacante.setIdUsuario(idUsuario);

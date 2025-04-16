@@ -44,23 +44,28 @@ public class Usuario {
     @Column
     private String imagen;
 
+    @Column
+    private Boolean isActive;
+
+    @Column
+    private String comentarioAdmin;
     
     @ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.MERGE )
     @JoinTable(
         name = "usuario_Rol",
         joinColumns = @JoinColumn(name = "idUsuario"),
         inverseJoinColumns = @JoinColumn(name = "Id_rol")
-    )
+        )
     private List<Roles> roles;
 
-
+        
     public Usuario() {
     }
-
+    
     public Long getIdUsuario() {
         return idUsuario;
     }
-
+    
     public void setIdUsuario(final Long idUsuario) {
         this.idUsuario = idUsuario;
     }
@@ -68,11 +73,11 @@ public class Usuario {
     public List<Roles> getRoles() {
         return roles;
     }
-
+    
     public void setRoles(List<Roles> roles) {
         this.roles = roles;
     }
-
+    
     public String getNombre() {
         return nombre;
     }
@@ -84,11 +89,11 @@ public class Usuario {
     public String getContrasena() {
         return contrasena;
     }
-
+    
     public void setContrasena(final String contrasena) {
         this.contrasena = contrasena;
     }
-
+    
     public String getCorreo() {
         return correo;
     }
@@ -104,28 +109,37 @@ public class Usuario {
     public void setTelefono(final String telefono) {
         this.telefono = telefono;
     }
-
+    
     public String getDescripcion() {
         return descripcion;
     }
-
+    
     public void setDescripcion(final String descripcion) {
         this.descripcion = descripcion;
     }
-
+    
     public String getImagen() {
         return imagen;
     }
-
+    
     public void setImagen(final String imagen) {
         this.imagen = imagen;
     }
-
-    @Override
-    public String toString() {
-        return "Usuario [idUsuario=" + idUsuario + ", nombre=" + nombre + ", contrasena=" + contrasena + ", correo="
-                + correo + ", telefono=" + telefono + ", descripcion=" + descripcion + ", imagen=" + imagen + ", roles="
-                + roles + "]";
+    
+    public Boolean getIsActive() {
+        return isActive;
+    }
+    
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
+    public String getComentarioAdmin() {
+        return comentarioAdmin;
+    }
+
+    public void setComentarioAdmin(String comentarioAdmin) {
+        this.comentarioAdmin = comentarioAdmin;
+    }
+    
 }

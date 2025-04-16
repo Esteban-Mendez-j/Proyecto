@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Cambiar estado vacantes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --azul-claro: #e0f2ff;
+      --azul: #4a90e2;
+      --azul-oscuro: #357ab8;
+      --texto: #333;
+      --borde: #c2e0f5;
+      --fondo: #f0f8ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--fondo);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 1rem;
+    }
+
+    .form-container {
+      background: white;
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 480px;
+      width: 100%;
+      border: 1px solid var(--borde);
+      transition: transform 0.3s ease;
+    }
+
+    .form-container:hover {
+      transform: translateY(-2px);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--azul-oscuro);
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      display: block;
+      color: var(--texto);
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 0.9rem;
+      font-size: 1rem;
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+      resize: none;
+      background: var(--azul-claro);
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--azul);
+      background: #fff;
+      box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
+    }
+
+    .btn-banear {
+      margin-top: 1.5rem;
+      background: var(--azul);
+      color: white;
+      padding: 0.9rem;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn-banear:hover {
+      background: var(--azul-oscuro);
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 1.5rem;
+      }
+
+      textarea {
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <form th:if="${activar}" class="form-container" th:action="@{/admin/activar/vacantes}" method="post">
+    <h2>Activar vacante</h2>
+
+    <label for="comentario">Motivo del baneo</label>
+<textarea id="comentario" name="comentario" placeholder="Escribe el motivo de la activacion aquí..." required></textarea>
+
+    <button type="submit" class="btn-banear">activar vacante</button>
+  </form>
+
+  <form th:if="${!activar}" class="form-container" th:action="@{/admin/desactivar/vacantes}" method="post">
+    <h2>Desactivar Usuario</h2>
+
+    <label for="comentario">Motivo de la desactivacion</label>
+    <textarea id="comentario" name="comentario" placeholder="Escribe el motivo de la desactivacion aquí..." required></textarea>
+
+    <button type="submit" class="btn-banear">Desactivar vacante</button>
+  </form>
+
+</body>
+</html>

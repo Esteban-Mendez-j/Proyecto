@@ -1,50 +1,105 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>[[#{usuario.list.headline}]]</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}" rel="stylesheet" />
+        <link th:href="@{/webjars/flatpickr/4.6.13/dist/flatpickr.min.css}" rel="stylesheet" />
+        <link th:href="@{/css/general.css}" rel="stylesheet" />
+        <link rel="stylesheet" th:href="@{/css/inicio.css}">
+
+        <title>Lista de usuarios</title>
     </head>
     <body>
-        <div layout:fragment="content">
-            <div class="d-flex flex-wrap mb-4">
-                <h1 class="flex-grow-1">[[#{usuario.list.headline}]]</h1>
-                <div>
-                    <a th:href="@{/usuarios/add}" class="btn btn-primary ms-2">[[#{usuario.list.createNew}]]</a>
+        <header >
+            <div class="container-nav">
+                <div class="logo">
+                    <img src="/images/logo.png" alt="logo">
+                    <label>SearchJobs</label>
                 </div>
+    
+                <nav class="navbar">
+                    <input type="checkbox" id="check">
+                    <label class="checkmenu" for="check">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </label>
+                
+                    <ul class="menuitems">
+                        <li><a th:href="@{/admin/home}">Inicio</a></li>
+                        <!-- <li><a th:href="@{/vacantes/listar}">Empleos</a></li> -->
+                        <li><a th:href="@{/admin/listUser/activos}">Usuarios activos</a></li>
+                        <li><a th:href="@{/admin/listUser/baneados}">Usuarios Baneados</a></li>
+                        <li><a href="#">Informe</a></li>
+                    </ul>    
+                    
+                    <div class="container-user">
+                      
+                        <details>
+                            <summary>
+                                <img class="perfil-img"  th:src="@{/images/imgCandidato.png}" alt="imagen del perfil">
+                            </summary>
+                            
+                            <div class="menu-perfil">
+                                <ul>
+                                    <li><a th:href="@{/usuarios/cerrarSesion}">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </nav>
             </div>
-            <div th:if="${usuarios.empty}">[[#{usuario.list.empty}]]</div>
-            <div th:if="${!usuarios.empty}" class="table-responsive">
+        </header>
+
+        <div style="top: 70x;">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:if="${userIsActive}"class="flex-grow-1">Usuarios Activos</h1>
+                <h1 th:if="${!userIsActive}"class="flex-grow-1">Usuarios Baneados</h1>
+            </div>
+
+            <div th:if="${ListUser.isEmpty()}">No hay usuarios</div>
+            <div th:if="${!ListUser.isEmpty()}" class="table-responsive">
                 <table class="table table-striped table-hover align-middle">
                     <thead>
                         <tr>
-                            <th scope="col">[[#{usuario.idUsuario.label}]]</th>
-                            <th scope="col">[[#{usuario.tipo.label}]]</th>
-                            <th scope="col">[[#{usuario.nombre.label}]]</th>
-                            <th scope="col">[[#{usuario.contrasena.label}]]</th>
-                            <th scope="col">[[#{usuario.correo.label}]]</th>
-                            <th scope="col">[[#{usuario.telefono.label}]]</th>
-                            <th scope="col">[[#{usuario.descripcion.label}]]</th>
-                            <th scope="col">[[#{usuario.imagen.label}]]</th>
-                            <th><!-- --></th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Correo</th>
+                            <th scope="col">Roles</th>
+                            
+                            
+                            <th> </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="usuario : ${usuarios}">
-                            <td>[[${usuario.idUsuario}]]</td>
-                            <td>[[${usuario.tipo}]]</td>
-                            <td>[[${usuario.nombre}]]</td>
-                            <td>[[${usuario.contrasena}]]</td>
-                            <td>[[${usuario.correo}]]</td>
-                            <td>[[${usuario.telefono}]]</td>
-                            <td>[[${usuario.descripcion}]]</td>
-                            <td>[[${usuario.imagen}]]</td>
+                        <tr th:each="usuario : ${ListUser}" >
+                            <td th:text="${usuario.nombre}"></td>
+                            <td th:text="${usuario.correo}"></td>
+                            <td>
+                                <span th:each="rol, iterStat : ${usuario.roles}" 
+                                    th:text="${rol + (iterStat.last ? '' : ', ')}"></span>
+                            </td>
+                            
+                            
                             <td>
                                 <div class="float-end text-nowrap">
-                                    <a th:href="@{/usuarios/edit/{idUsuario}(idUsuario=${usuario.idUsuario})}" class="btn btn-sm btn-secondary">[[#{usuario.list.edit}]]</a>
-                                    <form th:action="@{/usuarios/delete/{idUsuario}(idUsuario=${usuario.idUsuario})}"
-                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
-                                        <button type="submit" class="btn btn-sm btn-secondary">[[#{usuario.list.delete}]]</button>
+                                    <form th:if="${userIsActive && !usuario.Roles.contains('ADMIN')}" th:action="@{/admin/agregarRol}" method="post" class="d-inline">
+                                        <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
+                                        <button type="submit" class="btn btn-sm btn-secondary">hacer admin</button>
                                     </form>
+                                    <form th:if="${userIsActive && usuario.Roles.contains('ADMIN')}" th:action="@{/admin/removerRol}" method="post" class="d-inline">
+                                        <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
+                                        <button type="submit" class="btn btn-sm btn-secondary">quitar admin</button>
+                                    </form>
+                                    <form th:if="${userIsActive}" th:action="@{/admin/banear/usuario}" method="get" class="d-inline">
+                                        <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
+                                        <button type="submit" class="btn btn-sm btn-secondary">Banear</button>
+                                    </form>
+                                    <form th:if="${!userIsActive}" th:action="@{/admin/desbanear/usuario}" method="get" class="d-inline">
+                                        <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
+                                        <button type="submit" class="btn btn-sm btn-secondary">Desbanear</button>
+                                    </form>
+                                    
                                 </div>
                             </td>
                         </tr>

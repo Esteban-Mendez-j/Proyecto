@@ -2,6 +2,7 @@ package com.miproyecto.proyecto.repos;
 
 import com.miproyecto.proyecto.domain.Usuario;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +18,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByCorreoIgnoreCase(String correo);
 
     boolean existsByTelefonoIgnoreCase(String telefono);
+
+    List<Usuario> findByIsActive(Boolean isActive);
 
 }

@@ -3,7 +3,6 @@ package com.miproyecto.proyecto.model;
 
 import java.util.List;
 
-import com.miproyecto.proyecto.domain.Roles;
 import com.miproyecto.proyecto.service.EncryptionService;
 
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +13,7 @@ public class UsuarioDTO {
     
     String idUsuario;
 
-    private List<Roles> roles;
+    private List<String> roles;
 
     @NotNull
     @Size(max = 50)
@@ -39,17 +38,30 @@ public class UsuarioDTO {
     @Size(max = 255)
     private String imagen;
 
-    private EncryptionService encryptionService;
+    private Boolean isActive;
 
+    private String comentarioAdmin;
+
+    
+    private EncryptionService encryptionService;
+    
     // Constructor donde se inicializa el servicio de encriptación
     public UsuarioDTO() {
         this.encryptionService = new EncryptionService();  
     }
+    
+    public String getComentarioAdmin() {
+        return comentarioAdmin;
+    }
 
+    public void setComentarioAdmin(String comentarioAdmin) {
+        this.comentarioAdmin = comentarioAdmin;
+    }
+    
     public Long getIdUsuario() {
         return encryptionService.decrypt(idUsuario);
     }
-
+    
     public String getIdUsuarioEncrypt() {
         return idUsuario;
     }
@@ -58,11 +70,11 @@ public class UsuarioDTO {
         this.idUsuario = encryptionService.encrypt(idUsuario);
     }
 
-    public List<Roles> getRoles() {
+    public List<String> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Roles> roles) {
+    public void setRoles(List<String> roles) {
         this.roles = roles;
     }
    
@@ -114,11 +126,19 @@ public class UsuarioDTO {
         this.imagen = imagen;
     }
 
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
     @Override
     public String toString() {
-        return "UsuarioDTO [idUsuario=" + idUsuario + ", roles=" + roles + ", nombre=" + nombre + ", contrasena="
-                + contrasena + ", correo=" + correo + ", telefono=" + telefono + ", descripcion=" + descripcion
-                + ", imagen=" + imagen + ", encryptionService=" + encryptionService + "]";
+        return "UsuarioDTO [idUsuario=" + idUsuario + ", roles=" + roles + ", nombre=" + nombre + ", correo=" + correo
+                + "]";
     }
+
 
 }

@@ -17,6 +17,7 @@ public interface VacanteRepository extends JpaRepository<Vacante, Long>, JpaSpec
 
     boolean existsById(Long idUsuario);
 
+    List<Vacante> findByEstado(String estado);
     
 
 }

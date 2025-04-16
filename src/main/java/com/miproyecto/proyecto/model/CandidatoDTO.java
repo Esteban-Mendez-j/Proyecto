@@ -51,14 +51,4 @@ public class CandidatoDTO  extends UsuarioDTO {
         this.identificacion = identificacion;
     }
 
-    @Override
-    public String toString() {
-        return "CandidatoDTO [apellido=" + apellido + ", curriculo=" + curriculo + ", experiencia=" + experiencia
-                + ", identificacion=" + identificacion + ", toString()=" + super.toString() + "]";
-    }
-
-    
-
-
-
 }

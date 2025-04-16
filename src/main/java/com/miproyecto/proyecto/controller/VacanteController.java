@@ -73,7 +73,7 @@ public class VacanteController {
             (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty()) )) {
             vacantes = vacanteService.buscarVacantesConFiltros(filtro);
         } else {
-            vacantes = vacanteService.findAll();
+            vacantes = vacanteService.findAllByEstado("activa");
         }
 
 
@@ -104,7 +104,7 @@ public class VacanteController {
 
         VacanteDTO filtro = (VacanteDTO) session.getAttribute("filtro");
         // Buscar vacantes con el filtro aplicado
-        List<VacanteDTO> vacantes = vacanteService.findAll();
+        List<VacanteDTO> vacantes = vacanteService.findAllByEstado("activa");
         
         model.addAttribute("vacantes", vacantes);
         // Si no se encuentra la vacante, se podría redirigir a la lista de vacantes

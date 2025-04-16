@@ -50,18 +50,17 @@ public class VacanteDTO {
     @Size(max = 400)
     private String requerimientos;
 
-   
+    private String estado;
+
+    private String comentarioAdmin;
+
     private String idUsuario;
 
     private String nameEmpresa;
 
     private String imagenEmpresa;
-    
-    
 
     private EncryptionService encryptionService;
-
-
 
     public VacanteDTO() {
         this.encryptionService = new EncryptionService(); 
@@ -199,13 +198,20 @@ public class VacanteDTO {
         this.imagenEmpresa = imagenEmpresa;
     }
 
-    @Override
-    public String toString() {
-        return "VacanteDTO [nvacantes=" + nvacantes + ", cargo=" + cargo + ", fechaPublicacion=" + fechaPublicacion
-                + ", sueldo=" + sueldo + ", modalidad=" + modalidad + ", experiencia=" + experiencia + ", ciudad="
-                + ciudad + ", departamento=" + departamento + ", titulo=" + titulo + ", tipo=" + tipo + ", descripcion="
-                + descripcion + ", idUsuario=" + idUsuario + "]";
+    public String getEstado() {
+        return estado;
     }
 
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getComentarioAdmin() {
+        return comentarioAdmin;
+    }
+
+    public void setComentarioAdmin(String comentarioAdmin) {
+        this.comentarioAdmin = comentarioAdmin;
+    }
 
 }

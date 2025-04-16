@@ -5,6 +5,7 @@ import com.miproyecto.proyecto.domain.Usuario;
 import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.repos.CandidatoRepository;
 import com.miproyecto.proyecto.repos.EmpresaRepository;
+import com.miproyecto.proyecto.repos.RolesRepository;
 import com.miproyecto.proyecto.repos.UsuarioRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.ReferencedWarning;
@@ -13,11 +14,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
@@ -25,24 +29,32 @@ import java.util.Optional;
 
 
 @Service
+@Transactional
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final CandidatoRepository candidatoRepository;
     private final EmpresaRepository empresaRepository;
+    private final RolesRepository rolesRepository;
     public static final String UPLOAD_DIR = Path.of("uploads", "img").toAbsolutePath().toString();
 
-
-    public UsuarioService(final UsuarioRepository usuarioRepository,
-            final CandidatoRepository candidatoRepository,
-            final EmpresaRepository empresaRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, CandidatoRepository candidatoRepository,
+            EmpresaRepository empresaRepository, RolesRepository rolesRepository) {
         this.usuarioRepository = usuarioRepository;
         this.candidatoRepository = candidatoRepository;
         this.empresaRepository = empresaRepository;
+        this.rolesRepository = rolesRepository;
     }
 
     public List<UsuarioDTO> findAll() {
         final List<Usuario> usuarios = usuarioRepository.findAll(Sort.by("idUsuario"));
+        return usuarios.stream()
+                .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
+                .toList();
+    }
+
+    public List<UsuarioDTO> findAllByBannedStatus(Boolean isBanned) {
+        final List<Usuario> usuarios = usuarioRepository.findByIsActive(isBanned);
         return usuarios.stream()
                 .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
                 .toList();
@@ -125,24 +137,35 @@ public class UsuarioService {
 
     private UsuarioDTO mapToDTO(final Usuario usuario, final UsuarioDTO usuarioDTO) {
         usuarioDTO.setIdUsuario(usuario.getIdUsuario());
-        usuarioDTO.setRoles(usuario.getRoles());
         usuarioDTO.setNombre(usuario.getNombre());
         usuarioDTO.setContrasena(usuario.getContrasena());
         usuarioDTO.setCorreo(usuario.getCorreo());
         usuarioDTO.setTelefono(usuario.getTelefono());
         usuarioDTO.setDescripcion(usuario.getDescripcion());
         usuarioDTO.setImagen(usuario.getImagen());
+        usuarioDTO.setIsActive(usuario.getIsActive());
+        usuarioDTO.setRoles(
+            usuario.getRoles().stream()
+                .map(roles -> roles.getRol())
+                .collect(Collectors.toList())
+        );
+
         return usuarioDTO;
     }
 
     private Usuario mapToEntity(final UsuarioDTO usuarioDTO, final Usuario usuario) {
-        usuario.setRoles(usuarioDTO.getRoles());
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setContrasena(usuarioDTO.getContrasena());
         usuario.setCorreo(usuarioDTO.getCorreo());
         usuario.setTelefono(usuarioDTO.getTelefono());
         usuario.setDescripcion(usuarioDTO.getDescripcion());
         usuario.setImagen(usuarioDTO.getImagen());
+        usuario.setIsActive(usuarioDTO.getIsActive());
+        usuario.setRoles(
+            usuarioDTO.getRoles().stream()
+                    .map(roles -> rolesRepository.findByRol(roles))
+                    .collect(Collectors.toList())
+        );
         return usuario;
     }
 

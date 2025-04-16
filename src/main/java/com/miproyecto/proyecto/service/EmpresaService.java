@@ -12,6 +12,8 @@ import com.miproyecto.proyecto.util.ReferencedWarning;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,7 @@ public class EmpresaService {
         final Empresa empresa = new Empresa();
         List<Roles> roles= new ArrayList<>();
 
+        empresaDTO.setIsActive(true);
         roles.add(rolesRepository.findByRol("EMPRESA"));
         mapToEntity(empresaDTO, empresa);
         empresa.setRoles(roles);// guarda el rol en la db
@@ -74,7 +77,6 @@ public class EmpresaService {
 
     private EmpresaDTO mapToDTO(final Empresa empresa, final EmpresaDTO empresaDTO) {  
         empresaDTO.setIdUsuario(empresa.getIdUsuario());
-        empresaDTO.setRoles(empresa.getRoles());
         empresaDTO.setNombre(empresa.getNombre());
         empresaDTO.setContrasena(empresa.getContrasena());
         empresaDTO.setCorreo(empresa.getCorreo());
@@ -84,11 +86,17 @@ public class EmpresaService {
         empresaDTO.setSectorEmpresarial(empresa.getSectorEmpresarial());
         empresaDTO.setSitioWeb(empresa.getSitioWeb());
         empresaDTO.setNit(empresa.getNit());
+        empresaDTO.setIsActive(empresa.getIsActive());
+        empresaDTO.setComentarioAdmin(empresa.getComentarioAdmin());
+        empresaDTO.setRoles(
+            empresa.getRoles().stream()
+                    .map(roles -> roles.getRol())
+                    .collect(Collectors.toList())
+        );
         return empresaDTO;
     }
 
     private Empresa mapToEntity(final EmpresaDTO empresaDTO, final Empresa empresa) {
-        empresa.setRoles(empresaDTO.getRoles());
         empresa.setNombre(empresaDTO.getNombre());
         empresa.setContrasena(passwordEncoder.encode(empresaDTO.getContrasena()));
         empresa.setCorreo(empresaDTO.getCorreo());
@@ -98,7 +106,13 @@ public class EmpresaService {
         empresa.setSectorEmpresarial(empresaDTO.getSectorEmpresarial());
         empresa.setSitioWeb(empresaDTO.getSitioWeb());
         empresa.setNit(empresaDTO.getNit());
-
+        empresa.setIsActive(empresaDTO.getIsActive());
+        empresa.setComentarioAdmin(empresaDTO.getComentarioAdmin());
+        empresa.setRoles(
+            empresaDTO.getRoles().stream()
+                    .map(roles -> rolesRepository.findByRol(roles))
+                    .collect(Collectors.toList())
+        );
         return empresa;
     }
     
