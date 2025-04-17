@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado de Cuenta</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f2f4f7;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        p {
+            font-size: 1.1rem;
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        /* Estilo para las secciones importantes */
+        .important {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .status-card {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .status-card h3 {
+            color: #2980b9;
+        }
+        .status-card p {
+            font-size: 1.1rem;
+            margin: 5px 0;
+        }
+
+        /* Estilo para los botones */
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 1rem;
+            text-align: center;
+            width: 100%;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-small {
+            width: auto;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* Estilo para el formulario */
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            resize: vertical;
+            height: 150px;
+        }
+
+        /* Estilo para mensajes de alerta */
+        .alert {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #e74c3c;
+            margin-top: 20px;
+        }
+        .alert p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        /* Estilo para la sección de apelación */
+        .appeal-section {
+            margin-top: 20px;
+        }
+        .appeal-section h3 {
+            color: #27ae60;
+        }
+
+        /* Estilo para la parte de mensaje y acciones */
+        .message-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Estado de tu cuenta</h2>
+    
+        <div class="status-card">
+            <h3>Estado Actual</h3>
+            <p><span class="important">Tu cuenta está suspendida.</span></p>
+            <p>Motivo del baneo: <span th:text="${mensajeBan}"></span></p>
+        </div>
+
+        <div class="appeal-section">
+            <h3>¿Deseas apelar tu baneo?</h3>
+            <p>Si consideras que el baneo fue un error o deseas explicar tu situación, por favor escribe tu apelación en el siguiente formulario:</p>
+            
+            <form  method="post">
+                <input type="hidden" name="correo" th:value="${correo}" />
+                <textarea name="mensajeApelacion" required placeholder="Escribe tu apelacion aqui..."></textarea><br>
+                <button type="submit" class="btn">Enviar Apelación</button>
+            </form>
+        </div>
+    
+        <!-- <div class="alert">
+            <p>¡Gracias por tu apelación! Nuestro equipo está revisando tu caso y te notificaremos pronto.</p>
+        </div> -->
+
+        <div class="message-section">
+            <a th:href="@{/}" class="btn btn-small">Volver al inicio</a>
+        </div>
+    </div>
+
+</body>
+</html>

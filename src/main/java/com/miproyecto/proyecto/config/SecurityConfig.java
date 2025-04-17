@@ -23,9 +23,11 @@ import com.miproyecto.proyecto.util.JwtUtils;
 public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
-    public SecurityConfig(JwtUtils jwtUtils) {
+    public SecurityConfig(JwtUtils jwtUtils, CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
         this.jwtUtils = jwtUtils;
+        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
     }
 
     @Bean
@@ -90,9 +92,10 @@ public class SecurityConfig {
                     "/vacantes/listar", "/vacantes/seleccion/{nvacantes}",
                     "/vacantes/eliminar/filtro" 
                 ).permitAll()
+                .requestMatchers("/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
+                .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/empresas/**").hasRole("EMPRESA")
                 .requestMatchers("/candidatos/**").hasRole("CANDIDATO")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/vacantes/**", "/postulados/**", 
                     "/estudios", "/historialLaborals").hasAnyRole("EMPRESA", "CANDIDATO")
                 .anyRequest().authenticated()
@@ -100,8 +103,8 @@ public class SecurityConfig {
             .formLogin(formLogin -> formLogin                          
 				.loginPage("/usuarios/login")
 				.loginProcessingUrl("/usuarios/login")
+                .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customSuccessHandler(jwtUtils))
-                .failureUrl("/usuarios/login/error")
 				.permitAll()
 			)
 			.logout(logout -> logout                                   
@@ -113,5 +116,13 @@ public class SecurityConfig {
             )
             .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class);
         return http.build();
+    }
+
+    public JwtUtils getJwtUtils() {
+        return jwtUtils;
+    }
+
+    public CustomAuthenticationFailureHandler getCustomAuthenticationFailureHandler() {
+        return customAuthenticationFailureHandler;
     }
 }

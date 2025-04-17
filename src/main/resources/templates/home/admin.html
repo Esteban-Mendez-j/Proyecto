@@ -31,9 +31,11 @@
             
                 <ul class="menuitems">
                     <li><a th:href="@{/admin/home}">Inicio</a></li>
-                    <!-- <li><a th:href="@{/vacantes/listar}">Empleos</a></li> -->
+                    <li><a th:href="@{/admin/listVacantes/activas}">Vacantes Activas</a></li>
+                    <li><a th:href="@{/admin/listVacantes/desactivadas}">Vacantes Desactivadas</a></li>
                     <li><a th:href="@{/admin/listUser/activos}">Usuarios activos</a></li>
                     <li><a th:href="@{/admin/listUser/baneados}">Usuarios Baneados</a></li>
+                    <!-- <li><a href="#">Informe</a></li>  dataset -->
                 </ul>    
                 
                 <div class="container-user">

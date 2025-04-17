@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -157,13 +158,15 @@
                     
                     <!-- boton de postulacion -->
                     <div  th:replace="~{fragments/forms::error}" />
-                    <form th:action="@{/postulados/add/{nvacantes}(nvacantes=${vacanteSeleccionada.nvacantesEncryt})}" method="post">
+                    <form sec:authorize="hasRole('CANDIDATO')"
+                            th:action="@{/postulados/add/{nvacantes}(nvacantes=${vacanteSeleccionada.nvacantesEncryt})}" method="post">
                         <button type="submit">Postular</button>
+                    </form><br>
+
+                    <form sec:authorize="hasRole('ADMIN')" th:action="@{/admin/cambiar-estado/vacantes}" method="get">
+                        <input type="hidden" name="NVacante" th:value="${vacanteSeleccionada.nvacantes}">
+                        <button type="submit">Cambio Estado</button>
                     </form>
-                    <!-- <form th:if="${#ctx.session.tipo == 'invitado'}" th:action="@{/usuarios/login}">
-                        <button type="submit">Postular</button>
-                    </form> -->
-                    
                 </div>
         
                 <div class="textarea">

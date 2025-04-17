@@ -30,9 +30,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new User(
             usuario.getCorreo(),
             usuario.getContrasena(),
+            usuario.getIsActive(), 
+            true,           
+            true,       
+            true,            
             usuario.getRoles().stream()
                 .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getRol()))
                 .collect(Collectors.toList())
         );
+
     }
 }

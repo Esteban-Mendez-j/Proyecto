@@ -83,23 +83,21 @@
                             
                             <td>
                                 <div class="float-end text-nowrap">
-                                    <form th:if="${userIsActive && !usuario.Roles.contains('ADMIN')}" th:action="@{/admin/agregarRol}" method="post" class="d-inline">
+                                    <div th:if="${isSUPER_ADMIN}">
+                                        <form th:if="${userIsActive && !usuario.Roles.contains('ADMIN')}" th:action="@{/admin/agregarRol}" method="post" class="d-inline">
+                                            <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
+                                            <button type="submit" class="btn btn-sm btn-secondary">hacer admin</button>
+                                        </form>
+                                        <form th:if="${userIsActive && usuario.Roles.contains('ADMIN')}" th:action="@{/admin/removerRol}" method="post" class="d-inline">
+                                            <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
+                                            <button type="submit" class="btn btn-sm btn-secondary">quitar admin</button>
+                                        </form>
+                                    </div>
+                                    <form  th:action="@{/admin/cambiar-estado/usuario}" method="get" class="d-inline">
                                         <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
-                                        <button type="submit" class="btn btn-sm btn-secondary">hacer admin</button>
+                                        <button type="submit" class="btn btn-sm btn-secondary" th:text="${usuario.isActive} ? 'Banear' : 'Desbanear'"></button>
                                     </form>
-                                    <form th:if="${userIsActive && usuario.Roles.contains('ADMIN')}" th:action="@{/admin/removerRol}" method="post" class="d-inline">
-                                        <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
-                                        <button type="submit" class="btn btn-sm btn-secondary">quitar admin</button>
-                                    </form>
-                                    <form th:if="${userIsActive}" th:action="@{/admin/banear/usuario}" method="get" class="d-inline">
-                                        <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
-                                        <button type="submit" class="btn btn-sm btn-secondary">Banear</button>
-                                    </form>
-                                    <form th:if="${!userIsActive}" th:action="@{/admin/desbanear/usuario}" method="get" class="d-inline">
-                                        <input type="hidden" name="idUsuario" th:value="${usuario.idUsuario}">
-                                        <button type="submit" class="btn btn-sm btn-secondary">Desbanear</button>
-                                    </form>
-                                    
+
                                 </div>
                             </td>
                         </tr>

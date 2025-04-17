@@ -6,6 +6,7 @@ import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.util.ReferencedWarning;
 import com.miproyecto.proyecto.util.WebUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.stereotype.Controller;
@@ -51,10 +52,24 @@ public class UsuarioController {
     }
 
     @GetMapping("/login/error")
-    public String loginError(Model model){
-        model.addAttribute(WebUtils.MSG_ERROR, WebUtils.getMessage("Correo o Contraseña invalida"));
-        return "html/login";
+    public String loginError(Model model, HttpServletRequest request) {
+        String correo = (String) request.getSession().getAttribute("LOGIN_EMAIL");
+        String mensajeError = (String) request.getSession().getAttribute("LOGIN_ERROR_MESSAGE");
+        Boolean isBanned = (Boolean) request.getSession().getAttribute("IS_BANNED");
+        if (isBanned) {
+            //tambine se puede por la id
+            model.addAttribute("correo", correo);
+            model.addAttribute("mensajeBan", mensajeError);
+            request.getSession().removeAttribute("LOGIN_EMAIL");
+            request.getSession().removeAttribute("LOGIN_ERROR_MESSAGE");
+            request.getSession().removeAttribute("IS_BANNED");
+            return "admin/EstadoCuenta"; 
+        }
+
+        model.addAttribute(WebUtils.MSG_ERROR, WebUtils.getMessage(mensajeError));
+        return "html/login"; 
     }
+
 
     // @RequestMapping("/usuarios/cerrarSesion")
     // public String logout(@RequestParam(name = "tipo", defaultValue = "1") int tipo, RedirectAttributes redirectAttributes) {

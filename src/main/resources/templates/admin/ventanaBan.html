@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-
 <head>
   <meta charset="UTF-8">
-  <title>Banear Usuario</title>
+  <title th:text="${estado} ? 'Desbanear Usuario' : 'Banear Usuario'">Cambiar Estado</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -76,6 +75,35 @@
       box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
     }
 
+    select {
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 1rem;
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+      background: var(--azul-claro);
+      color: var(--texto);
+      margin-bottom: 1rem;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M70 90L30 50h80z' fill='%234a90e2'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.7rem center;
+      background-size: 1rem;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--azul);
+      background: #fff;
+      box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
+    }
+
+    option {
+      padding: 0.5rem;
+      background-color: white;
+      color: var(--texto);
+    }
+
     .btn-banear {
       margin-top: 1.5rem;
       background: var(--azul);
@@ -105,28 +133,24 @@
     }
   </style>
 </head>
-
 <body>
 
-  <form th:if="${banear}" class="form-container" th:action="@{/admin/banear/usuario}" method="post">
-    <h2>Banear Usuario</h2>
+  <form class="form-container" th:action="@{/admin/cambiar-estado/usuario}" method="post">
+    <h2 th:text="${isActive} ? 'Banear Usuario' : 'Desbanear Usuario'">Cambiar Estado</h2>
+    <div th:replace="~{fragments/forms::error}" />
 
-    <label for="comentario">Motivo del baneo</label>
-    <textarea id="comentario" name="comentario" placeholder="Escribe el motivo del baneo aquí..." required></textarea>
+    <label for="estado">Selecciona el nuevo estado:</label>
+    <select name="estado" id="estado" required>
+      <option value="false" th:selected="${isActive}">Banear</option>
+      <option value="true" th:selected="${!isActive}">Desbanear</option>
+    </select>
+
+    <label for="comentario">Motivo</label>
+    <textarea id="comentario" name="comentario" placeholder="Escribe el motivo aquí..." required></textarea>
+
     <input type="hidden" name="idUsuario" th:value="${idUsuario}">
-    <button type="submit" class="btn-banear">Banear Usuario</button>
-  </form>
-
-  <form th:if="${!banear}" class="form-container" th:action="@{/admin/desbanear/usuario}" method="post">
-    <h2>Desbanear Usuario</h2>
-
-    <label for="comentario">Motivo del desbaneo</label>
-    <textarea id="comentario" name="comentario" placeholder="Escribe el motivo del baneo aquí..." required></textarea>
-    <input type="hidden" name="idUsuario" th:value="${idUsuario}">
-
-    <button type="submit" class="btn-banear">Desbanear Usuario</button>
+    <button type="submit" class="btn-banear" th:text="${isActive} ? 'Banear Usuario' : 'Desbanear Usuario'"></button>
   </form>
 
 </body>
-
 </html>

@@ -53,17 +53,41 @@ public class UsuarioService {
                 .toList();
     }
 
-    public List<UsuarioDTO> findAllByBannedStatus(Boolean isBanned) {
-        final List<Usuario> usuarios = usuarioRepository.findByIsActive(isBanned);
-        return usuarios.stream()
-                .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
-                .toList();
+    public List<UsuarioDTO> findAllByBannedStatus(Boolean isBanned, Long idUsuario) {
+        List<Usuario> usuarios = usuarioRepository.findByIsActive(isBanned);
+        Usuario usuarioAutenticado = usuarioRepository.findById(idUsuario)
+                .orElseThrow(NotFoundException::new);
+    
+        boolean esSuperAdmin = usuarioAutenticado.getRoles().stream()
+                .anyMatch(rol -> rol.getRol().equals("SUPER_ADMIN"));
+    
+        if (esSuperAdmin) {
+            return usuarios.stream()
+                    .filter(usuario -> !usuario.getIdUsuario().equals(idUsuario))
+                    .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
+                    .toList();
+        } else {
+            return usuarios.stream()
+                    .filter(usuario -> !usuario.getIdUsuario().equals(idUsuario))
+                    .filter(usuario -> usuario.getRoles().stream().noneMatch(rol ->
+                            rol.getRol().equals("ADMIN") || rol.getRol().equals("SUPER_ADMIN")))
+                    .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
+                    .toList();
+        }
     }
-
+    
+    
     public Long findIdByCorreo(String correo){
         Usuario usuario = usuarioRepository.getByCorreo(correo)
             .orElseThrow(NotFoundException::new);
         return usuario.getIdUsuario();
+    }
+
+    public UsuarioDTO findByCorreo(String correo){
+        return usuarioRepository.getByCorreo(correo)
+            .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
+            .orElseThrow(NotFoundException::new);
+        
     }
 
     public UsuarioDTO get(final Long idUsuario) {
@@ -144,6 +168,7 @@ public class UsuarioService {
         usuarioDTO.setDescripcion(usuario.getDescripcion());
         usuarioDTO.setImagen(usuario.getImagen());
         usuarioDTO.setIsActive(usuario.getIsActive());
+        usuarioDTO.setComentarioAdmin(usuario.getComentarioAdmin());
         usuarioDTO.setRoles(
             usuario.getRoles().stream()
                 .map(roles -> roles.getRol())
@@ -161,6 +186,7 @@ public class UsuarioService {
         usuario.setDescripcion(usuarioDTO.getDescripcion());
         usuario.setImagen(usuarioDTO.getImagen());
         usuario.setIsActive(usuarioDTO.getIsActive());
+        usuario.setComentarioAdmin(usuarioDTO.getComentarioAdmin());
         usuario.setRoles(
             usuarioDTO.getRoles().stream()
                     .map(roles -> rolesRepository.findByRol(roles))

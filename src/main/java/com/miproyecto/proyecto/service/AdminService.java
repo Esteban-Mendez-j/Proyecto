@@ -56,9 +56,11 @@ public class AdminService {
     public void cambiarEstadoVacantes (Long Nvacante, String estado, String comentario ){
         Vacante vacante = vacanteRepository.findById(Nvacante)
             .orElseThrow(NotFoundException::new);
-
-        vacante.setEstado(estado);
-        vacante.setComentarioAdmin(comentario);
-        vacanteRepository.save(vacante);
+        if(!estado.equalsIgnoreCase(vacante.getEstado())){
+            vacante.setEstado(estado);
+            vacante.setComentarioAdmin(comentario);
+            vacanteRepository.save(vacante);
+        }
+        
     }
 }

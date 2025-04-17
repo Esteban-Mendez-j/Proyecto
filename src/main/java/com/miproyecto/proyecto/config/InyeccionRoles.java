@@ -20,7 +20,7 @@ public class InyeccionRoles implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        List<String> roles = List.of("CANDIDATO", "EMPRESA", "ADMIN");
+        List<String> roles = List.of("CANDIDATO", "EMPRESA", "ADMIN", "SUPER_ADMIN");
 
         for (String nombreRol : roles) {
             if (rolesRepository.findByRol(nombreRol) == null) {
