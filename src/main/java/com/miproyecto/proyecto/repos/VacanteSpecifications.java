@@ -47,11 +47,11 @@ public class VacanteSpecifications {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("fechaPublicacion"), filtro.getFechaPublicacion()));
             }
     
-            // Filtro para tipo de vacante (Voluntariado o Vacante)
+            // Filtro para tipo de vacante (practica o Vacante)
 
             if ("null".equals(filtro.getTipo())) {
                 predicates.add(criteriaBuilder.or(
-                    criteriaBuilder.equal(root.get("tipo"), "Voluntariado"),
+                    criteriaBuilder.equal(root.get("tipo"), "practica"),
                     criteriaBuilder.equal(root.get("tipo"), "Vacante")
                 ));
             }else {

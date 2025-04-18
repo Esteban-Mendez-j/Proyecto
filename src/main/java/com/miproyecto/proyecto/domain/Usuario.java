@@ -15,6 +15,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 
 
 @Entity
@@ -57,6 +58,14 @@ public class Usuario {
         inverseJoinColumns = @JoinColumn(name = "Id_rol")
         )
     private List<Roles> roles;
+
+    // Relacion con las apelaciones en las que el Usuario es el candidato o empresa
+    @OneToMany(mappedBy = "usuario")
+    private List<Apelacion> apelacionesComoUsuario;
+
+    // Relacion con las apelaciones en las que el Usuario es admin
+    @OneToMany(mappedBy = "admin")
+    private List<Apelacion> apelacionesComoAdmin;
 
         
     public Usuario() {

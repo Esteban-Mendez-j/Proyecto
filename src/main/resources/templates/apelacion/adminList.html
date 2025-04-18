@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lista de Apelaciones</title>
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #e9f4ff;
+            padding: 2rem;
+        }
+        h1 {
+            color: #005fa3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        th {
+            background-color: #cde6ff;
+        }
+        .btn {
+            background-color: #0077cc;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    <h1>Todas las Apelaciones</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Mensaje</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="apelacion : ${apelaciones}">
+                <td th:text="${apelacion.idUsuario}">Usuario</td>
+                <td th:text="${apelacion.mensaje}">Mensaje</td>
+                <td th:text="${apelacion.estado}">Estado</td>
+                <td th:text="${#temporals.format(apelacion.fechaCreacion, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+                <td>
+                    <a class="btn" th:href="@{'/apelaciones/cambiarEstado/' + ${apelacion.id}}">Cambiar Estado</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

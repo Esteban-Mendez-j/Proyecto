@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <title>Mis Apelaciones</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            padding: 2rem;
+        }
+        h1 {
+            color: #0077cc;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        table, th, td {
+            border: 1px solid #b0d4f1;
+        }
+        th {
+            background-color: #d6ecff;
+            padding: 10px;
+        }
+        td {
+            padding: 8px;
+        }
+        .btn {
+            background-color: #0077cc;
+            color: #fff;
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .btn:hover {
+            background-color: #005fa3;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    <h1>Mis Apelaciones</h1>
+    <a class="btn" th:href="@{/apelaciones/add}">Nueva Apelación</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Mensaje</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="apelacion : ${apelaciones}">
+                <td th:text="${apelacion.mensaje}">Mensaje</td>
+                <td th:text="${apelacion.estado}">Estado</td>
+                <td th:text="${#temporals.format(apelacion.fechaCreacion, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+                <td>
+                    <a class="btn" th:href="@{'/apelaciones/edit/' + ${apelacion.id}}">Editar</a>
+                    <a class="btn" th:href="@{'/apelaciones/cambiarEstado/' + ${apelacion.id}}">Cambiar Estado</a>
+                    <form th:action="@{'/apelaciones/delete/' + ${apelacion.id}}" method="post" style="display:inline;">
+                        <button type="submit" class="btn">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

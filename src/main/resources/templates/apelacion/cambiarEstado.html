@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <title>Cambiar Estado</title>
+    <style>
+        body { font-family: 'Segoe UI'; background: #f0f8ff; padding: 2rem; }
+        form {
+            background: white; padding: 2rem;
+            max-width: 400px; margin: auto;
+            border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        label, select {
+            display: block; margin-top: 1rem;
+        }
+        select {
+            width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #b0d4f1;
+        }
+        button {
+            background: #0077cc; color: white; padding: 10px 20px;
+            border: none; border-radius: 5px; margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    <h1>Cambiar Estado de Apelación</h1>
+    <form th:action="@{'/apelaciones/cambiarEstado/' + ${apelacion.id}}" method="post">
+        <label for="estado">Nuevo Estado:</label>
+        <select id="estado" name="estado">
+            <option value="PENDIENTE" th:selected="${apelacion.estado == 'PENDIENTE'}">Pendiente</option>
+            <option value="APROBADA" th:selected="${apelacion.estado == 'APROBADA'}">Aprobada</option>
+            <option value="RECHAZADA" th:selected="${apelacion.estado == 'RECHAZADA'}">Rechazada</option>
+        </select>
+        <button type="submit">Actualizar Estado</button>
+    </form>
+</body>
+</html>

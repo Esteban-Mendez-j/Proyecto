@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <title>Nueva Apelación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4faff;
+            padding: 2rem;
+        }
+        h1 {
+            color: #007acc;
+        }
+        form {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        label, textarea, select {
+            display: block;
+            margin: 1rem 0 0.5rem;
+        }
+        textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cce0f5;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #0077cc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    <h1>Agregar Apelación</h1>
+    <form th:action="@{/apelaciones/add}" method="post" th:object="${apelacion}">
+        <label for="mensaje">Mensaje:</label>
+        <textarea id="mensaje" th:field="*{mensaje}" required></textarea>
+
+        <label for="esPorCuenta">¿Es por cuenta?:</label>
+        <select id="esPorCuenta" th:field="*{esPorCuenta}">
+            <option th:value="true">Sí</option>
+            <option th:value="false">No (por vacante)</option>
+        </select>
+
+        <button type="submit">Enviar Apelación</button>
+    </form>
+</body>
+</html>

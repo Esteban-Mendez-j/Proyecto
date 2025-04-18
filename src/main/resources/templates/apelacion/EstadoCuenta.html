@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
     <title>Estado de Cuenta</title>
     <style>
         /* Estilos generales */
@@ -116,7 +118,7 @@
     </style>
 </head>
 <body>
-
+    <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
     <div class="container">
         <h2>Estado de tu cuenta</h2>
     
@@ -130,16 +132,12 @@
             <h3>¿Deseas apelar tu baneo?</h3>
             <p>Si consideras que el baneo fue un error o deseas explicar tu situación, por favor escribe tu apelación en el siguiente formulario:</p>
             
-            <form  method="post">
+            <form th:action="@{/apelaciones/add}" method="post">
                 <input type="hidden" name="correo" th:value="${correo}" />
                 <textarea name="mensajeApelacion" required placeholder="Escribe tu apelacion aqui..."></textarea><br>
                 <button type="submit" class="btn">Enviar Apelación</button>
             </form>
         </div>
-    
-        <!-- <div class="alert">
-            <p>¡Gracias por tu apelación! Nuestro equipo está revisando tu caso y te notificaremos pronto.</p>
-        </div> -->
 
         <div class="message-section">
             <a th:href="@{/}" class="btn btn-small">Volver al inicio</a>

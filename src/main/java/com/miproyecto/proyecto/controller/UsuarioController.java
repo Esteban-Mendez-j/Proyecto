@@ -63,7 +63,7 @@ public class UsuarioController {
             request.getSession().removeAttribute("LOGIN_EMAIL");
             request.getSession().removeAttribute("LOGIN_ERROR_MESSAGE");
             request.getSession().removeAttribute("IS_BANNED");
-            return "admin/EstadoCuenta"; 
+            return "apelacion/EstadoCuenta"; 
         }
 
         model.addAttribute(WebUtils.MSG_ERROR, WebUtils.getMessage(mensajeError));

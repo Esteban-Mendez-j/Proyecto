@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/general.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+    <title>Editar Apelación</title>
+    <style>
+        body { font-family: Arial; background-color: #eef6fc; padding: 2rem; }
+        form {
+            background: white; padding: 2rem; border-radius: 10px;
+            max-width: 600px; margin: auto; box-shadow: 0 0 10px #ccc;
+        }
+        label, textarea {
+            display: block; margin-top: 1rem;
+        }
+        textarea {
+            width: 100%; padding: 10px; border: 1px solid #aad4f3; border-radius: 5px;
+        }
+        button {
+            background-color: #0077cc; color: white;
+            padding: 10px 20px; margin-top: 1rem; border: none; border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/plantilla :: headerInvitado}"></div>
+    <h1>Editar Apelación</h1>
+    <form th:action="@{'/apelaciones/edit/' + ${apelacion.id}}" method="post" th:object="${apelacion}">
+        <label for="mensaje">Mensaje:</label>
+        <textarea id="mensaje" th:field="*{mensaje}" required></textarea>
+        <button type="submit">Actualizar</button>
+    </form>
+</body>
+</html>

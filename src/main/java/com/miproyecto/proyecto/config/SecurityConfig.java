@@ -90,7 +90,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/usuarios/**", "/css/**", 
                     "/images/**", "/js/**", "/empresas/add", "candidatos/add", 
                     "/vacantes/listar", "/vacantes/seleccion/{nvacantes}",
-                    "/vacantes/eliminar/filtro" 
+                    "/vacantes/eliminar/filtro", "/apelaciones/**" 
                 ).permitAll()
                 .requestMatchers("/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
