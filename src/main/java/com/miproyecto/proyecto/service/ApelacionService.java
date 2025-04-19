@@ -57,10 +57,10 @@ public class ApelacionService {
     }
 
     // Crear apelacion
-    public void create(final ApelacionDTO apelacionDTO) {
+    public Long  create(final ApelacionDTO apelacionDTO) {
         final Apelacion apelacion = new Apelacion();
         mapToEntity(apelacionDTO, apelacion, true);
-        apelacionRepository.save(apelacion);
+        return apelacionRepository.save(apelacion).getId();
     }
 
     // Actualizar apelacion

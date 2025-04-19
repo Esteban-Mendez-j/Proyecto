@@ -52,7 +52,7 @@ public class EmpresaService {
                 .orElseThrow(NotFoundException::new);
     }
     
-    public void create(final EmpresaDTO empresaDTO) {
+    public Long create(final EmpresaDTO empresaDTO) {
         final Empresa empresa = new Empresa();
         List<Roles> roles= new ArrayList<>();
 
@@ -61,7 +61,7 @@ public class EmpresaService {
         mapToEntity(empresaDTO, empresa);
         empresa.setRoles(roles);// guarda el rol en la db
         
-        empresaRepository.save(empresa);
+        return empresaRepository.save(empresa).getIdUsuario();
     }
 
     public void update(final Long idUsuario, final EmpresaDTO empresaDTO) {

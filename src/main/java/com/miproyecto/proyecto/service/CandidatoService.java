@@ -63,7 +63,7 @@ public class CandidatoService{
 
 
     // crea y guarda un objeto candidato en la base de datos 
-    public void create(final CandidatoDTO candidatoDTO) {
+    public Long create(final CandidatoDTO candidatoDTO) {
         final Candidato candidato = new Candidato();
         List<Roles> roles= new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class CandidatoService{
         mapToEntity(candidatoDTO, candidato, true);
         candidato.setRoles(roles);// guarda el rol en la db
          
-        candidatoRepository.save(candidato);
+        return candidatoRepository.save(candidato).getIdUsuario();
     }
 
     
