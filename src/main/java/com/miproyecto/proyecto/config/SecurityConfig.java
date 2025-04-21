@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,10 +14,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.miproyecto.proyecto.config.filter.JwtTokenValidator;
-import com.miproyecto.proyecto.repos.UsuarioRepository;
 import com.miproyecto.proyecto.service.CustomUserDetailsService;
+import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 @Configuration
@@ -36,8 +38,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    UserDetailsService userDetailsService(UsuarioRepository usuarioRepository){
-        return new CustomUserDetailsService(usuarioRepository);
+    UserDetailsService userDetailsService(UsuarioService usuarioService){
+        return new CustomUserDetailsService(usuarioService);
     }
 
     /*
@@ -69,7 +71,7 @@ public class SecurityConfig {
     */
     @Bean
     AuthenticationManager authenticationManager(HttpSecurity http,
-                                             UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) throws Exception {
+                                            UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) throws Exception {
         
         return http.getSharedObject(AuthenticationManagerBuilder.class)
             .authenticationProvider(authenticationProvider(userDetailsService,passwordEncoder))
@@ -83,33 +85,35 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, 
+            @Qualifier("customCorsConfig") CorsConfigurationSource corsConfig) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfig))       
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/usuarios/**", "/css/**", 
-                    "/images/**", "/js/**", "/empresas/add", "candidatos/add", 
-                    "/vacantes/listar", "/vacantes/seleccion/{nvacantes}",
-                    "/vacantes/eliminar/filtro", "/apelaciones/**" 
+                    "/images/**", "/js/**", "/api/empresas/add", "/api/candidatos/add", 
+                    "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}",
+                    "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar" 
                 ).permitAll()
-                .requestMatchers("/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
-                .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
-                .requestMatchers("/empresas/**").hasRole("EMPRESA")
-                .requestMatchers("/candidatos/**").hasRole("CANDIDATO")
-                .requestMatchers("/vacantes/**", "/postulados/**", 
-                    "/estudios", "/historialLaborals").hasAnyRole("EMPRESA", "CANDIDATO")
+                .requestMatchers("/api/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
+                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                .requestMatchers("/api/empresas/**","/api/vacantes/popular/listar").hasRole("EMPRESA")
+                .requestMatchers("/api/candidatos/**").hasRole("CANDIDATO")
+                .requestMatchers( "/api/postulados/**","/api/vacantes/**", 
+                    "/api/estudios", "/api/historialLaborals").hasAnyRole("EMPRESA", "CANDIDATO")
                 .anyRequest().authenticated()
             )
-            .formLogin(formLogin -> formLogin                          
-				.loginPage("/usuarios/login")
-				.loginProcessingUrl("/usuarios/login")
+            .formLogin(formLogin -> formLogin                       
+				.loginPage("http://localhost:4321/login")
+                .loginProcessingUrl("/api/usuarios/login")
                 .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customSuccessHandler(jwtUtils))
 				.permitAll()
 			)
 			.logout(logout -> logout                                   
 				.logoutUrl("/usuarios/cerrarSesion")
-				.logoutSuccessUrl("/?logout")
+				.logoutSuccessUrl("http://localhost:4321/?logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
 				.permitAll()

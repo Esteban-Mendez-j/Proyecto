@@ -4,8 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,16 +37,12 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        // String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        HttpSession session =  request.getSession(false);
-        String jwtToken = null;
-        if (session != null) {
-            jwtToken = (String) session.getAttribute("jwtToken");
-        }
+        String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        
         try {
             if (jwtToken != null) {
         
-                // jwtToken = jwtToken.substring(7); /// el error es este borra algo auqi 
+                jwtToken = jwtToken.substring(7); 
 
                 DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
 

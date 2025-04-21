@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -87,6 +88,15 @@ public class UsuarioService {
         return usuarioRepository.getByCorreo(correo)
             .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
             .orElseThrow(NotFoundException::new);
+        
+    }
+
+    public Optional<Usuario> findByCorreo(String correo, boolean isAutenticacion){
+        try {
+            return usuarioRepository.getByCorreo(correo);
+        } catch (NotFoundException e) {
+            throw new UsernameNotFoundException("Usuario no encontrado");
+        }
         
     }
 

@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.rest;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
@@ -34,7 +35,7 @@ public class VacanteResource {
     private final JwtUtils jwtUtils;
 
     
-   
+
     public VacanteResource(VacanteService vacanteService, JwtUtils jwtUtils) {
         this.vacanteService = vacanteService;
         this.jwtUtils = jwtUtils;
@@ -53,36 +54,72 @@ public class VacanteResource {
 
     @GetMapping("/listar")
     public ResponseEntity<Map<String, Object>> listarVacantes(
-            @ModelAttribute VacanteDTO filtro,
-            HttpSession session) {
+        HttpSession session) {
 
-        session.setAttribute("filtro", filtro);
-
-        List<VacanteDTO> vacantes;
-        if (filtro != null && (
-            (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) ||
-            (filtro.getCiudad() != null && !filtro.getCiudad().isEmpty()) ||
-            (filtro.getTipo() != null && !filtro.getTipo().isEmpty()) ||
-            (filtro.getModalidad() != null && !filtro.getModalidad().isEmpty()) ||
-            (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty())
-        )) {
-            vacantes = vacanteService.buscarVacantesConFiltros(filtro);
-        } else {
-            vacantes = vacanteService.findAllByEstado("activa");
-        }
-
+        List<VacanteDTO>vacantes = vacanteService.findAllByEstado("activa");
+        
         Map<String, Object> response = new HashMap<>();
         response.put("vacantes", vacantes);
-        response.put("filtro", filtro);
-
-        if (!vacantes.isEmpty()) {
-            response.put("vacanteSeleccionada", vacanteService.get(vacantes.get(0).getNvacantes()));
-        }
-
         return ResponseEntity.ok(response);
     }
 
-   
+    // @GetMapping("/popular/listar")
+    // public ResponseEntity<Map<String, Object>> TopVacantes(
+    //     HttpSession session) {
+
+    //     String jwtToken = (String) session.getAttribute("jwtToken");
+    //     DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+    //     Long idEmpresa = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+    //     List<VacanteDTO>vacantes = vacanteService.TopVacantesPorPostulados(idEmpresa);
+        
+    //     Map<String, Object> response = new HashMap<>();
+    //     response.put("vacantes", vacantes);
+    //     return ResponseEntity.ok(response);
+    // }
+
+    @GetMapping("/Top/listar")
+    public ResponseEntity<Map<String, Object>> TopVacantesPorFechaSueldoExperiencia(
+        HttpSession session) {
+        List<VacanteDTO>vacantes = vacanteService.TopVacantesPorFechaSueldoExperiencia();
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("vacantes", vacantes);
+        return ResponseEntity.ok(response);
+    }
+
+    // @GetMapping("/listar")
+    // public ResponseEntity<Map<String, Object>> listarVacantes(
+    //     HttpSession session) {
+            
+    //         @ModelAttribute VacanteDTO filtro,
+    //     session.setAttribute("filtro", filtro);
+
+    //     List<VacanteDTO> vacantes;
+    //     if (filtro != null && (
+    //         (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) ||
+    //         (filtro.getCiudad() != null && !filtro.getCiudad().isEmpty()) ||
+    //         (filtro.getTipo() != null && !filtro.getTipo().isEmpty()) ||
+    //         (filtro.getModalidad() != null && !filtro.getModalidad().isEmpty()) ||
+    //         (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty())
+    //     )) {
+    //         vacantes = vacanteService.buscarVacantesConFiltros(filtro);
+    //     } else {
+    //         vacantes = vacanteService.findAllByEstado("activa");
+    //     }
+    //     vacantes = vacanteService.findAllByEstado("activa");
+        
+    //     Map<String, Object> response = new HashMap<>();
+    //     response.put("vacantes", vacantes);
+    //     response.put("filtro", filtro);
+
+    //     if (!vacantes.isEmpty()) {
+    //         response.put("vacanteSeleccionada", vacanteService.get(vacantes.get(0).getNvacantes()));
+    //     }
+
+    //     return ResponseEntity.ok(response);
+    // }
+
+
     @GetMapping("/seleccion/{nvacantes}")
     public ResponseEntity<Map<String, Object>> seleccionVacante(
             @PathVariable(name = "nvacantes") Long nvacantes,
@@ -93,13 +130,7 @@ public class VacanteResource {
         if (vacanteSeleccionada == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", "Vacante no encontrada"));
         }
-
-        List<VacanteDTO> vacantes = vacanteService.findAllByEstado("activa");
-        VacanteDTO filtro = (VacanteDTO) session.getAttribute("filtro");
-
         Map<String, Object> response = new HashMap<>();
-        response.put("vacantes", vacantes);
-        response.put("filtro", filtro);
         response.put("vacanteSeleccionada", vacanteSeleccionada);
 
         return ResponseEntity.ok(response);

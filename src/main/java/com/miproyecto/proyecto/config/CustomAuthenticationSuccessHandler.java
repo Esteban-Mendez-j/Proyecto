@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.config;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +27,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         String jwtToken = jwtUtils.createToken(authentication);
 
+        Cookie cookie = new Cookie("jwtToken", jwtToken);
+        cookie.setHttpOnly(true);            
+        cookie.setSecure(true);              
+        cookie.setPath("/");                 
+        cookie.setMaxAge(60 * 60);           // 1 hora
+
+        response.addCookie(cookie);
+    
         HttpSession session = request.getSession();
         session.setAttribute("jwtToken", jwtToken);
 
@@ -33,14 +42,15 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")) 
                 || authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_SUPER_ADMIN"))) {
-            redirectURL = "/admin/home";
+            redirectURL = "http://localhost:4321/";
         } else if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_EMPRESA"))) {
-            redirectURL = "/empresa/home";
+            redirectURL = "http://localhost:4321/empleos";
         }else{
-            redirectURL = "/candidato/home";
+            redirectURL = "http://localhost:4321/chat";
         }
 
         response.sendRedirect(redirectURL);
+
     }
 }
 

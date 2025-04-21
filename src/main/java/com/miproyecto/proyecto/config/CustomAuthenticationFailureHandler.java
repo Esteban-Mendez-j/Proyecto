@@ -39,7 +39,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
         request.getSession().setAttribute("IS_BANNED", isBanned);
         request.getSession().setAttribute("LOGIN_ERROR_MESSAGE", errorMessage);
-        response.sendRedirect("/usuarios/login/error");
+        response.sendRedirect("/api/usuarios/login/error");
         
     }
 }

@@ -10,8 +10,12 @@ import com.miproyecto.proyecto.repos.VacanteRepository;
 import com.miproyecto.proyecto.repos.VacanteSpecifications;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.ReferencedWarning;
-import java.util.List;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -36,7 +40,7 @@ public class VacanteService {
 
     // listado de todas las vacantes activas
     public List<VacanteDTO> findAllByEstado(String estado) {
-        final List<Vacante> vacantes = vacanteRepository.findByEstado(estado);
+        final List<Vacante> vacantes = vacanteRepository.findByEstadoOrderByFechaPublicacionDesc(estado);
         return vacantes.stream()
                 .map(vacante -> mapToDTO(vacante, new VacanteDTO()))
                 .toList();
@@ -66,6 +70,25 @@ public class VacanteService {
             .toList(); // Obtienes las vacantes filtradas
     }
 
+    // public List<VacanteDTO> TopVacantesPorPostulados(Long idEmpresa){
+    //     return vacanteRepository.findVacantesConMasPostulacionesPorEmpresa(idEmpresa).stream()
+    //     .map(vacante -> mapToDTO(vacante, new VacanteDTO()))
+    //     .toList();
+    // }
+
+    public List<VacanteDTO> TopVacantesPorFechaSueldoExperiencia() {
+        Set<Vacante> topVacantes = new HashSet<>();
+        
+        topVacantes.addAll(vacanteRepository.findTop3ByEstadoOrderByFechaPublicacionDesc("activa"));
+        topVacantes.addAll(vacanteRepository.findTop3ByEstadoOrderByExperienciaAsc("activa"));
+        topVacantes.addAll(vacanteRepository.findTop3ByEstadoOrderBySueldoDesc("activa"));
+
+        // Convertir a DTO
+        return topVacantes.stream()
+            .filter(vacante -> vacante != null)
+            .map(vacante -> mapToDTO(vacante, new VacanteDTO()))
+            .collect(Collectors.toList());
+    }
 
     public VacanteDTO get(final Long nvacantes) {
         return vacanteRepository.findById(nvacantes)
