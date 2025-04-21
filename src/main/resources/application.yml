@@ -1,14 +1,15 @@
 spring:
   datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:mysql://localhost:3306/mydb?serverTimezone=UTC}
-    username: ${JDBC_DATABASE_USERNAME:root}
-    password: ${JDBC_DATABASE_PASSWORD:}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ""
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
     open-in-view: false
     properties:
       hibernate:
@@ -17,17 +18,18 @@ spring:
             non_contextual_creation: true
         id:
           new_generator_mappings: true
+
   mvc:
     format:
       date: yyyy-MM-dd
       date-time: yyyy-MM-dd'T'HH:mm:ss
       time: HH:mm:ss
-      
+
   servlet:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
-  
+
 security:
   jwt:
     key:
@@ -35,6 +37,7 @@ security:
     user:
       generator: SEARCHJOBS-BACKEND
     expiration: ${JWT_EXPIRATION}
+
 error:
   handling:
     http-status-in-json-response: true
