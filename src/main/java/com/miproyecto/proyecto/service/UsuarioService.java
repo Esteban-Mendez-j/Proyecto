@@ -143,7 +143,7 @@ public class UsuarioService {
 
         // Crear directorio si no existe
         Path uploadPath = Path.of(UPLOAD_DIR);
-        Files.createDirectories(uploadPath); // Crear directorios si no existen
+        Files.createDirectories(uploadPath); 
         // Generar un nombre único para el archivo
         String nombreArchivo = idUsuario + "_" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
         Path rutaArchivo = uploadPath.resolve(nombreArchivo);

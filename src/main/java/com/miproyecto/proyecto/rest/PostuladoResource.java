@@ -1,7 +1,7 @@
 package com.miproyecto.proyecto.rest;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.model.CandidatoDTO;
+import com.miproyecto.proyecto.model.CandidatoResumenDTO;
 import com.miproyecto.proyecto.model.PostuladoDTO;
 import com.miproyecto.proyecto.service.CandidatoService;
 import com.miproyecto.proyecto.service.PostuladoService;
@@ -10,11 +10,12 @@ import com.miproyecto.proyecto.util.JwtUtils;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,35 +48,30 @@ public class PostuladoResource {
         return ResponseEntity.ok(postuladoService.findAll());
     }
 
-
+    //Candidatos postulados a una vacante (para empresa)
     @GetMapping("/lista/{nvacantes}")
-    public ResponseEntity<Map<String,Object>> listaByNvacantes(@PathVariable(name = "nvacantes") final Long nvacantes) {
+    public ResponseEntity<Map<String,Object>> listaByNvacantes(
+                @PathVariable(name = "nvacantes") final Long nvacantes, 
+                @PageableDefault(page = 0, size = 10)
+                Pageable pageable) {
         
-        Map<String, Object> response = new HashMap<>();
-        // Obtener las postulaciones
-        response.put("postulados", postuladoService.findByNvacantes(nvacantes));  // Se añaden los postulados al modelo
-
-        // Obtener los candidatos únicos asociados a estas postulaciones
-        Map<Long, CandidatoDTO> candidatosMap = postuladoService.obtenerCandidatosUnicosPorVacante(nvacantes);
-        response.put("candidatos", candidatosMap);  // Añadir el mapa completo de candidatos al modelo
-
+        Map<String, Object> response = postuladoService.findByNvacantes(nvacantes, pageable); 
         return ResponseEntity.ok(response);
     }
 
+    // lista de postulaciones de un candidato (para candidato )
     @GetMapping("/lista/candidato")
-    public ResponseEntity<Map<String, Object>> listaByIdUsuario(HttpSession session) {
+    public ResponseEntity<Map<String, Object>> listaByIdUsuario(
+                HttpSession session,
+                @PageableDefault(page = 0, size = 10)
+                Pageable pageable) {
 
         // Extraer el ID del usuario desde el token JWT guardado en sesión
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-        Map<String, Object> response = new HashMap<>();
-
-        // Obtener postulados y vacantes asociadas
-        response.put("postulados", postuladoService.findByIdUsuario(idUsuario));
-        response.put("vacantes", postuladoService.findVacantesByIdUsuario(idUsuario));
-
+        Map<String, Object> response =  postuladoService.findByIdUsuario(idUsuario, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -90,32 +86,26 @@ public class PostuladoResource {
         // Obtener ID del usuario desde el token JWT en sesión
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-        Long idUsuarioId = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
         // Verificar si ya está postulado
-        if (postuladoService.findByNvacantesAndIdUsuario(nvacantes, idUsuarioId) != null) {
+        if (postuladoService.findByNvacantesAndIdUsuario(nvacantes, idUsuario) != null) {
             response.put("status", "error");
             response.put("message", "Ya postulaste a esta vacante.");
             return ResponseEntity.badRequest().body(response);
         }
 
         // Verificar datos del perfil del candidato
-        CandidatoDTO candidatoDTO = candidatoService.get(idUsuarioId);
-        boolean estudio = candidatoService.estudiosExist(idUsuarioId);
+        CandidatoResumenDTO candidatoResumenDTO = candidatoService.getCandidatoResumen(idUsuario);
 
-        if (candidatoDTO.getDescripcion() == null || !estudio || candidatoDTO.getTelefono() == null) {
+        if (candidatoResumenDTO.getCurriculo() == null ) {
             response.put("status", "info");
-            response.put("message", "Completa tu perfil con descripción, teléfono y al menos un estudio antes de postularte.");
+            response.put("message", "Debes subir tu curriculo para postularte");
             return ResponseEntity.badRequest().body(response);
         }
-
         // Crear postulación
         PostuladoDTO postuladoDTO = new PostuladoDTO();
-        postuladoDTO.setIdUsuario(idUsuarioId);
-        postuladoDTO.setNvacante(nvacantes);
-        postuladoDTO.setFechaPostulacion(LocalDate.now());
-        postuladoDTO.setEstado("Espera");
-
+        postuladoDTO.setCandidato(candidatoResumenDTO);
         postuladoService.create(postuladoDTO);
 
         response.put("status", "success");

@@ -28,11 +28,11 @@ public class Postulado {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nvacante_id", nullable = false)
-    private Vacante nvacante;
+    private Vacante vacante;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario_id")
-    private Candidato idUsuario;
+    private Candidato candidato;
 
     public Long getNPostulacion() {
         return nPostulacion;
@@ -58,20 +58,20 @@ public class Postulado {
         this.estado = estado;
     }
 
-    public Vacante getNvacante() {
-        return nvacante;
+    public Vacante getVacante() {
+        return vacante;
     }
 
-    public void setNvacante(final Vacante nvacante) {
-        this.nvacante = nvacante;
+    public void setVacante(final Vacante vacante) {
+        this.vacante = vacante;
     }
 
-    public Candidato getIdUsuario() {
-        return idUsuario;
+    public Candidato getCandidato() {
+        return candidato;
     }
 
-    public void setIdUsuario(final Candidato idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setCandidato(final Candidato candidato) {
+        this.candidato = candidato;
     }
 
 }

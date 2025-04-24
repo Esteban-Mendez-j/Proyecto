@@ -1,6 +1,5 @@
 package com.miproyecto.proyecto.controller;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.CandidatoDTO;
 import com.miproyecto.proyecto.model.ValidationGroups;
 import com.miproyecto.proyecto.service.CandidatoService;
@@ -13,7 +12,6 @@ import com.miproyecto.proyecto.util.JwtUtils;
 import com.miproyecto.proyecto.util.ReferencedWarning;
 import com.miproyecto.proyecto.util.WebUtils;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 
@@ -60,36 +58,36 @@ public class CandidatoController {
         this.usuarioService = usuarioService;
     }
 
-    @GetMapping("/perfil")
-    public String mostrarPerfil( 
-            @RequestParam(name = "idUsuario", required = false) String idUsuarioEncrypt,
-            @RequestParam(name = "nPostulacion", required = false) String nPostulacionEncrypt,
-            Model model, HttpSession session) {
-        Long idUsuario; Long nPostulacion = null ;
+    // @GetMapping("/perfil")
+    // public String mostrarPerfil( 
+    //         @RequestParam(name = "idUsuario", required = false) String idUsuarioEncrypt,
+    //         @RequestParam(name = "nPostulacion", required = false) String nPostulacionEncrypt,
+    //         Model model, HttpSession session) {
+    //     Long idUsuario; Long nPostulacion = null ;
 
-        if (idUsuarioEncrypt == null && nPostulacionEncrypt == null) {
-            // Sacamos el ID del usuario que inicia sesion
-            String jwtToken = (String) session.getAttribute("jwtToken");
-            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-            idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-        } else{
-            idUsuario = encryptionService.decrypt(idUsuarioEncrypt);
-            nPostulacion = encryptionService.decrypt(nPostulacionEncrypt);
+    //     if (idUsuarioEncrypt == null && nPostulacionEncrypt == null) {
+    //         // Sacamos el ID del usuario que inicia sesion
+    //         String jwtToken = (String) session.getAttribute("jwtToken");
+    //         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+    //         idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+    //     } else{
+    //         idUsuario = encryptionService.decrypt(idUsuarioEncrypt);
+    //         nPostulacion = encryptionService.decrypt(nPostulacionEncrypt);
 
-            if (postuladoService.get(nPostulacion).getIdUsuario() != idUsuario && nPostulacion != null) {
-                model.addAttribute("error", "No tienes Permiso para acceder");
-                return "/postulado/list";
-            }
-        }
+    //         if (postuladoService.get(nPostulacion).getIdUsuario() != idUsuario && nPostulacion != null) {
+    //             model.addAttribute("error", "No tienes Permiso para acceder");
+    //             return "/postulado/list";
+    //         }
+    //     }
         
-        CandidatoDTO candidatoDTO = candidatoService.get(idUsuario);
-        if(candidatoDTO == null){return"redirect:/usuarios/login";}
+    //     CandidatoDTO candidatoDTO = candidatoService.get(idUsuario);
+    //     if(candidatoDTO == null){return"redirect:/usuarios/login";}
         
-        model.addAttribute("estudios", estudioService.getEstudiosByIdUsuario(idUsuario));
-        model.addAttribute("historialLaboral", historialLaboralService.getHistorialByIdUsuario(idUsuario));
-        model.addAttribute("candidato", candidatoDTO);
-        return "candidato/perfil"; 
-    }
+    //     model.addAttribute("estudios", estudioService.getEstudiosByIdUsuario(idUsuario));
+    //     model.addAttribute("historialLaboral", historialLaboralService.getHistorialByIdUsuario(idUsuario));
+    //     model.addAttribute("candidato", candidatoDTO);
+    //     return "candidato/perfil"; 
+    // }
 
     @GetMapping("/add")
     public String add(@ModelAttribute("candidato") final CandidatoDTO candidatoDTO) {

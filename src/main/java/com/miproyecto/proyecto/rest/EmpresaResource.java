@@ -9,9 +9,9 @@ import com.miproyecto.proyecto.util.JwtUtils;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +46,10 @@ public class EmpresaResource {
 
     @GetMapping("/perfil")
     public ResponseEntity<Map<String, Object>> mostrarPerfil( Model model,HttpSession session,
-            @RequestParam(value = "idUsuario", required = false) Long idUsuario) {        
+            @RequestParam(value = "idUsuario", required = false) Long idUsuario,
+            Pageable pageable) {        
         
-        Map<String, Object> response = new HashMap<>();        
+        Map<String, Object> response = vacanteService.findByIdUsuario(idUsuario, pageable);        
         if (idUsuario == null) {
             // Sacamos el ID del usuario que inicia sesion
             String jwtToken = (String) session.getAttribute("jwtToken");
@@ -57,7 +58,6 @@ public class EmpresaResource {
         } 
         EmpresaDTO empresaDTO = empresaService.get(idUsuario);        
         if (empresaDTO == null) {return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);} 
-        response.put("vacantes", vacanteService.findByIdUsuario(idUsuario));
         response.put("empresa", empresaDTO);
         return ResponseEntity.ok(response); 
     }

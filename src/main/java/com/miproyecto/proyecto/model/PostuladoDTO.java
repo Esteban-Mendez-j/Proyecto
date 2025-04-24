@@ -3,7 +3,6 @@ package com.miproyecto.proyecto.model;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.miproyecto.proyecto.service.EncryptionService;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,7 +12,7 @@ import jakarta.validation.constraints.Size;
 public class PostuladoDTO {
 
     @JsonProperty("nPostulacion")
-    private String nPostulacion;
+    private Long nPostulacion;
 
     @NotNull
     private LocalDate fechaPostulacion;
@@ -23,36 +22,23 @@ public class PostuladoDTO {
     private String estado;
 
     @NotNull
-    private String nvacante;
+    private VacanteResumenDTO vacante;
 
-    private String idUsuario; 
+    private CandidatoResumenDTO candidato;
 
-    private EncryptionService encryptionService;
-
-    // Constructor donde se inicializa el servicio de encriptación
-    public PostuladoDTO() {
-        this.encryptionService = new EncryptionService();  // Inicializa el servicio de encriptación
-    }
-
-    public Long getNPostulacion() {
-        return encryptionService.decrypt(nPostulacion);
-    }
-
-    public String getNPostulacionEncrypt() {
+    public Long getnPostulacion() {
         return nPostulacion;
     }
-    
 
-    public void setNPostulacion(final Long nPostulacion) {
-        this.nPostulacion = encryptionService.encrypt(nPostulacion);
+    public void setnPostulacion(Long nPostulacion) {
+        this.nPostulacion = nPostulacion;
     }
 
-    
     public LocalDate getFechaPostulacion() {
         return fechaPostulacion;
     }
 
-    public void setFechaPostulacion(final LocalDate fechaPostulacion) {
+    public void setFechaPostulacion(LocalDate fechaPostulacion) {
         this.fechaPostulacion = fechaPostulacion;
     }
 
@@ -60,31 +46,25 @@ public class PostuladoDTO {
         return estado;
     }
 
-    public void setEstado(final String estado) {
+    public void setEstado(String estado) {
         this.estado = estado;
     }
 
-    public Long getNvacante() {
-        return encryptionService.decrypt(nvacante);
+    public VacanteResumenDTO getVacante() {
+        return vacante;
     }
 
-    public String getNvacanteEncrypt(){
-        return nvacante;
+    public void setVacante(VacanteResumenDTO vacante) {
+        this.vacante = vacante;
     }
 
-    public void setNvacante(final Long nvacante) {
-        this.nvacante = encryptionService.encrypt(nvacante);
+    public CandidatoResumenDTO getCandidato() {
+        return candidato;
     }
 
-    public Long getIdUsuario() {
-        return encryptionService.decrypt(idUsuario);
-    }
+    public void setCandidato(CandidatoResumenDTO candidato) {
+        this.candidato = candidato;
+    } 
+
     
-    public String getIdUsuarioEncrypt() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(final Long idUsuario) {
-        this.idUsuario = encryptionService.encrypt(idUsuario);
-    }
 }

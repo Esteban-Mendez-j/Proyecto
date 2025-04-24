@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.UsuarioDTO;
-import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.service.AdminService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.service.VacanteService;
@@ -69,27 +70,17 @@ public class AdminResource {
 
     // Obtener vacantes activas
     @GetMapping("/listVacantes/activas")
-    public ResponseEntity<Map<String, Object>> getActiveVacancies() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("redirectUrl", "/vacantes/listar"); // Esto puede ser un enlace que el frontend maneje
+    public ResponseEntity<Map<String, Object>> getActiveVacancies(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+        Map<String, Object> response = vacanteService
+            .findAllByEstado("activa", pageable, "vacantes");
         return ResponseEntity.ok(response);
     }
 
     // Obtener vacantes desactivadas
     @GetMapping("/listVacantes/desactivadas")
-    public ResponseEntity<Map<String, Object>> getInactiveVacancies() {
-        List<VacanteDTO> vacantesDesactivadas = vacanteService.findAllByEstado("desactivada");
-        VacanteDTO vacanteSeleccionada = null;
-
-        if (!vacantesDesactivadas.isEmpty()) {
-            Long nVacanteSeleccion = vacantesDesactivadas.get(0).getNvacantes();
-            vacanteSeleccionada = vacanteService.get(nVacanteSeleccion);
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("vacantesDesactivadas", vacantesDesactivadas);
-        response.put("vacanteSeleccionada", vacanteSeleccionada);
-
+    public ResponseEntity<Map<String, Object>> getInactiveVacancies(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+        Map<String, Object> response = vacanteService
+            .findAllByEstado("desactivada", pageable, "vacantesDesactivadas");
         return ResponseEntity.ok(response);
     }
 

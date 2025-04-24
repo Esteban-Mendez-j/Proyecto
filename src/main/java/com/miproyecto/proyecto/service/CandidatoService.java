@@ -6,6 +6,7 @@ import com.miproyecto.proyecto.domain.HistorialLaboral;
 import com.miproyecto.proyecto.domain.Postulado;
 import com.miproyecto.proyecto.domain.Roles;
 import com.miproyecto.proyecto.model.CandidatoDTO;
+import com.miproyecto.proyecto.model.CandidatoResumenDTO;
 import com.miproyecto.proyecto.repos.CandidatoRepository;
 import com.miproyecto.proyecto.repos.EstudioRepository;
 import com.miproyecto.proyecto.repos.HistorialLaboralRepository;
@@ -54,6 +55,12 @@ public class CandidatoService{
                 .orElseThrow(NotFoundException::new);
     }
 
+    public CandidatoResumenDTO getCandidatoResumen(final Long idUsuario) {
+        return candidatoRepository.findById(idUsuario)
+                .map(candidato -> mapToResumenDTO(candidato, new CandidatoResumenDTO()))
+                .orElseThrow(NotFoundException::new);
+    }
+
     // busca un candidato por su identificacion
     public CandidatoDTO getByIdentificacion(final String identificacion) {
         return candidatoRepository.findByIdentificacion(identificacion)
@@ -71,7 +78,7 @@ public class CandidatoService{
         candidatoDTO.setIsActive(true);
         mapToEntity(candidatoDTO, candidato, true);
         candidato.setRoles(roles);// guarda el rol en la db
-         
+        
         return candidatoRepository.save(candidato).getIdUsuario();
     }
 
@@ -112,6 +119,14 @@ public class CandidatoService{
         return candidatoDTO;
     }
 
+    public CandidatoResumenDTO mapToResumenDTO(final Candidato candidato, final CandidatoResumenDTO candidatoResumenDTO) {
+        candidatoResumenDTO.setId(candidato.getIdUsuario());
+        candidatoResumenDTO.setNombre(candidato.getNombre());
+        candidatoResumenDTO.setExperiencia(candidato.getExperiencia());
+        candidatoResumenDTO.setCurriculo(candidato.getCurriculo());
+        return candidatoResumenDTO;
+    }
+    
     // convierte un objeto de Roles candidatoDTO a candidato
     private Candidato mapToEntity(final CandidatoDTO candidatoDTO, final Candidato candidato, boolean crear) {
         if (crear) {

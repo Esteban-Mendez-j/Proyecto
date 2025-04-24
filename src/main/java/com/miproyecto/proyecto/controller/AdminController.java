@@ -1,19 +1,16 @@
 package com.miproyecto.proyecto.controller;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.service.AdminService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.service.VacanteService;
@@ -64,20 +61,21 @@ public class AdminController {
         return "redirect:/vacantes/listar";
     }
 
-    @GetMapping("/listVacantes/desactivadas")
-    public String ListVacanteDesactive(Model model, @ModelAttribute VacanteDTO filtro) {
-        List<VacanteDTO> vacantesDesactivadas = vacanteService.findAllByEstado("desactivada"); 
-        VacanteDTO vacanteSeleccion = null;
-        if(!vacantesDesactivadas.isEmpty()){
-            Long nVacanteSeleccion = vacantesDesactivadas.get(0).getNvacantes();
-            vacanteSeleccion = vacanteService.get(nVacanteSeleccion);
-        }
-        model.addAttribute("vacanteSeleccionada", vacanteSeleccion);
-        model.addAttribute("vacantes", vacantesDesactivadas);
-        model.addAttribute("filtro", filtro);
+    // no tiene paginacion
+    // @GetMapping("/listVacantes/desactivadas")
+    // public String ListVacanteDesactive(Model model, @ModelAttribute VacanteDTO filtro) {
+    //     List<VacanteDTO> vacantesDesactivadas = vacanteService.findAllByEstado("desactivada"); 
+    //     VacanteDTO vacanteSeleccion = null;
+    //     if(!vacantesDesactivadas.isEmpty()){
+    //         Long nVacanteSeleccion = vacantesDesactivadas.get(0).getNvacantes();
+    //         vacanteSeleccion = vacanteService.get(nVacanteSeleccion);
+    //     }
+    //     model.addAttribute("vacanteSeleccionada", vacanteSeleccion);
+    //     model.addAttribute("vacantes", vacantesDesactivadas);
+    //     model.addAttribute("filtro", filtro);
 
-        return "html/ofertas";
-    }
+    //     return "html/ofertas";
+    // }
 
 
     @PostMapping("/agregarRol")

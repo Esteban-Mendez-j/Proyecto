@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,54 +42,54 @@ public class VacanteController {
         this.encryptionService = new EncryptionService();
     }
 
-    @GetMapping
-    public String list(final Model model,HttpSession session) {
-        // aqui debe ir el id de la session iniciada solo si es empresa
-        String jwtToken = (String) session.getAttribute("jwtToken");
-        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+    // @GetMapping
+    // public String list(final Model model,HttpSession session) {
+    //     // aqui debe ir el id de la session iniciada solo si es empresa
+    //     String jwtToken = (String) session.getAttribute("jwtToken");
+    //     DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+    //     Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-        model.addAttribute("vacantes", vacanteService.findByIdUsuario(idUsuario));
-        return "vacante/list";
-    }
+    //     model.addAttribute("vacantes", vacanteService.findByIdUsuario(idUsuario));
+    //     return "vacante/list";
+    // }
     
 
-    @GetMapping("/listar")
-    public String listarVacantes(
-            @ModelAttribute VacanteDTO filtro, Model model, HttpSession session,
-            @RequestParam(required = false) String titulo) {
+    // @GetMapping("/listar")
+    // public String listarVacantes(
+    //         @ModelAttribute VacanteDTO filtro, Model model, HttpSession session,
+    //         @RequestParam(required = false) String titulo) {
     
-        // Guardar el filtro en la sesión
-        session.setAttribute("filtro", filtro);
+    //     Guardar el filtro en la sesión
+    //     session.setAttribute("filtro", filtro);
     
-        // Buscar vacantes con el filtro aplicado
-        List<VacanteDTO> vacantes;
-        if (filtro != null && 
-            ( (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) || 
-            (filtro.getCiudad() != null && !filtro.getCiudad().isEmpty()) || 
-            (filtro.getTipo() != null && !filtro.getTipo().isEmpty()) || 
-            (filtro.getModalidad() != null && !filtro.getModalidad().isEmpty()) || 
-            (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty()) )) {
-            vacantes = vacanteService.buscarVacantesConFiltros(filtro);
-        } else {
-            vacantes = vacanteService.findAllByEstado("activa");
-        }
+    //     Buscar vacantes con el filtro aplicado
+    //     List<VacanteDTO> vacantes;
+    //     if (filtro != null && 
+    //         ( (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) || 
+    //         (filtro.getCiudad() != null && !filtro.getCiudad().isEmpty()) || 
+    //         (filtro.getTipo() != null && !filtro.getTipo().isEmpty()) || 
+    //         (filtro.getModalidad() != null && !filtro.getModalidad().isEmpty()) || 
+    //         (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty()) )) {
+    //         vacantes = vacanteService.buscarVacantesConFiltros(filtro);
+    //     } else {
+    //         vacantes = vacanteService.findAllByEstado("activa");
+    //     }
 
 
-        // Seleccionar la primera vacante si hay alguna
-        if (!vacantes.isEmpty()) {
-            Long nvacantes = vacantes.get(0).getNvacantes(); 
-            model.addAttribute("vacanteSeleccionada", vacanteService.get(nvacantes));
-        }
+    //     Seleccionar la primera vacante si hay alguna
+    //     if (!vacantes.isEmpty()) {
+    //         Long nvacantes = vacantes.get(0).getNvacantes(); 
+    //         model.addAttribute("vacanteSeleccionada", vacanteService.get(nvacantes));
+    //     }
     
-        model.addAttribute("vacantes", vacantes);
-        model.addAttribute("filtro", filtro);
+    //     model.addAttribute("vacantes", vacantes);
+    //     model.addAttribute("filtro", filtro);
     
-        // Guardar el filtro actualizado en la sesión para futuras búsquedas
-        session.setAttribute("filtro", filtro);
+    //     Guardar el filtro actualizado en la sesión para futuras búsquedas
+    //     session.setAttribute("filtro", filtro);
     
-        return "html/ofertas";
-    }
+    //     return "html/ofertas";
+    // }
 
 
     @GetMapping("/seleccion/{nvacantes}")
@@ -104,9 +103,9 @@ public class VacanteController {
 
         VacanteDTO filtro = (VacanteDTO) session.getAttribute("filtro");
         // Buscar vacantes con el filtro aplicado
-        List<VacanteDTO> vacantes = vacanteService.findAllByEstado("activa");
+        // List<VacanteDTO> vacantes = vacanteService.findAllByEstado("activa"); no hay paginacion
         
-        model.addAttribute("vacantes", vacantes);
+        // model.addAttribute("vacantes", vacantes);
         // Si no se encuentra la vacante, se podría redirigir a la lista de vacantes
         if (vacanteSeleccionada == null) {
             return "redirect:/vacantes/listar"; // Redirigir a la lista de vacantes

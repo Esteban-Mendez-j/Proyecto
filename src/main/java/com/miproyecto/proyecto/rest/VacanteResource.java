@@ -1,7 +1,6 @@
 package com.miproyecto.proyecto.rest;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
@@ -13,12 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -42,24 +42,23 @@ public class VacanteResource {
     }
 
     @GetMapping
-    public ResponseEntity<List<VacanteDTO>> list(HttpSession session) {
+    public ResponseEntity<Map<String,Object>> list(HttpSession session, 
+        @PageableDefault(page = 0, size = 10) Pageable pageable) {
+
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-        List<VacanteDTO> vacantes = vacanteService.findByIdUsuario(idUsuario);
-        return ResponseEntity.ok(vacantes);
+        Map<String, Object> response = vacanteService.findByIdUsuario(idUsuario, pageable);
+        return ResponseEntity.ok(response);
     }
 
 
     @GetMapping("/listar")
     public ResponseEntity<Map<String, Object>> listarVacantes(
-        HttpSession session) {
+        HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
-        List<VacanteDTO>vacantes = vacanteService.findAllByEstado("activa");
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("vacantes", vacantes);
+        Map<String, Object> response = vacanteService.findAllByEstado("activa", pageable, "vacantes");
         return ResponseEntity.ok(response);
     }
 
@@ -90,7 +89,7 @@ public class VacanteResource {
     // @GetMapping("/listar")
     // public ResponseEntity<Map<String, Object>> listarVacantes(
     //     HttpSession session) {
-            
+        
     //         @ModelAttribute VacanteDTO filtro,
     //     session.setAttribute("filtro", filtro);
 

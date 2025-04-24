@@ -4,6 +4,7 @@ import com.miproyecto.proyecto.domain.Empresa;
 import com.miproyecto.proyecto.domain.Postulado;
 import com.miproyecto.proyecto.domain.Vacante;
 import com.miproyecto.proyecto.model.VacanteDTO;
+import com.miproyecto.proyecto.model.VacanteResumenDTO;
 import com.miproyecto.proyecto.repos.EmpresaRepository;
 import com.miproyecto.proyecto.repos.PostuladoRepository;
 import com.miproyecto.proyecto.repos.VacanteRepository;
@@ -11,12 +12,15 @@ import com.miproyecto.proyecto.repos.VacanteSpecifications;
 import com.miproyecto.proyecto.util.NotFoundException;
 import com.miproyecto.proyecto.util.ReferencedWarning;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,26 +43,36 @@ public class VacanteService {
     }
 
     // listado de todas las vacantes activas
-    public List<VacanteDTO> findAllByEstado(String estado) {
-        final List<Vacante> vacantes = vacanteRepository.findByEstadoOrderByFechaPublicacionDesc(estado);
-        return vacantes.stream()
-                .map(vacante -> mapToDTO(vacante, new VacanteDTO()))
-                .toList();
+    public Map<String,Object> findAllByEstado(String estado, Pageable pageable, String nameList) {
+        final Page<Vacante> vacantes = vacanteRepository.findByEstadoOrderByFechaPublicacionDesc(estado, pageable);
+        final Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(vacante, new VacanteDTO()));
+        return mapResponse(vacantesDTO, nameList) ;       
+    }
+
+    public Map<String,Object> mapResponse(Page<VacanteDTO> pageableResponse, String nameList){
+        Map<String,Object> response = new HashMap<>();
+
+        response.put(nameList, pageableResponse.getContent());
+        response.put("totalElements", pageableResponse.getTotalElements());
+        response.put("pageActual", pageableResponse.getPageable());
+        response.put("totalPage", pageableResponse.getTotalPages());
+
+        return response;
     }
 
     // listado de las vacantes que esten relacionados con el idUsuario
-    public List<VacanteDTO> findByIdUsuario(Long idUsuario) {
+    public Map<String,Object> findByIdUsuario(Long idUsuario, Pageable pageable) {
         // Obtener la empresa usando su id
         Empresa empresa = empresaRepository.findById(idUsuario)
                 .orElseThrow(() -> new NotFoundException("Empresa no encontrada"));
         
         // Obtener las vacantes relacionadas con esa empresa
-        List<Vacante> vacantes = vacanteRepository.findByIdUsuario(empresa);
+        Page<Vacante> vacantes = vacanteRepository.findByIdUsuario(empresa, pageable);
         
         // Convertir cada vacante a VacanteDTO y devolver la lista
-        return vacantes.stream()
-                .map(vacante -> mapToDTO(vacante, new VacanteDTO()))
-                .toList();
+        Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(vacante, new VacanteDTO()));
+        return mapResponse(vacantesDTO, "vacantes");
+                
     }
     
 
@@ -136,6 +150,13 @@ public class VacanteService {
         return vacanteDTO;
     }
 
+    public VacanteResumenDTO mapToResumenDTO(final Vacante vacante, final VacanteResumenDTO vacanteResumenDTO){
+        vacanteResumenDTO.setId(vacante.getNvacantes());
+        vacanteResumenDTO.setCiudad(vacante.getCiudad());
+        vacanteResumenDTO.setTitulo(vacante.getTitulo());
+        vacanteResumenDTO.setTipo(vacante.getTipo());
+        return vacanteResumenDTO;
+    }
 
     private Vacante mapToEntity(final VacanteDTO vacanteDTO, final Vacante vacante) {
         vacante.setCargo(vacanteDTO.getCargo());
@@ -155,10 +176,6 @@ public class VacanteService {
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         vacante.setIdUsuario(idUsuario);
         return vacante;
-    }
-
-    public boolean idempresaExists(final Long idUsuario) {
-        return vacanteRepository.existsById(idUsuario);
     }
 
     public ReferencedWarning getReferencedWarning(final Long nvacantes) {

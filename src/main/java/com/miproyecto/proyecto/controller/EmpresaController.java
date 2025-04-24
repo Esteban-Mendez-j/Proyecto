@@ -53,25 +53,25 @@ public class EmpresaController {
     }
 
 
-    @GetMapping("/perfil")
-    public String mostrarPerfil( Model model,HttpSession session,
-            @RequestParam(value = "idUsuario", required = false) String idUsuarioEncrypt) {        
-        Long idUsuario;
-        if (idUsuarioEncrypt == null) {
-            // Sacamos el ID del usuario que inicia sesion
-            String jwtToken = (String) session.getAttribute("jwtToken");
-            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-            idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-        } else{
-            idUsuario = encryptionService.decrypt(idUsuarioEncrypt);
-        }
+    // @GetMapping("/perfil")
+    // public String mostrarPerfil( Model model,HttpSession session,
+    //         @RequestParam(value = "idUsuario", required = false) String idUsuarioEncrypt) {        
+    //     Long idUsuario;
+    //     if (idUsuarioEncrypt == null) {
+    //         // Sacamos el ID del usuario que inicia sesion
+    //         String jwtToken = (String) session.getAttribute("jwtToken");
+    //         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+    //         idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+    //     } else{
+    //         idUsuario = encryptionService.decrypt(idUsuarioEncrypt);
+    //     }
 
-        EmpresaDTO empresaDTO = empresaService.get(idUsuario);        
-        if (empresaDTO == null) {return "redirect:/usuarios/login";} 
-        model.addAttribute("vacantes", vacanteService.findByIdUsuario(idUsuario));
-        model.addAttribute("empresa", empresaDTO);
-        return "empresa/perfil"; 
-    }
+    //     EmpresaDTO empresaDTO = empresaService.get(idUsuario);        
+    //     if (empresaDTO == null) {return "redirect:/usuarios/login";} 
+    //     model.addAttribute("vacantes", vacanteService.findByIdUsuario(idUsuario));
+    //     model.addAttribute("empresa", empresaDTO);
+    //     return "empresa/perfil"; 
+    // }
 
 
     @GetMapping("/add")

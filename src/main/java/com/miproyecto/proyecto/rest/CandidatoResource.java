@@ -62,7 +62,7 @@ public class CandidatoResource {
             idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         } else{
 
-            if (postuladoService.get(nPostulacion).getIdUsuario() != idUsuario && nPostulacion != null) {
+            if (postuladoService.get(nPostulacion).getCandidato().getId() != idUsuario && nPostulacion != null) {
                 response.put("error", "No tienes Permiso para acceder");
                 return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
