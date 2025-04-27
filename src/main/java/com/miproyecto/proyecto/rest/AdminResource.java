@@ -72,7 +72,7 @@ public class AdminResource {
     @GetMapping("/listVacantes/activas")
     public ResponseEntity<Map<String, Object>> getActiveVacancies(@PageableDefault(page = 0, size = 10) Pageable pageable) {
         Map<String, Object> response = vacanteService
-            .findAllByEstado("activa", pageable, "vacantes");
+            .findAllByEstado(true, pageable, "vacantes");
         return ResponseEntity.ok(response);
     }
 
@@ -80,7 +80,7 @@ public class AdminResource {
     @GetMapping("/listVacantes/desactivadas")
     public ResponseEntity<Map<String, Object>> getInactiveVacancies(@PageableDefault(page = 0, size = 10) Pageable pageable) {
         Map<String, Object> response = vacanteService
-            .findAllByEstado("desactivada", pageable, "vacantesDesactivadas");
+            .findAllByEstado(false, pageable, "vacantesDesactivadas");
         return ResponseEntity.ok(response);
     }
 
@@ -126,10 +126,10 @@ public class AdminResource {
     @PostMapping("/cambiar-estado/vacantes")
     public ResponseEntity<Map<String, String>> changeVacancyStatus(
             @RequestParam("NVacante") Long nVacante,
-            @RequestParam("estado") String estado,
+            @RequestParam("estado") boolean estado,
             @RequestParam("comentario") String comentario) {
 
-        if (estado.equalsIgnoreCase(vacanteService.get(nVacante).getEstado())) {
+        if (estado == vacanteService.get(nVacante).isActive()) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "La vacante ya está " + estado);
             return ResponseEntity.badRequest().body(errorResponse);

@@ -2,15 +2,19 @@ package com.miproyecto.proyecto.rest;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.CandidatoDTO;
+import com.miproyecto.proyecto.model.ValidationGroups;
 import com.miproyecto.proyecto.service.CandidatoService;
 import com.miproyecto.proyecto.service.EstudioService;
 import com.miproyecto.proyecto.service.HistorialLaboralService;
 import com.miproyecto.proyecto.service.PostuladoService;
+import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +31,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -38,14 +45,17 @@ public class CandidatoResource {
     private final PostuladoService postuladoService;
     private final EstudioService estudioService;
     private final HistorialLaboralService historialLaboralService;
+    private final UsuarioService usuarioService; 
 
     public CandidatoResource(CandidatoService candidatoService, JwtUtils jwtUtils, PostuladoService postuladoService,
-            EstudioService estudioService, HistorialLaboralService historialLaboralService) {
+            EstudioService estudioService, HistorialLaboralService historialLaboralService,
+            UsuarioService usuarioService) {
         this.candidatoService = candidatoService;
         this.jwtUtils = jwtUtils;
         this.postuladoService = postuladoService;
         this.estudioService = estudioService;
         this.historialLaboralService = historialLaboralService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping("/perfil")
@@ -77,18 +87,66 @@ public class CandidatoResource {
         return ResponseEntity.ok(response); 
     }
 
-    @GetMapping("/{idCandidato}")
-    public ResponseEntity<CandidatoDTO> getCandidato(
-            @PathVariable(name = "idCandidato") final Long idCandidato) {
-        return ResponseEntity.ok(candidatoService.get(idCandidato));
-    }
-
     @PostMapping("/add")
     public ResponseEntity<Long> createCandidato(
             @RequestBody @Valid final CandidatoDTO candidatoDTO) {
         final Long createdIdCandidato = candidatoService.create(candidatoDTO);
         return new ResponseEntity<>(createdIdCandidato, HttpStatus.CREATED);
     }
+
+    @GetMapping("/edit/{idUsuario}")
+    public ResponseEntity<CandidatoDTO> getCandidato(
+            @PathVariable(name = "idCandidato") final Long idCandidato) {
+        return ResponseEntity.ok(candidatoService.get(idCandidato));
+    }
+
+    @PostMapping(value = "/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> editCandidato(
+            @RequestPart("candidato") @Validated({ValidationGroups.OnUpdate.class, Default.class}) CandidatoDTO candidatoDTO,
+            @RequestPart(name = "img", required = false) MultipartFile imagen,
+            @RequestPart(name = "pdf", required = false) MultipartFile curriculo) {
+
+        Map<String, Object> response = new HashMap<>();
+        Long idUsuario = candidatoDTO.getIdUsuario();
+
+        try {
+            // Si hay errores de validación, lo ideal es capturarlos con @ControllerAdvice
+            // pero para este ejemplo asumimos que ya están validados.
+
+            // Verificar si se ha proporcionado una nueva imagen
+            if (imagen != null && !imagen.isEmpty()) {
+                if (candidatoDTO.getImagen() != null && !candidatoDTO.getImagen().isEmpty()) {
+                    usuarioService.eliminarArchivo(candidatoDTO.getImagen(), true);
+                }
+                String rutaImagen = usuarioService.guardarArchivo(imagen, idUsuario);
+                candidatoDTO.setImagen(rutaImagen);
+            }
+
+            // Verificar si se ha proporcionado un nuevo curriculo
+            if (curriculo != null && !curriculo.isEmpty()) {
+                if (candidatoDTO.getCurriculo() != null && !candidatoDTO.getCurriculo().isEmpty() ) {
+                    usuarioService.eliminarArchivo(candidatoDTO.getCurriculo(), false);
+                }
+                String rutacurriculo = usuarioService.guardarArchivo(curriculo, idUsuario);
+                candidatoDTO.setCurriculo(rutacurriculo);
+            }
+            // Actualizar los datos
+            candidatoService.update(idUsuario, candidatoDTO);
+            response.put("status", "success");
+            response.put("message", "Candidato actualizado correctamente.");
+            return ResponseEntity.ok(response);
+
+        } catch (IOException e) {
+            response.put("status", "error");
+            response.put("message", "Error al guardar la imagen.");
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "Error al actualizar el candidato.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
     @PutMapping("/edit/{idUsuario}")
     public ResponseEntity<Long> updateCandidato(

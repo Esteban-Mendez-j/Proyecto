@@ -57,13 +57,13 @@ public class Vacante {
     private String requerimientos;
 
     @Column
-    private String estado;
+    private boolean isActive;
 
     @Column
     private String comentarioAdmin;
 
 
-    @OneToMany(mappedBy = "nvacante")
+    @OneToMany(mappedBy = "vacante")
     private Set<Postulado> litarpostulados;
 
 
@@ -183,12 +183,12 @@ public class Vacante {
         this.idUsuario = idUsuario;
     }
 
-    public String getEstado() {
-        return estado;
+    public boolean getIsActive() {
+        return isActive;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public String getComentarioAdmin() {

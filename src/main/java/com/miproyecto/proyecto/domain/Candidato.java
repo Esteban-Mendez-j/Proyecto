@@ -24,7 +24,7 @@ public class Candidato extends Usuario {
     @Column(unique = true, length = 11)
     private String identificacion;
 
-    @OneToMany(mappedBy = "idUsuario")
+    @OneToMany(mappedBy = "candidato")
     private Set<Postulado> listarPostulados;
 
     @OneToMany(mappedBy = "idUsuario")

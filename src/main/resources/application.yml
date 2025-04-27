@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ""
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/mydb?serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
@@ -30,6 +30,11 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
 
+app:
+  upload-dir:
+    img: ${UPLOAD_DIR_IMG}
+    pdf: ${UPLOAD_DIR_PDF}
+    
 security:
   jwt:
     key:

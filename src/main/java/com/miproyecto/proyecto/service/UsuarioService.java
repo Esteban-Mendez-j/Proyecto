@@ -3,12 +3,9 @@ package com.miproyecto.proyecto.service;
 
 import com.miproyecto.proyecto.domain.Usuario;
 import com.miproyecto.proyecto.model.UsuarioDTO;
-import com.miproyecto.proyecto.repos.CandidatoRepository;
-import com.miproyecto.proyecto.repos.EmpresaRepository;
 import com.miproyecto.proyecto.repos.RolesRepository;
 import com.miproyecto.proyecto.repos.UsuarioRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
-import com.miproyecto.proyecto.util.ReferencedWarning;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +16,8 @@ import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -34,16 +33,17 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final CandidatoRepository candidatoRepository;
-    private final EmpresaRepository empresaRepository;
     private final RolesRepository rolesRepository;
-    public static final String UPLOAD_DIR = Path.of("uploads", "img").toAbsolutePath().toString();
+    // public static final String UPLOAD_DIR = Path.of("uploads", "img").toAbsolutePath().toString();
+    
+    @Value("${app.upload-dir.img}")
+    private String imgUploadDir;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, CandidatoRepository candidatoRepository,
-            EmpresaRepository empresaRepository, RolesRepository rolesRepository) {
+    @Value("${app.upload-dir.pdf}")
+    private String pdfUploadDir;
+
+    public UsuarioService(UsuarioRepository usuarioRepository, RolesRepository rolesRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.candidatoRepository = candidatoRepository;
-        this.empresaRepository = empresaRepository;
         this.rolesRepository = rolesRepository;
     }
 
@@ -134,38 +134,45 @@ public class UsuarioService {
         usuarioRepository.deleteById(idUsuario);
     }
 
+    public String guardarArchivo(MultipartFile file, Long idUsuario) throws IOException {
+        String tipo = file.getContentType();
 
-    public String guardarImagen(MultipartFile file, Long idUsuario) throws IOException {
-        // Validar Roles de archivo
-        if (!file.getContentType().startsWith("image/")) {
-            throw new IllegalArgumentException("Solo se permiten archivos de imagen.");
+        // Verifica si es imagen o PDF
+        String carpeta;
+        if (tipo != null && tipo.startsWith("image/")) {
+            carpeta = imgUploadDir;
+        } else if ("application/pdf".equals(tipo)) {
+            carpeta = pdfUploadDir;
+        } else {
+            throw new IllegalArgumentException("Solo se permiten archivos de imagen o PDF.");
         }
 
-        // Crear directorio si no existe
-        Path uploadPath = Path.of(UPLOAD_DIR);
-        Files.createDirectories(uploadPath); 
-        // Generar un nombre único para el archivo
-        String nombreArchivo = idUsuario + "_" + UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        Path rutaArchivo = uploadPath.resolve(nombreArchivo);
+        // Crear carpeta si no existe
+        Path rutaCarpeta = Path.of(carpeta).toAbsolutePath();
+        Files.createDirectories(rutaCarpeta);
+
+        // Crear nombre único para el archivo
+        String nombreArchivo = idUsuario + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path rutaArchivo = rutaCarpeta.resolve(nombreArchivo);
 
         // Guardar el archivo en el servidor
-        try (InputStream inputStream = file.getInputStream()) {
-            Files.copy(inputStream, rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+        try (InputStream is = file.getInputStream()) {
+            Files.copy(is, rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        // Retornar el nombre único del archivo (puede usarse para acceder a la imagen más tarde)
         return nombreArchivo;
     }
 
-    public void eliminarImagen(String fileName) throws IOException {
-        // Construir la ruta completa del archivo usando el nombre de la imagen
-        Path filePath = Path.of(UPLOAD_DIR, fileName);
+    public void eliminarArchivo(String fileName, boolean esImagen) throws IOException {
+        // Determinar la carpeta dependiendo si es imagen o PDF
+        String carpeta = esImagen ? imgUploadDir : pdfUploadDir;
+        Path ruta = Path.of(carpeta, fileName);
 
-        // Verificar si el archivo existe antes de eliminarlo
-        if (Files.exists(filePath)) {
-            Files.delete(filePath); // Eliminar el archivo
+        // Eliminar el archivo si existe
+        if (Files.exists(ruta)) {
+            Files.delete(ruta);
         } else {
-            throw new IOException("El archivo no existe: " + filePath.toString());
+            throw new IOException("El archivo no existe: " + ruta);
         }
     }
 
@@ -212,27 +219,5 @@ public class UsuarioService {
     public boolean telefonoExists(final String telefono) {
         return usuarioRepository.existsByTelefonoIgnoreCase(telefono);
     }
-
-
-    public ReferencedWarning getReferencedWarning(final Long idUsuario) {
-        final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(NotFoundException::new);
-    
-        if (candidatoRepository.existsByIdUsuario(usuario.getIdUsuario())) {
-            referencedWarning.setKey("usuario.candidato.idUsuario.referenced");
-            referencedWarning.addParam(idUsuario); // Usa idUsuario directamente.
-            return referencedWarning;
-        }
-    
-        if (empresaRepository.existsByIdUsuario(usuario.getIdUsuario())) {
-            referencedWarning.setKey("usuario.empresa.idUsuario.referenced");
-            referencedWarning.addParam(idUsuario); // Usa idUsuario directamente.
-            return referencedWarning;
-        }
-    
-        return null;
-    }
-    
 
 }

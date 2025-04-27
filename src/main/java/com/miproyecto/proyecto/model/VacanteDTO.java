@@ -5,12 +5,10 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-import com.miproyecto.proyecto.service.EncryptionService;
-
 
 public class VacanteDTO {
 
-    private String nvacantes;
+    private Long nvacantes;
 
     
     @NotNull
@@ -50,40 +48,29 @@ public class VacanteDTO {
     @Size(max = 400)
     private String requerimientos;
 
-    private String estado;
+    private boolean isActive;
 
     private String comentarioAdmin;
 
-    private String idUsuario;
+    private Long idUsuario;
 
     private String nameEmpresa;
 
     private String imagenEmpresa;
 
-    private EncryptionService encryptionService;
-
-    public VacanteDTO() {
-        this.encryptionService = new EncryptionService(); 
-    }
-
     public Long getNvacantes() {
-        return encryptionService.decrypt(nvacantes);
-    }
-
-    public String getNvacantesEncryt(){
         return nvacantes;
     }
 
-    public void setNvacantes(final Long nvacante) {
-        this.nvacantes = encryptionService.encrypt(nvacante);
+    public void setNvacantes(Long nvacantes) {
+        this.nvacantes = nvacantes;
     }
-
 
     public String getCargo() {
         return cargo;
     }
 
-    public void setCargo(final String cargo) {
+    public void setCargo(String cargo) {
         this.cargo = cargo;
     }
 
@@ -91,7 +78,7 @@ public class VacanteDTO {
         return fechaPublicacion;
     }
 
-    public void setFechaPublicacion(final LocalDate fechaPublicacion) {
+    public void setFechaPublicacion(LocalDate fechaPublicacion) {
         this.fechaPublicacion = fechaPublicacion;
     }
 
@@ -99,7 +86,7 @@ public class VacanteDTO {
         return sueldo;
     }
 
-    public void setSueldo(final Double sueldo) {
+    public void setSueldo(Double sueldo) {
         this.sueldo = sueldo;
     }
 
@@ -107,7 +94,7 @@ public class VacanteDTO {
         return modalidad;
     }
 
-    public void setModalidad(final String modalidad) {
+    public void setModalidad(String modalidad) {
         this.modalidad = modalidad;
     }
 
@@ -115,7 +102,7 @@ public class VacanteDTO {
         return experiencia;
     }
 
-    public void setExperiencia(final String experiencia) {
+    public void setExperiencia(String experiencia) {
         this.experiencia = experiencia;
     }
 
@@ -123,7 +110,7 @@ public class VacanteDTO {
         return ciudad;
     }
 
-    public void setCiudad(final String ciudad) {
+    public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
     }
 
@@ -131,7 +118,7 @@ public class VacanteDTO {
         return departamento;
     }
 
-    public void setDepartamento(final String departamento) {
+    public void setDepartamento(String departamento) {
         this.departamento = departamento;
     }
 
@@ -139,7 +126,7 @@ public class VacanteDTO {
         return titulo;
     }
 
-    public void setTitulo(final String titulo) {
+    public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
 
@@ -147,7 +134,7 @@ public class VacanteDTO {
         return tipo;
     }
 
-    public void setTipo(final String tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
@@ -155,7 +142,7 @@ public class VacanteDTO {
         return descripcion;
     }
 
-    public void setDescripcion(final String descripcion) {
+    public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
 
@@ -167,43 +154,12 @@ public class VacanteDTO {
         this.requerimientos = requerimientos;
     }
 
-    public String getNameEmpresa() {
-        return nameEmpresa;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setNameEmpresa(String nameEmpresa) {
-        this.nameEmpresa = nameEmpresa;
-    }
-
-
-    public Long getIdUsuario() {
-        // Desencriptar el valor y convertirlo a Long
-        return encryptionService.decrypt(idUsuario);
-    }
-
-    public String getIdUsuarioEncrypt() {
-        return idUsuario;
-    }
-    
-    public void setIdUsuario(final Long idUsuario) {
-        // Encriptar el valor antes de almacenarlo como String
-        this.idUsuario = encryptionService.encrypt(idUsuario);
-    }
-
-    public String getImagenEmpresa() {
-        return imagenEmpresa;
-    }
-
-    public void setImagenEmpresa(String imagenEmpresa) {
-        this.imagenEmpresa = imagenEmpresa;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public String getComentarioAdmin() {
@@ -214,4 +170,27 @@ public class VacanteDTO {
         this.comentarioAdmin = comentarioAdmin;
     }
 
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public String getNameEmpresa() {
+        return nameEmpresa;
+    }
+
+    public void setNameEmpresa(String nameEmpresa) {
+        this.nameEmpresa = nameEmpresa;
+    }
+
+    public String getImagenEmpresa() {
+        return imagenEmpresa;
+    }
+
+    public void setImagenEmpresa(String imagenEmpresa) {
+        this.imagenEmpresa = imagenEmpresa;
+    }
 }

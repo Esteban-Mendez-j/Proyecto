@@ -35,8 +35,6 @@ public class CandidatoService{
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;
 
-   
-
     public CandidatoService(CandidatoRepository candidatoRepository, PostuladoRepository postuladoRepository,
             EstudioRepository estudioRepository, HistorialLaboralRepository historialLaboralRepository,
             PasswordEncoder passwordEncoder, RolesRepository rolesRepository) {
@@ -169,7 +167,7 @@ public class CandidatoService{
                 .orElseThrow(NotFoundException::new);
         
         // Verificamos si hay alguna referencia en las otras tablas.
-        final Postulado postulado = postuladoRepository.findFirstByIdUsuario(candidato);
+        final Postulado postulado = postuladoRepository.findFirstByCandidato(candidato);
         if (postulado != null) {
             referencedWarning.setKey("candidato.postulado.idUsuario.referenced");
             referencedWarning.addParam(postulado.getNPostulacion());

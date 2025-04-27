@@ -17,13 +17,13 @@ public interface VacanteRepository extends JpaRepository<Vacante, Long>, JpaSpec
 
     Vacante findFirstByIdUsuario(Empresa empresa);
 
-    Page<Vacante> findByEstadoOrderByFechaPublicacionDesc(String estado, Pageable pageable);
+    Page<Vacante> findByIsActiveOrderByFechaPublicacionDesc(boolean estado, Pageable pageable);
 
-    List<Vacante> findTop3ByEstadoOrderByFechaPublicacionDesc(String estado);
+    List<Vacante> findTop2ByIsActiveOrderByFechaPublicacionDesc(boolean estado);
 
-    List<Vacante> findTop3ByEstadoOrderBySueldoDesc(String estado);
+    List<Vacante> findTop2ByIsActiveOrderBySueldoDesc(boolean estado);
 
-    List<Vacante> findTop3ByEstadoOrderByExperienciaAsc(String estado);
+    List<Vacante> findTop2ByIsActiveOrderByExperienciaAsc(boolean estado);
 
     // @Query("SELECT v FROM Vacante v LEFT JOIN v.litarpostulados p WHERE v.idUsuario = :idEmpresa AND v.estado = 'activa' GROUP BY v ORDER BY COUNT(p) DESC")
     // List<Vacante> findVacantesConMasPostulacionesPorEmpresa(@Param("idEmpresa") Long idEmpresa);

@@ -58,7 +58,7 @@ public class VacanteResource {
     public ResponseEntity<Map<String, Object>> listarVacantes(
         HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
-        Map<String, Object> response = vacanteService.findAllByEstado("activa", pageable, "vacantes");
+        Map<String, Object> response = vacanteService.findAllByEstado(true, pageable, "vacantes");
         return ResponseEntity.ok(response);
     }
 

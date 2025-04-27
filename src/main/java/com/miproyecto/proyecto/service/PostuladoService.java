@@ -56,7 +56,7 @@ public class PostuladoService {
     public Map<String, Object> findByNvacantes(Long nvacantes, Pageable pageable) {
         final Vacante vacante = vacanteRepository.findById(nvacantes)
                 .orElseThrow(NotFoundException::new);
-        Page<PostuladoDTO> postulados = postuladoRepository.findByNvacante(vacante, pageable)
+        Page<PostuladoDTO> postulados = postuladoRepository.findByVacante(vacante, pageable)
                 .map(postulado -> mapToDTO(postulado, new PostuladoDTO())); 
         return mapResponse(postulados, "postulados");
     }
@@ -66,13 +66,13 @@ public class PostuladoService {
         final Candidato candidato = candidatoRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
 
-        Page<PostuladoDTO> postulados = postuladoRepository.findByIdUsuario(candidato, pageable)
+        Page<PostuladoDTO> postulados = postuladoRepository.findByCandidato(candidato, pageable)
                 .map(postulado -> mapToDTO(postulado, new PostuladoDTO()));
         return mapResponse(postulados, "postulados");
     }
 
     public PostuladoDTO findByNvacantesAndIdUsuario(Long nvacanteId, Long idUsuarioId) {
-        return postuladoRepository.findByNvacante_NvacantesAndIdUsuario_IdUsuario(nvacanteId, idUsuarioId)
+        return postuladoRepository.findByVacante_NvacantesAndCandidato_IdUsuario(nvacanteId, idUsuarioId)
                 .map(postulado -> mapToDTO(postulado, new PostuladoDTO()))
                 .orElse(null); 
     }
@@ -101,6 +101,16 @@ public class PostuladoService {
                 .orElseThrow(NotFoundException::new);
         mapToEntity(postuladoDTO, postulado);
         postuladoRepository.save(postulado);
+    }
+
+    public void cambiarEstadoVacantes(Long Nvacante, boolean estado) {
+        int postuladosAtualizados = postuladoRepository.actualizarEstadoPostulacionesPorVacante(Nvacante, estado);
+        System.out.println("postulados actualizados: " + postuladosAtualizados);
+    }
+
+    public void cambiarEstadoPorUsuario(Long idUsuario, boolean estado) {
+        int postuladosAtualizados = postuladoRepository.actualizarEstadoPostulacionesPorUsuario(idUsuario, estado);
+        System.out.println("postulados actualizados: " + postuladosAtualizados);
     }
 
     public void delete(final Long nPostulacion) {

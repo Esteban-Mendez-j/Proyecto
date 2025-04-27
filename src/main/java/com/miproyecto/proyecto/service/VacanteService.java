@@ -43,8 +43,8 @@ public class VacanteService {
     }
 
     // listado de todas las vacantes activas
-    public Map<String,Object> findAllByEstado(String estado, Pageable pageable, String nameList) {
-        final Page<Vacante> vacantes = vacanteRepository.findByEstadoOrderByFechaPublicacionDesc(estado, pageable);
+    public Map<String,Object> findAllByEstado(boolean estado, Pageable pageable, String nameList) {
+        final Page<Vacante> vacantes = vacanteRepository.findByIsActiveOrderByFechaPublicacionDesc(estado, pageable);
         final Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(vacante, new VacanteDTO()));
         return mapResponse(vacantesDTO, nameList) ;       
     }
@@ -56,7 +56,6 @@ public class VacanteService {
         response.put("totalElements", pageableResponse.getTotalElements());
         response.put("pageActual", pageableResponse.getPageable());
         response.put("totalPage", pageableResponse.getTotalPages());
-
         return response;
     }
 
@@ -93,9 +92,9 @@ public class VacanteService {
     public List<VacanteDTO> TopVacantesPorFechaSueldoExperiencia() {
         Set<Vacante> topVacantes = new HashSet<>();
         
-        topVacantes.addAll(vacanteRepository.findTop3ByEstadoOrderByFechaPublicacionDesc("activa"));
-        topVacantes.addAll(vacanteRepository.findTop3ByEstadoOrderByExperienciaAsc("activa"));
-        topVacantes.addAll(vacanteRepository.findTop3ByEstadoOrderBySueldoDesc("activa"));
+        topVacantes.addAll(vacanteRepository.findTop2ByIsActiveOrderByFechaPublicacionDesc(true));
+        topVacantes.addAll(vacanteRepository.findTop2ByIsActiveOrderByExperienciaAsc(true));
+        topVacantes.addAll(vacanteRepository.findTop2ByIsActiveOrderBySueldoDesc(true));
 
         // Convertir a DTO
         return topVacantes.stream()
@@ -113,7 +112,7 @@ public class VacanteService {
     public Long create(final VacanteDTO vacanteDTO) {
         final Vacante vacante = new Vacante();
         mapToEntity(vacanteDTO, vacante);
-        vacante.setEstado("activa");
+        vacante.setIsActive(true);
         return vacanteRepository.save(vacante).getNvacantes();
     }
 
@@ -142,7 +141,7 @@ public class VacanteService {
         vacanteDTO.setTipo(vacante.getTipo());
         vacanteDTO.setDescripcion(vacante.getDescripcion());
         vacanteDTO.setRequerimientos(vacante.getRequerimientos());
-        vacanteDTO.setEstado(vacante.getEstado());
+        vacanteDTO.setActive(vacante.getIsActive());
         vacanteDTO.setComentarioAdmin(vacante.getComentarioAdmin());
         vacanteDTO.setIdUsuario(vacante.getIdUsuario() == null ? null : vacante.getIdUsuario().getIdUsuario());
         vacanteDTO.setNameEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getNombre() : "Empresa Desconocida");
@@ -170,7 +169,7 @@ public class VacanteService {
         vacante.setTipo(vacanteDTO.getTipo());
         vacante.setDescripcion(vacanteDTO.getDescripcion());
         vacante.setRequerimientos(vacanteDTO.getRequerimientos());
-        vacante.setEstado(vacanteDTO.getEstado());
+        vacante.setIsActive(vacanteDTO.isActive());
         vacante.setComentarioAdmin(vacanteDTO.getComentarioAdmin());
         final Empresa idUsuario = vacanteDTO.getIdUsuario() == null ? null : empresaRepository.findById(vacanteDTO.getIdUsuario())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
@@ -182,7 +181,7 @@ public class VacanteService {
         final ReferencedWarning referencedWarning = new ReferencedWarning();
         final Vacante vacante = vacanteRepository.findById(nvacantes)
                 .orElseThrow(NotFoundException::new);
-        final Postulado nvacantePostulado = postuladoRepository.findFirstByNvacante(vacante);
+        final Postulado nvacantePostulado = postuladoRepository.findFirstByVacante(vacante);
         if (nvacantePostulado != null) {
             referencedWarning.setKey("vacante.postulado.nvacante.referenced");
             referencedWarning.addParam(nvacantePostulado.getNPostulacion());

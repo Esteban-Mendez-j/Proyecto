@@ -23,6 +23,8 @@ public class AdminService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private VacanteRepository vacanteRepository;
+    @Autowired
+    private PostuladoService postuladoService;
 
 
     public void modificarRoles (Long idUsuario, boolean addRole ){
@@ -44,23 +46,27 @@ public class AdminService {
     }
 
 
-    public void cambiarIsActive(Long idUsuario, boolean IsActive, String comentario){
+    public void cambiarIsActive(Long idUsuario, boolean estado, String comentario){
         Usuario usuario = usuarioRepository.findById(idUsuario)
             .orElseThrow(NotFoundException::new);
 
-        usuario.setIsActive(IsActive);
-        usuario.setComentarioAdmin(comentario);
-        usuarioRepository.save(usuario);
+        if(estado != usuario.getIsActive()){
+            usuario.setIsActive(estado);
+            usuario.setComentarioAdmin(comentario);
+            usuarioRepository.save(usuario);
+            postuladoService.cambiarEstadoPorUsuario(idUsuario, estado);
+        }
     }
 
-    public void cambiarEstadoVacantes (Long Nvacante, String estado, String comentario ){
+    public void cambiarEstadoVacantes (Long Nvacante, Boolean estado, String comentario ){
         Vacante vacante = vacanteRepository.findById(Nvacante)
             .orElseThrow(NotFoundException::new);
-        if(!estado.equalsIgnoreCase(vacante.getEstado())){
-            vacante.setEstado(estado);
+
+        if(estado != vacante.getIsActive()){
+            vacante.setIsActive(estado);
             vacante.setComentarioAdmin(comentario);
             vacanteRepository.save(vacante);
-        }
-        
+            postuladoService.cambiarEstadoVacantes(Nvacante , estado);
+        }   
     }
 }

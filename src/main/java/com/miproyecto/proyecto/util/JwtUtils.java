@@ -7,7 +7,6 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.service.UsuarioService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,8 +30,13 @@ public class JwtUtils {
     @Value("${security.jwt.expiration}")
     private long jwtExpirationMs;
 
-    @Autowired
-    private UsuarioService usuarioService;
+    
+    private final UsuarioService usuarioService;
+
+    
+    public JwtUtils(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     public String createToken(Authentication authentication) {
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
