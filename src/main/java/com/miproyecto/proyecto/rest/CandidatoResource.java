@@ -88,10 +88,12 @@ public class CandidatoResource {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Long> createCandidato(
-            @RequestBody @Valid final CandidatoDTO candidatoDTO) {
-        final Long createdIdCandidato = candidatoService.create(candidatoDTO);
-        return new ResponseEntity<>(createdIdCandidato, HttpStatus.CREATED);
+    public ResponseEntity<Map<String, Object>> createCandidato(@RequestBody  @Valid  CandidatoDTO candidatoDTO) {
+        Map<String, Object> response = new HashMap<>();
+        candidatoService.create(candidatoDTO);
+        response.put("status", HttpStatus.CREATED.value());
+        response.put("mensaje", "Usuario creado con exito!");
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/edit/{idUsuario}")

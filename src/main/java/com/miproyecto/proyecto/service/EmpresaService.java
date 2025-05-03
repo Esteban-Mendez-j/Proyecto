@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.service;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +15,6 @@ import com.miproyecto.proyecto.domain.Roles;
 import com.miproyecto.proyecto.domain.Vacante;
 import com.miproyecto.proyecto.model.EmpresaDTO;
 import com.miproyecto.proyecto.repos.EmpresaRepository;
-// import com.miproyecto.proyecto.repos.UsuarioSpecifications;
 import com.miproyecto.proyecto.repos.RolesRepository;
 import com.miproyecto.proyecto.repos.VacanteRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
@@ -53,16 +53,14 @@ public class EmpresaService {
                 .orElseThrow(NotFoundException::new);
     }
     
-    public Long create(final EmpresaDTO empresaDTO) {
-        final Empresa empresa = new Empresa();
+    public void create(final EmpresaDTO empresaDTO) {
         List<Roles> roles= new ArrayList<>();
-
         empresaDTO.setIsActive(true);
+        empresaDTO.setImagen("/images/imgEmpresa.png");
         roles.add(rolesRepository.findByRol("EMPRESA"));
-        mapToEntity(empresaDTO, empresa);
-        empresa.setRoles(roles);// guarda el rol en la db
-        
-        return empresaRepository.save(empresa).getIdUsuario();
+        Empresa empresa = mapToEntity(empresaDTO, new Empresa());
+        empresa.setRoles(roles);
+        empresaRepository.save(empresa);
     }
 
     public void update(final Long idUsuario, final EmpresaDTO empresaDTO) {
@@ -109,11 +107,11 @@ public class EmpresaService {
         empresa.setNit(empresaDTO.getNit());
         empresa.setIsActive(empresaDTO.getIsActive());
         empresa.setComentarioAdmin(empresaDTO.getComentarioAdmin());
-        empresa.setRoles(
-            empresaDTO.getRoles().stream()
-                    .map(roles -> rolesRepository.findByRol(roles))
-                    .collect(Collectors.toList())
-        );
+        // empresa.setRoles(
+        //     empresaDTO.getRoles().stream()
+        //             .map(roles -> rolesRepository.findByRol(roles))
+        //             .collect(Collectors.toList())
+        // );
         return empresa;
     }
     

@@ -95,6 +95,7 @@ public class SecurityConfig {
                     "/images/**", "/js/**", "/api/empresas/add", "/api/candidatos/add", 
                     "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}",
                     "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" 
+                    ,"/api/chats/**", "/app/chat.sendMessage"
                 ).permitAll()
                 .requestMatchers("/api/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
@@ -105,7 +106,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(formLogin -> formLogin                       
-				.loginPage("http://localhost:4321/login")
+				// .loginPage("http://localhost:4321/login")
                 .loginProcessingUrl("/api/usuarios/login")
                 .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customSuccessHandler(jwtUtils))

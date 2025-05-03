@@ -1,29 +1,24 @@
-package com.miproyecto.proyecto.domain;
+package com.miproyecto.proyecto.model;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "mensajes")
-public class Mensaje {
-
-    @Id
-    private String id;
+public class MensajeDTO {
     private String chatId;
     private String senderId;
     private String receiverId;
-    private String senderRole;  
-    private String receiverRole; 
+    private String senderRole;
+    private String receiverRole;
     private String content;
     private LocalDateTime time;
     private String state;
 
-    public String getId() {
-        return id;
+    public MensajeDTO() {
     }
-    public void setId(String id) {
-        this.id = id;
+    public String getState() {
+        return state;
+    }
+    public void setState(String state) {
+        this.state = state;
     }
     public String getChatId() {
         return chatId;
@@ -66,11 +61,5 @@ public class Mensaje {
     }
     public void setTime(LocalDateTime time) {
         this.time = time;
-    }
-    public String getState() {
-        return state;
-    }
-    public void setState(String state) {
-        this.state = state;
     }
 }

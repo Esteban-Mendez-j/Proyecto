@@ -136,7 +136,7 @@ public class UsuarioDTO {
 
     @Override
     public String toString() {
-        return "UsuarioDTO [idUsuario=" + idUsuario + ", roles=" + roles + ", nombre=" + nombre + ", correo=" + correo
+        return "UsuarioDTO [idUsuario=" + idUsuario + ", roles=" + roles + ", nombre=" + nombre + ", correo=" + correo+"contraseña: "+ contrasena
                 + "]";
     }
 
