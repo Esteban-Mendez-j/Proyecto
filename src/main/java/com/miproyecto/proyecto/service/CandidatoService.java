@@ -68,16 +68,17 @@ public class CandidatoService{
 
 
     // crea y guarda un objeto candidato en la base de datos 
-    public Long create(final CandidatoDTO candidatoDTO) {
+    public void create(final CandidatoDTO candidatoDTO) {
         final Candidato candidato = new Candidato();
         List<Roles> roles= new ArrayList<>();
 
         roles.add(rolesRepository.findByRol("CANDIDATO"));
         candidatoDTO.setIsActive(true);
+        candidatoDTO.setImagen("/images/imgCandidato.png");
         mapToEntity(candidatoDTO, candidato, true);
         candidato.setRoles(roles);// guarda el rol en la db
         
-        return candidatoRepository.save(candidato).getIdUsuario();
+        candidatoRepository.save(candidato);
     }
 
     
@@ -150,16 +151,6 @@ public class CandidatoService{
         return candidatoRepository.existsByIdentificacionIgnoreCase(identificacion);
     }
 
-    public boolean estudiosExist(final Long idUsuario) {
-        final Candidato candidato = candidatoRepository.findById(idUsuario)
-                .orElseThrow(NotFoundException::new);
-        return estudioRepository.existsByIdUsuario(candidato);
-    }
-    
-
-    public boolean idUsuarioExists(final Long idUsuario) {
-        return candidatoRepository.existsByIdUsuario(idUsuario);
-    }
 
     public ReferencedWarning getReferencedWarning(final Long idUsuario) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();

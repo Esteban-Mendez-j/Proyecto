@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.service;
 
+import com.miproyecto.proyecto.domain.Candidato;
 import com.miproyecto.proyecto.domain.Empresa;
 import com.miproyecto.proyecto.domain.Roles;
 import com.miproyecto.proyecto.domain.Vacante;
@@ -52,16 +53,14 @@ public class EmpresaService {
                 .orElseThrow(NotFoundException::new);
     }
     
-    public Long create(final EmpresaDTO empresaDTO) {
-        final Empresa empresa = new Empresa();
+    public void create(final EmpresaDTO empresaDTO) {
         List<Roles> roles= new ArrayList<>();
-
         empresaDTO.setIsActive(true);
+        empresaDTO.setImagen("/images/imgEmpresa.png");
         roles.add(rolesRepository.findByRol("EMPRESA"));
-        mapToEntity(empresaDTO, empresa);
-        empresa.setRoles(roles);// guarda el rol en la db
-        
-        return empresaRepository.save(empresa).getIdUsuario();
+        Empresa empresa = mapToEntity(empresaDTO, new Empresa());
+        empresa.setRoles(roles);
+        empresaRepository.save(empresa);
     }
 
     public void update(final Long idUsuario, final EmpresaDTO empresaDTO) {
@@ -108,11 +107,11 @@ public class EmpresaService {
         empresa.setNit(empresaDTO.getNit());
         empresa.setIsActive(empresaDTO.getIsActive());
         empresa.setComentarioAdmin(empresaDTO.getComentarioAdmin());
-        empresa.setRoles(
-            empresaDTO.getRoles().stream()
-                    .map(roles -> rolesRepository.findByRol(roles))
-                    .collect(Collectors.toList())
-        );
+        // empresa.setRoles(
+        //     empresaDTO.getRoles().stream()
+        //             .map(roles -> rolesRepository.findByRol(roles))
+        //             .collect(Collectors.toList())
+        // );
         return empresa;
     }
     

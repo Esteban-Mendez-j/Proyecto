@@ -9,6 +9,7 @@ import com.miproyecto.proyecto.util.JwtUtils;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.domain.Pageable;
@@ -63,9 +64,13 @@ public class EmpresaResource {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Long> createEmpresa(@RequestBody @Valid final EmpresaDTO empresaDTO) {
-        final Long createdIdEmpresa = empresaService.create(empresaDTO);
-        return new ResponseEntity<>(createdIdEmpresa, HttpStatus.CREATED);
+    public ResponseEntity<Map<String, Object>> createEmpresa(@RequestBody @Valid final EmpresaDTO empresaDTO) {
+        Map<String, Object> response = new HashMap<>();
+        empresaService.create(empresaDTO);
+        System.out.println("hola "+ empresaDTO);
+        response.put("status", HttpStatus.CREATED.value());
+        response.put("mensaje", "Empresa creado con exito!");
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/edit/{idEmpresa}")

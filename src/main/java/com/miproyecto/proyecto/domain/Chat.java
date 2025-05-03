@@ -9,14 +9,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Chat {
 
     @Id
-    private String id; // Este será tu chatId, usado también en los mensajes
+    private String id;
     private String empresaId;
     private String candidatoId;
     private LocalDateTime createdAt;
-    private LocalDateTime lastMessageAt;
-    private String lastMessageContent; // Opcional: rápido acceso al último mensaje
+    private LocalDateTime horaUltimoMensaje;
+    private String ContentUltimoMensaje; 
     private Boolean isActive;
-    
+
     public String getId() {
         return id;
     }
@@ -41,22 +41,22 @@ public class Chat {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-    public LocalDateTime getLastMessageAt() {
-        return lastMessageAt;
+    public LocalDateTime getHoraUltimoMensaje() {
+        return horaUltimoMensaje;
     }
-    public void setLastMessageAt(LocalDateTime lastMessageAt) {
-        this.lastMessageAt = lastMessageAt;
+    public void setHoraUltimoMensaje(LocalDateTime horaUltimoMensaje) {
+        this.horaUltimoMensaje = horaUltimoMensaje;
     }
-    public String getLastMessageContent() {
-        return lastMessageContent;
+    public String getContentUltimoMensaje() {
+        return ContentUltimoMensaje;
     }
-    public void setLastMessageContent(String lastMessageContent) {
-        this.lastMessageContent = lastMessageContent;
+    public void setContentUltimoMensaje(String contentUltimoMensaje) {
+        ContentUltimoMensaje = contentUltimoMensaje;
     }
     public Boolean getIsActive() {
         return isActive;
     }
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
-    } 
+    }
 }
