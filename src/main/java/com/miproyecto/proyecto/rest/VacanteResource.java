@@ -1,13 +1,5 @@
 package com.miproyecto.proyecto.rest;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.model.VacanteDTO;
-import com.miproyecto.proyecto.service.VacanteService;
-import com.miproyecto.proyecto.util.JwtUtils;
-
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,19 +18,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.miproyecto.proyecto.model.FiltroVacanteDTO;
+import com.miproyecto.proyecto.model.VacanteDTO;
+import com.miproyecto.proyecto.repos.VacanteRepository;
+import com.miproyecto.proyecto.service.VacanteService;
+import com.miproyecto.proyecto.util.JwtUtils;
+
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping(value = "/api/vacantes", produces = MediaType.APPLICATION_JSON_VALUE)
 public class VacanteResource {
-
+    private final VacanteRepository vacanteRepository;
     private final VacanteService vacanteService;
     private final JwtUtils jwtUtils;
 
     
 
-    public VacanteResource(VacanteService vacanteService, JwtUtils jwtUtils) {
+    public VacanteResource(VacanteService vacanteService, JwtUtils jwtUtils, VacanteRepository vacanteRepository) {
         this.vacanteService = vacanteService;
         this.jwtUtils = jwtUtils;
+        this.vacanteRepository = vacanteRepository;
     }
 
     @GetMapping
@@ -86,6 +89,16 @@ public class VacanteResource {
         return ResponseEntity.ok(response);
     }
 
+
+
+    @GetMapping("/listar/filtradas")
+    public ResponseEntity<Map<String, Object>> listarVacantesFiltradas(
+    HttpSession session,
+    @PageableDefault(page = 0, size = 10) Pageable pageable,
+    @RequestBody FiltroVacanteDTO filtro ) {
+        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(filtro, pageable);
+        return ResponseEntity.ok(response);
+    }
     // @GetMapping("/listar")
     // public ResponseEntity<Map<String, Object>> listarVacantes(
     //     HttpSession session) {

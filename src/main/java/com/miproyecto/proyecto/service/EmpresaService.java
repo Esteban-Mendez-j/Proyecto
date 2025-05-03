@@ -1,15 +1,5 @@
 package com.miproyecto.proyecto.service;
 
-import com.miproyecto.proyecto.domain.Empresa;
-import com.miproyecto.proyecto.domain.Roles;
-import com.miproyecto.proyecto.domain.Vacante;
-import com.miproyecto.proyecto.model.EmpresaDTO;
-import com.miproyecto.proyecto.repos.EmpresaRepository;
-import com.miproyecto.proyecto.repos.RolesRepository;
-import com.miproyecto.proyecto.repos.VacanteRepository;
-import com.miproyecto.proyecto.util.NotFoundException;
-import com.miproyecto.proyecto.util.ReferencedWarning;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +8,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.miproyecto.proyecto.domain.Empresa;
+import com.miproyecto.proyecto.domain.Roles;
+import com.miproyecto.proyecto.domain.Vacante;
+import com.miproyecto.proyecto.model.EmpresaDTO;
+import com.miproyecto.proyecto.repos.EmpresaRepository;
+// import com.miproyecto.proyecto.repos.UsuarioSpecifications;
+import com.miproyecto.proyecto.repos.RolesRepository;
+import com.miproyecto.proyecto.repos.VacanteRepository;
+import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.util.ReferencedWarning;
 
 
 @Service
@@ -137,5 +138,19 @@ public class EmpresaService {
         }
         return null;
     }
-
 }
+
+
+    
+//     public List<EmpresaDTO> buscarEmpresasConFiltro(EmpresaDTO filtro) {
+//         Specification<Empresa> spec = UsuarioSpecifications.conFiltros(filtro);
+//         List<Empresa> empresas = empresaRepository.findAll(spec);
+//         return empresas.stream().map(this::convertirADTO).toList();
+//     }
+
+//     private EmpresaDTO convertirADTO(Empresa empresa) {
+//         return null;
+//         // conversión básica o usando MapStruct
+//     }
+// }
+

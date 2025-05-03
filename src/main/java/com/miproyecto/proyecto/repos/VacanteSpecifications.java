@@ -1,19 +1,17 @@
 package com.miproyecto.proyecto.repos;
-import org.springframework.data.jpa.domain.Specification;
- 
-
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.criteria.Predicate;
-
+import org.springframework.data.jpa.domain.Specification;
 
 import com.miproyecto.proyecto.domain.Vacante;
-import com.miproyecto.proyecto.model.VacanteDTO;
+import com.miproyecto.proyecto.model.FiltroVacanteDTO;
+
+import jakarta.persistence.criteria.Predicate;
 
 public class VacanteSpecifications {
     
-    public static Specification<Vacante> conFiltros(VacanteDTO filtro) {
+    public static Specification<Vacante> conFiltros(FiltroVacanteDTO filtro) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 

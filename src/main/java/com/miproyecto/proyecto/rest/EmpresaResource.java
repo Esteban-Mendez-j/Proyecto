@@ -1,14 +1,5 @@
 package com.miproyecto.proyecto.rest;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.model.EmpresaDTO;
-import com.miproyecto.proyecto.service.EmpresaService;
-import com.miproyecto.proyecto.service.VacanteService;
-import com.miproyecto.proyecto.util.JwtUtils;
-
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-
 import java.util.Map;
 
 import org.springframework.data.domain.Pageable;
@@ -25,6 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.miproyecto.proyecto.model.EmpresaDTO;
+import com.miproyecto.proyecto.service.EmpresaService;
+import com.miproyecto.proyecto.service.VacanteService;
+import com.miproyecto.proyecto.util.JwtUtils;
+
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -90,4 +90,10 @@ public class EmpresaResource {
         return ResponseEntity.noContent().build();
     }
 
+    // @PostMapping("/buscar")
+    // public ResponseEntity<List<EmpresaDTO>> buscarEmpresas(@RequestBody EmpresaDTO filtro) {
+    //     List<EmpresaDTO> resultados = empresaService.buscarEmpresasConFiltro(filtro);
+    //     return ResponseEntity.ok(resultados);
+    // }
 }
+

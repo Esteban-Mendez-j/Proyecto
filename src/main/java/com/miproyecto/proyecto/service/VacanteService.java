@@ -1,17 +1,5 @@
 package com.miproyecto.proyecto.service;
 
-import com.miproyecto.proyecto.domain.Empresa;
-import com.miproyecto.proyecto.domain.Postulado;
-import com.miproyecto.proyecto.domain.Vacante;
-import com.miproyecto.proyecto.model.VacanteDTO;
-import com.miproyecto.proyecto.model.VacanteResumenDTO;
-import com.miproyecto.proyecto.repos.EmpresaRepository;
-import com.miproyecto.proyecto.repos.PostuladoRepository;
-import com.miproyecto.proyecto.repos.VacanteRepository;
-import com.miproyecto.proyecto.repos.VacanteSpecifications;
-import com.miproyecto.proyecto.util.NotFoundException;
-import com.miproyecto.proyecto.util.ReferencedWarning;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +12,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.miproyecto.proyecto.domain.Empresa;
+import com.miproyecto.proyecto.domain.Postulado;
+import com.miproyecto.proyecto.domain.Vacante;
+import com.miproyecto.proyecto.model.FiltroVacanteDTO;
+import com.miproyecto.proyecto.model.VacanteDTO;
+import com.miproyecto.proyecto.model.VacanteResumenDTO;
+import com.miproyecto.proyecto.repos.EmpresaRepository;
+import com.miproyecto.proyecto.repos.PostuladoRepository;
+import com.miproyecto.proyecto.repos.VacanteRepository;
+import com.miproyecto.proyecto.repos.VacanteSpecifications;
+import com.miproyecto.proyecto.util.NotFoundException;
+import com.miproyecto.proyecto.util.ReferencedWarning;
 
 
 @Service
@@ -74,14 +75,29 @@ public class VacanteService {
                 
     }
     
-
-    public List<VacanteDTO> buscarVacantesConFiltros(VacanteDTO filtro) {
-        // Llamas a la especificación y obtienes los resultados filtrados
+    public Map<String, Object> buscarVacantesConFiltros(FiltroVacanteDTO filtro, Pageable pageable) {
         Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
-        return vacanteRepository.findAll(specification).stream()
-            .map(vacante -> mapToDTO(vacante, new VacanteDTO()))
-            .toList(); // Obtienes las vacantes filtradas
+        Page<VacanteDTO> page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(vacante, new VacanteDTO()));
+        return mapResponse(page, "vacantes");         
     }
+    // private String mapJobType(String astroType) {
+    //     switch (astroType) {
+    //         case "fullTime": return "Tiempo completo";
+    //         case "partTime": return "Medio tiempo";
+    //         case "contract": return "Por contrato";
+    //         case "freelance": return "Freelance";
+    //         default: return astroType;
+    //     }
+    // }
+    
+    // private String mapModality(String astroModality) {
+    //     switch (astroModality) {
+    //         case "remote": return "Remota";
+    //         case "office": return "Presencial";
+    //         case "hybrid": return "Híbrido";
+    //         default: return astroModality;
+    //     }
+    // }
 
     // public List<VacanteDTO> TopVacantesPorPostulados(Long idEmpresa){
     //     return vacanteRepository.findVacantesConMasPostulacionesPorEmpresa(idEmpresa).stream()
@@ -191,3 +207,14 @@ public class VacanteService {
     }
 
 }
+//     public Map<String, Object> preparePaginatedResponse(List<String> jobType, List<String> experience, List<String> modality, Pageable pageable) {
+        
+//         Specification<Vacante> spec = Specification.where(
+//             VacanteSpecifications.conFiltrosDesdeAstro(jobType, experience, modality))
+//             .and(VacanteSpecifications.conFiltrosDesdeAstro(jobType, experience, modality));
+        
+//         Page<VacanteDTO> page = vacanteRepository.findAll(spec, pageable).map(vacante -> mapToDTO(vacante, new VacanteDTO()));
+//         return mapResponse(page, "vacantes");
+       
+//     }
+// }
