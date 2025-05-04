@@ -9,6 +9,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -156,9 +157,20 @@ public class VacanteResource {
     
 
     @PostMapping("/add")
-    public ResponseEntity<Long> createVacante(@RequestBody @Valid final VacanteDTO vacanteDTO) {
-        final Long createdNvacantes = vacanteService.create(vacanteDTO);
-        return new ResponseEntity<>(createdNvacantes, HttpStatus.CREATED);
+    public ResponseEntity<Map<String, Object>> createVacante(
+            @RequestBody @Valid final VacanteDTO vacanteDTO,
+            @CookieValue(name = "jwtToken", required = false) String jwtToken) {
+                
+        Map<String, Object> response = new HashMap<>();
+        if (jwtToken != null) {
+            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+            Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));    
+            vacanteDTO.setIdUsuario(idUsuario);
+        }
+        // vacanteService.create(vacanteDTO);
+        response.put("status", HttpStatus.CREATED.value());
+        response.put("mensaje", "Empresa creada con exito!");
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/edit/{nvacantes}")

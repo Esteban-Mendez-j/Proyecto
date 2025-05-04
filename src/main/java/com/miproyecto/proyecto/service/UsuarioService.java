@@ -86,8 +86,7 @@ public class UsuarioService {
 
     public UsuarioDTO findByCorreo(String correo){
         return usuarioRepository.getByCorreo(correo)
-            .map(usuario -> mapToDTO(usuario, new UsuarioDTO()))
-            .orElseThrow(NotFoundException::new);
+            .map(usuario -> mapToDTO(usuario, new UsuarioDTO())).orElse(null);
         
     }
 

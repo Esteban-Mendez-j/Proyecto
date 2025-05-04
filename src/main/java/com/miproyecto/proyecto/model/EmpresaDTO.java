@@ -12,7 +12,7 @@ public class EmpresaDTO extends UsuarioDTO  {
     private String sitioWeb;
 
     @Size(max = 10)
-    @EmpresaNitUnique(message = " ya está registrado")
+    @EmpresaNitUnique(message = "Este NIT ya esta registrado")
     private String nit;
 
     public String getSectorEmpresarial() {

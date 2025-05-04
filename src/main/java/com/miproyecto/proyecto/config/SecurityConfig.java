@@ -92,21 +92,21 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/usuarios/**", "/css/**", 
-                    "/images/**", "/js/**", "/api/empresas/add", "/api/candidatos/add", 
+                    "/images/**", "/js/**", "/api/empresas/add", "/api/candidatos/add","/api/usuarios/rol",
                     "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}",
                     "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" 
-                    ,"/api/chats/**", "/app/chat.sendMessage"
+                    ,"/api/chats/**", "/app/chat.sendMessage","/api/vacantes/**"
                 ).permitAll()
                 .requestMatchers("/api/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/api/empresas/**","/api/vacantes/popular/listar").hasRole("EMPRESA")
                 .requestMatchers("/api/candidatos/**").hasRole("CANDIDATO")
-                .requestMatchers( "/api/postulados/**","/api/vacantes/**", 
+                .requestMatchers( "/api/postulados/**", 
                     "/api/estudios", "/api/historialLaborals").hasAnyRole("EMPRESA", "CANDIDATO")
                 .anyRequest().authenticated()
             )
             .formLogin(formLogin -> formLogin                       
-				// .loginPage("http://localhost:4321/login")
+				.loginPage("http://localhost:4321/login")
                 .loginProcessingUrl("/api/usuarios/login")
                 .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customSuccessHandler(jwtUtils))

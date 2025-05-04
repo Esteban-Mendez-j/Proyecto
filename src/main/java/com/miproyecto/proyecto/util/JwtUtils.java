@@ -43,9 +43,8 @@ public class JwtUtils {
 
         // se guarda el username (correo), pero hay que guradar el id par que se mas facil 
         User user = (User) authentication.getPrincipal();
-        // String username = user.getUsername();
         String username =  usuarioService.findIdByCorreo(user.getUsername()).toString();
-
+        String rolPrincipal = usuarioService.findByCorreo(user.getUsername()).getRolPrinciapl();
         String authorities = authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
@@ -55,6 +54,7 @@ public class JwtUtils {
                 .withIssuer(this.userGenerator)
                 .withSubject(username)
                 .withClaim("authorities", authorities)
+                .withClaim("rolPrincipal", rolPrincipal)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .withJWTId(UUID.randomUUID().toString())
