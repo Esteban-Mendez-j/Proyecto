@@ -11,6 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.miproyecto.proyecto.util.JwtUtils;
 
@@ -55,12 +57,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        List<String> priority = List.of("ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_EMPRESA", "ROLE_CANDIDATO");
-
-        String rolPrincipal = priority.stream()
-            .filter(roles::contains)
-            .findFirst()
-            .orElse(roles.get(0));
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        String rolPrincipal = decodedJWT.getClaim("rolPrincipal").asString();
         
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("roles", roles);

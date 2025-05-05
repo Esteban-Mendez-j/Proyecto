@@ -117,7 +117,7 @@ public class SecurityConfig {
 				.logoutUrl("/usuarios/cerrarSesion")
 				.logoutSuccessUrl("http://localhost:4321/?logout")
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
+                .deleteCookies("JSESSIONID", "jwtToken")
 				.permitAll()
             )
             .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class);

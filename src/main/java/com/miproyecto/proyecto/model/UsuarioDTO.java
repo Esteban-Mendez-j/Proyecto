@@ -134,11 +134,12 @@ public class UsuarioDTO {
     }
 
     public String getRolPrinciapl(){
-        if(roles.size() > 0){
-            return roles.get(0);
+        if (!roles.isEmpty()) {
+            return roles.get(0); // o getAuthority()
         }
         return "ROLE_INVITADO";
     }
+    
 
     @Override
     public String toString() {

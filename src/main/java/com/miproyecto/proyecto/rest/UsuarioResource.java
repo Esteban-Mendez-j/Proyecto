@@ -22,6 +22,7 @@ import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 
@@ -44,8 +45,8 @@ public class UsuarioResource {
     @GetMapping("/rol")
     public ResponseEntity<Map<String, Object>> getRol( @CookieValue(name = "jwtToken", required = false) String jwtTokenCookee, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
-        System.out.println(jwtTokenCookee);
         String jwtToken = (String) session.getAttribute("jwtToken");
+        System.out.println(jwtToken);
       
         if (jwtToken == null) {
             // Si no hay token en la sesión, devolver rol de invitado
