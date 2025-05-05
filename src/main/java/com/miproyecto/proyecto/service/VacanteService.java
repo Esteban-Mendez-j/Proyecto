@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -125,11 +126,12 @@ public class VacanteService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    public Long create(final VacanteDTO vacanteDTO) {
+    public void create(final VacanteDTO vacanteDTO) {
         final Vacante vacante = new Vacante();
+        vacanteDTO.setFechaPublicacion(LocalDate.now());
         mapToEntity(vacanteDTO, vacante);
         vacante.setIsActive(true);
-        return vacanteRepository.save(vacante).getNvacantes();
+        vacanteRepository.save(vacante);
     }
 
     public void update(final Long nvacantes, final VacanteDTO vacanteDTO) {

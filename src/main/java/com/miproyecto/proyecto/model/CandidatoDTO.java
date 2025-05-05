@@ -15,7 +15,7 @@ public class CandidatoDTO  extends UsuarioDTO {
     private String experiencia;
 
     @Size(max = 11)
-    @CandidatoIdentificacionUnique(message = " ya está registrada")
+    @CandidatoIdentificacionUnique(message = "Esta identificacion ya esta registrada")
     private String identificacion;
 
 

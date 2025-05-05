@@ -67,9 +67,8 @@ public class EmpresaResource {
     public ResponseEntity<Map<String, Object>> createEmpresa(@RequestBody @Valid final EmpresaDTO empresaDTO) {
         Map<String, Object> response = new HashMap<>();
         empresaService.create(empresaDTO);
-        System.out.println("hola "+ empresaDTO);
         response.put("status", HttpStatus.CREATED.value());
-        response.put("mensaje", "Empresa creado con exito!");
+        response.put("mensaje", "Empresa creada con exito!");
         return ResponseEntity.ok(response);
     }
 

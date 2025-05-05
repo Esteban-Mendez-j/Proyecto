@@ -1,11 +1,13 @@
 package com.miproyecto.proyecto.rest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +17,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.service.UsuarioService;
-import com.miproyecto.proyecto.util.WebUtils;
+import com.miproyecto.proyecto.util.JwtUtils;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
 
 
 @RestController
@@ -28,35 +31,43 @@ import jakarta.validation.Valid;
 public class UsuarioResource {
 
     private final UsuarioService usuarioService;
+    private final JwtUtils jwtUtils;
 
-    public UsuarioResource(final UsuarioService usuarioService) {
+
+    
+    public UsuarioResource(UsuarioService usuarioService, JwtUtils jwtUtils) {
         this.usuarioService = usuarioService;
+        this.jwtUtils = jwtUtils;
     }
 
-    @GetMapping("/login/error")
-    public ResponseEntity<Map<String, Object>> loginError(HttpServletRequest request) {
+
+    @GetMapping("/rol")
+    public ResponseEntity<Map<String, Object>> getRol(@CookieValue(name = "jwtToken", required = false) String jwtToken) {
         Map<String, Object> response = new HashMap<>();
 
-        String correo = (String) request.getSession().getAttribute("LOGIN_EMAIL");
-        String mensajeError = (String) request.getSession().getAttribute("LOGIN_ERROR_MESSAGE");
-        Boolean isBanned = (Boolean) request.getSession().getAttribute("IS_BANNED");
-
-        if (isBanned != null && isBanned) {
-            response.put("status", "banned");
-            response.put("correo", correo);
-            response.put("mensaje", mensajeError);
-        } else {
-            response.put("status", "error");
-            response.put("mensaje", WebUtils.getMessage(mensajeError));
+        if (jwtToken == null) {
+            // Si no hay token en la sesión, devolver rol de invitado
+            response.put("rolPrincipal", "ROLE_INVITADO");
+            response.put("roles", List.of("ROLE_INVITADO"));
+            return ResponseEntity.ok(response);
+        }
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        if (decodedJWT == null) {
+            // Si el token es inválido, también devolver como invitado
+            response.put("rolPrincipal", "ROLE_INVITADO");
+            response.put("roles", List.of("ROLE_INVITADO"));
+            return ResponseEntity.ok(response);
         }
 
-        // Limpiar los atributos de sesión
-        request.getSession().removeAttribute("LOGIN_EMAIL");
-        request.getSession().removeAttribute("LOGIN_ERROR_MESSAGE");
-        request.getSession().removeAttribute("IS_BANNED");
+        // Token válido: extraer claims
+        List<String> roles = decodedJWT.getClaim("authorities").asList(String.class);
+        String rolPrincipal = decodedJWT.getClaim("rolPrincipal").asString();
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        response.put("rolPrincipal", rolPrincipal);
+        response.put("roles", roles);
+        return ResponseEntity.ok(response);
     }
+
 
     
 

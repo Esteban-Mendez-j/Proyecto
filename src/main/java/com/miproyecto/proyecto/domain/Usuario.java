@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 
 
 @Entity
@@ -57,6 +58,7 @@ public class Usuario {
         joinColumns = @JoinColumn(name = "idUsuario"),
         inverseJoinColumns = @JoinColumn(name = "Id_rol")
         )
+    @OrderColumn(name = "orden_rol") 
     private List<Roles> roles;
 
     // Relacion con las apelaciones en las que el Usuario es el candidato o empresa

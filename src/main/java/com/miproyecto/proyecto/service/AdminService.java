@@ -38,7 +38,7 @@ public class AdminService {
         }
    
         if (addRole) {
-            usuario.getRoles().add(adminRole);
+            usuario.getRoles().add(0, adminRole);
         } else {
             usuario.getRoles().remove(adminRole);
         }

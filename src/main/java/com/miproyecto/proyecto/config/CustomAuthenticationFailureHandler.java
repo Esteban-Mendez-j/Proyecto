@@ -1,17 +1,18 @@
 package com.miproyecto.proyecto.config;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.service.UsuarioService;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -23,23 +24,25 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException exception) throws IOException, ServletException {
+            AuthenticationException exception) throws IOException {
+
         String correo = request.getParameter("username");
-        request.getSession().setAttribute("LOGIN_EMAIL", correo);
-
-        String errorMessage = "Correo o contraseña incorrecta";
-        boolean isBanned = false; 
-        
         UsuarioDTO usuario = usuarioService.findByCorreo(correo);
-        if (usuario != null && !usuario.getIsActive()) {
-            errorMessage =  usuario.getComentarioAdmin();
-            isBanned = true;
 
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        Map<String, Object> responseBody = new HashMap<>();
+        if (usuario != null && !usuario.getIsActive()) {
+            responseBody.put("status", "banned");
+            responseBody.put("mensaje", "Tu cuneta esta desabilitada");
+            responseBody.put("mensajeAdmin", usuario.getComentarioAdmin());
+        } else {
+            responseBody.put("status", "error");
+            responseBody.put("mensaje", "Correo o contraseña incorrecta");
         }
 
-        request.getSession().setAttribute("IS_BANNED", isBanned);
-        request.getSession().setAttribute("LOGIN_ERROR_MESSAGE", errorMessage);
-        response.sendRedirect("/api/usuarios/login/error");
-        
+        new ObjectMapper().writeValue(response.getOutputStream(), responseBody);
     }
+
 }

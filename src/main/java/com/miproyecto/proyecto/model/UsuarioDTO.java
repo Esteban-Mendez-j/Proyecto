@@ -25,11 +25,11 @@ public class UsuarioDTO {
 
     @NotNull
     @Size(max = 100)
-    @UsuarioCorreoUnique(message = " ya está registrado")
+    @UsuarioCorreoUnique(message = "Este correo ya esta registrado")
     private String correo;
 
     @Size(max = 15)
-    @UsuarioTelefonoUnique(message = " ya está registrado")
+    @UsuarioTelefonoUnique(message = "Este telefono ya esta registrado")
     private String telefono;
 
     @Size(max = 400)
@@ -41,7 +41,6 @@ public class UsuarioDTO {
     private Boolean isActive;
 
     private String comentarioAdmin;
-
     
     private EncryptionService encryptionService;
     
@@ -132,6 +131,13 @@ public class UsuarioDTO {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public String getRolPrinciapl(){
+        if(roles.size() > 0){
+            return roles.get(0);
+        }
+        return "ROLE_INVITADO";
     }
 
     @Override
