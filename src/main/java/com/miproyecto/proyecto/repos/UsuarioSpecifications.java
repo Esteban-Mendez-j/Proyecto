@@ -7,39 +7,37 @@ import org.springframework.data.jpa.domain.Specification;
 
 //  import com.miproyecto.proyecto.domain.Empresa;
 import com.miproyecto.proyecto.domain.Usuario;
-//  import com.miproyecto.proyecto.model.EmpresaDTO;
-import com.miproyecto.proyecto.model.UsuarioDTO;
 
 import jakarta.persistence.criteria.Predicate;
 
 public class UsuarioSpecifications {
 
-        public static Specification<Usuario> conFiltros(UsuarioDTO filtro){
+        public static Specification<Usuario> conFiltros(String nombre, String rol, Boolean estado ){
                 return(root, query, criteriaBuilder) -> {
                         List<Predicate> predicates = new ArrayList<>();
 
                         // Filtro por nombre
-                        if (filtro.getNombre() != null && !filtro.getNombre().isEmpty()) {
+                        if (nombre != null && !nombre.isEmpty()) {
                                 predicates.add(criteriaBuilder.like(
                                                 criteriaBuilder.lower(root.get("nombre")),
-                                                "%" + filtro.getNombre().toLowerCase() + "%"));
+                                                "%" + nombre.toLowerCase() + "%"));
 
                         }       
                         // Filtro por Actividad
-                        if (filtro.getIsActive() != null && !filtro.getIsActive()){
+                        if (estado != null && !estado){
                                 predicates.add(criteriaBuilder.like(
                                                 criteriaBuilder.lower(root.get("actividad")),
-                                                "%" + filtro.getIsActive() + "%"));
+                                                "%" + estado + "%"));
 
                         }
-                        if (filtro.getRoles() != null && !filtro.getRoles().isEmpty()){
+                        if (rol != null && !rol.isEmpty()){
                                 predicates.add(criteriaBuilder.like(
-                                                criteriaBuilder.lower(root.get("actividad")),
-                                                "%" + filtro.getRoles() + "%"));
+                                                criteriaBuilder.lower(root.get("Rol")),
+                                                "%" + rol + "%"));
                      
                         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
                 };
-                return null;
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
 
 

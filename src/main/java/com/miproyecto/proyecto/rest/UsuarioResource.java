@@ -1,12 +1,5 @@
 package com.miproyecto.proyecto.rest;
 
-import com.miproyecto.proyecto.model.UsuarioDTO;
-import com.miproyecto.proyecto.service.UsuarioService;
-import com.miproyecto.proyecto.util.WebUtils;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +14,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.miproyecto.proyecto.model.UsuarioDTO;
+import com.miproyecto.proyecto.service.UsuarioService;
+import com.miproyecto.proyecto.util.WebUtils;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -86,5 +86,14 @@ public class UsuarioResource {
         usuarioService.delete(idUsuario);
         return ResponseEntity.noContent().build();
     }
+    // @GetMapping("/listar")
+    // public ResponseEntity<Map<String, Object>> listarUsuarios(
+    //     HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+
+    //     Map<String, Object> response = usuarioService.findAllByEstado(true, pageable, "usuarios");
+    //     return ResponseEntity.ok(response);
+    // }
+
+
 
 }

@@ -1,7 +1,6 @@
 package com.miproyecto.proyecto.rest;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.service.AdminService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.service.VacanteService;
@@ -36,37 +33,85 @@ public class AdminResource {
     @Autowired
     private JwtUtils jwtUtils;
 
+
+@GetMapping("/listar/filtrados")
+public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
+        HttpSession session,
+        @PageableDefault(page = 0, size = 10) Pageable pageable,
+        @RequestParam(name = "nombre", required = false) String nombre,
+        @RequestParam(name = "rol", required = false) String rol,
+        @RequestParam(name = "estado", required = false) Boolean estado) {
+    
+    Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(nombre, rol, estado, pageable);
+    return ResponseEntity.ok(response);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Obtener usuarios activos
-    @GetMapping("/listUser/activos")
-    public ResponseEntity<Map<String, Object>> getActiveUsers(HttpSession session) {
-        String jwtToken = (String) session.getAttribute("jwtToken");
-        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+    // @GetMapping("/listUser/activos")
+    // public ResponseEntity<Map<String, Object>> getActiveUsers(HttpSession session, Pageable pageable) {
+    //     String jwtToken = (String) session.getAttribute("jwtToken");
+    //     DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+    //     Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         
-        List<UsuarioDTO> usuarios = usuarioService.findAllByBannedStatus(true, idUsuario);
-        Map<String, Object> response = new HashMap<>();
-        response.put("usuarios", usuarios);
-        response.put("userIsActive", true);
-        response.put("isSUPER_ADMIN", usuarioService.get(idUsuario).getRoles().contains("SUPER_ADMIN"));
+    //     List<UsuarioDTO> usuarios = usuarioService.findAllByBannedStatus(true, idUsuario, pageable);
+    //     Map<String, Object> response = new HashMap<>();
+    //     response.put("usuarios", usuarios);
+    //     response.put("userIsActive", true);
+    //     response.put("isSUPER_ADMIN", usuarioService.get(idUsuario).getRoles().contains("SUPER_ADMIN"));
 
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
 
-    // Obtener usuarios baneados
-    @GetMapping("/listUser/baneados")
-    public ResponseEntity<Map<String, Object>> getBannedUsers(HttpSession session) {
-        String jwtToken = (String) session.getAttribute("jwtToken");
-        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+    // // Obtener usuarios baneados
+    // @GetMapping("/listUser/baneados")
+    // public ResponseEntity<Map<String, Object>> getBannedUsers(HttpSession session) {
+    //     String jwtToken = (String) session.getAttribute("jwtToken");
+    //     DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+    //     Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-        List<UsuarioDTO> usuarios = usuarioService.findAllByBannedStatus(false, idUsuario);
-        Map<String, Object> response = new HashMap<>();
-        response.put("usuarios", usuarios);
-        response.put("userIsActive", false);
-        response.put("isSUPER_ADMIN", usuarioService.get(idUsuario).getRoles().contains("SUPER_ADMIN"));
+    //     List<UsuarioDTO> usuarios = usuarioService.findAllByBannedStatus(false, idUsuario);
+    //     Map<String, Object> response = new HashMap<>();
+    //     response.put("usuarios", usuarios);
+    //     response.put("userIsActive", false);
+    //     response.put("isSUPER_ADMIN", usuarioService.get(idUsuario).getRoles().contains("SUPER_ADMIN"));
 
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
 
     // Obtener vacantes activas
     @GetMapping("/listVacantes/activas")

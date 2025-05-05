@@ -1,30 +1,34 @@
 package com.miproyecto.proyecto.service;
 
 
-import com.miproyecto.proyecto.domain.Usuario;
-import com.miproyecto.proyecto.model.UsuarioDTO;
-import com.miproyecto.proyecto.repos.RolesRepository;
-import com.miproyecto.proyecto.repos.UsuarioRepository;
-import com.miproyecto.proyecto.util.NotFoundException;
-
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
+import com.miproyecto.proyecto.domain.Usuario;
+import com.miproyecto.proyecto.model.UsuarioDTO;
+import com.miproyecto.proyecto.repos.RolesRepository;
+import com.miproyecto.proyecto.repos.UsuarioRepository;
+import com.miproyecto.proyecto.repos.UsuarioSpecifications;
+import com.miproyecto.proyecto.util.NotFoundException;
 
 
 
@@ -54,8 +58,8 @@ public class UsuarioService {
                 .toList();
     }
 
-    public List<UsuarioDTO> findAllByBannedStatus(Boolean isBanned, Long idUsuario) {
-        List<Usuario> usuarios = usuarioRepository.findByIsActive(isBanned);
+    public List<UsuarioDTO> findAllByBannedStatus(Boolean isBanned, Long idUsuario, Pageable pageable) {
+        Page<Usuario> usuarios = usuarioRepository.findByIsActive(isBanned, pageable);
         Usuario usuarioAutenticado = usuarioRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
     
@@ -220,4 +224,50 @@ public class UsuarioService {
         return usuarioRepository.existsByTelefonoIgnoreCase(telefono);
     }
 
+    // public Map<String,Object> findUserByEstado(boolean estado, Pageable pageable, String nameList) {
+    //     final Page<Usuario> usuarios =  usuarioRepository.findIsActiveUsuariosByIsActive(estado, pageable);
+    //     final Page<UsuarioDTO> usuariosDTO = usuarios.map(usuario -> mapToDTO(usuario, new VacanteDTO()));
+    //     return mapResponse(usuariosDTO, nameList) ;       
+    // }
+
+
+
+
+
+        public Map<String,Object> mapResponse(Page<UsuarioDTO> pageableResponse, String nameList){
+        Map<String,Object> response = new HashMap<>();
+
+        response.put(nameList, pageableResponse.getContent());
+        response.put("totalElements", pageableResponse.getTotalElements());
+        response.put("pageActual", pageableResponse.getPageable());
+        response.put("totalPage", pageableResponse.getTotalPages());
+        return response;
+    }
+    // public Map<String,Object> findByIdUsuario(Long idUsuario, Pageable pageable) {
+    //     // Obtener la empresa usando su id
+    //     Empresa empresa = empresaRepository.findById(idUsuario)
+    //             .orElseThrow(() -> new NotFoundException("Empresa no encontrada"));
+        
+    //     // Obtener las vacantes relacionadas con esa empresa
+    //     Page<Vacante> vacantes = vacanteRepository.findByIdUsuario(empresa, pageable);
+        
+    //     // Convertir cada vacante a VacanteDTO y devolver la lista
+    //     Page<VacanteDTO> vacantesDTO = vacantes.map(vacante -> mapToDTO(vacante, new VacanteDTO()));
+    //     return mapResponse(vacantesDTO, "vacantes");
+                
+    // }
+
+    
+//  buscar usuarios Activos o inactivos
+//     public Map<String,Object> findAllByEstado(boolean estado, Pageable pageable, String nameList) {
+//         final Page<Usuario> usuarios = usuarioRepository.findByIsActive(estado, pageable);
+//         final Page<UsuarioDTO> usuarioDTO = usuarios.map(Usuario -> mapToDTO(Usuario, new UsuarioDTO()));
+//         return mapResponse(usuarioDTO, nameList) ;       
+//     }
+    //FiltrosUsuarios
+    public Map<String, Object> buscarUsuariosConFiltros( String nombre , String rol, Boolean estado  , Pageable pageable) {
+        Specification<Usuario> specification = UsuarioSpecifications.conFiltros(nombre,  rol,  estado);
+        Page<UsuarioDTO> page = usuarioRepository.findAll(specification, pageable).map(usuario -> mapToDTO(usuario, new UsuarioDTO())); 
+        return mapResponse(page, "usuarios");  
+    }
 }
