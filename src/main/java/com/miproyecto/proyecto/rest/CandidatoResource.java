@@ -1,19 +1,5 @@
 package com.miproyecto.proyecto.rest;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.miproyecto.proyecto.model.CandidatoDTO;
-import com.miproyecto.proyecto.model.ValidationGroups;
-import com.miproyecto.proyecto.service.CandidatoService;
-import com.miproyecto.proyecto.service.EstudioService;
-import com.miproyecto.proyecto.service.HistorialLaboralService;
-import com.miproyecto.proyecto.service.PostuladoService;
-import com.miproyecto.proyecto.service.UsuarioService;
-import com.miproyecto.proyecto.util.JwtUtils;
-
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-import jakarta.validation.groups.Default;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +20,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.miproyecto.proyecto.model.CandidatoDTO;
+import com.miproyecto.proyecto.model.ValidationGroups;
+import com.miproyecto.proyecto.service.CandidatoService;
+import com.miproyecto.proyecto.service.EstudioService;
+import com.miproyecto.proyecto.service.HistorialLaboralService;
+import com.miproyecto.proyecto.service.PostuladoService;
+import com.miproyecto.proyecto.service.UsuarioService;
+import com.miproyecto.proyecto.util.JwtUtils;
+
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 
 
 @RestController

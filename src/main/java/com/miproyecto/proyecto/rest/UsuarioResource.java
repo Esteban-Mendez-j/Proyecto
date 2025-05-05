@@ -105,6 +105,5 @@ public class UsuarioResource {
     //     return ResponseEntity.ok(response);
     // }
 
-
-
+  
 }
