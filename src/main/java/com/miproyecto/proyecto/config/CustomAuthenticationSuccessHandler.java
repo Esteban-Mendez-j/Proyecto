@@ -1,15 +1,18 @@
 package com.miproyecto.proyecto.config;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.miproyecto.proyecto.util.JwtUtils;
 
@@ -35,18 +38,16 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         String jwtToken = jwtUtils.createToken(authentication);
 
-        // Guardar en cookie si lo deseas (opcional)
-        Cookie cookie = new Cookie("jwtToken", jwtToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false); 
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60); // 1 hora
-        response.addCookie(cookie);
-
-
-        response.addHeader("Set-Cookie", String.format(
-        "jwtToken=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None",
-        jwtToken, 60 * 60));
+        // Crear cookie JWT correctamente
+        ResponseCookie jwtCookie = ResponseCookie.from("jwtToken", jwtToken)
+        .httpOnly(true)
+        .secure(false) // true si usas HTTPS en producción
+        .sameSite("lix") // O "Strict" según necesites
+        .path("/")
+        .maxAge(60*60)
+        .build();
+        // Agregar cookie a la respuesta
+        response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
 
         HttpSession session = request.getSession();
         session.setAttribute("jwtToken", jwtToken);
@@ -56,12 +57,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        List<String> priority = List.of("ROLE_SUPER_ADMIN", "ROLE_ADMIN", "ROLE_EMPRESA", "ROLE_CANDIDATO");
-
-        String rolPrincipal = priority.stream()
-            .filter(roles::contains)
-            .findFirst()
-            .orElse(roles.get(0));
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        String rolPrincipal = decodedJWT.getClaim("rolPrincipal").asString();
         
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("roles", roles);
