@@ -21,7 +21,7 @@ import com.miproyecto.proyecto.util.JwtUtils;
 import jakarta.servlet.http.HttpSession;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin")  
 public class AdminResource {
 
     @Autowired

@@ -24,10 +24,9 @@ public class UsuarioSpecifications {
 
                         }       
                         // Filtro por Actividad
-                        if (estado != null && !estado){
-                                predicates.add(criteriaBuilder.like(
-                                                criteriaBuilder.lower(root.get("actividad")),
-                                                "%" + estado + "%"));
+                        if (estado != null) {
+                                predicates.add(criteriaBuilder.equal(root.get("isActive"), estado));
+                            
 
                         }
                         if (rol != null && !rol.isEmpty()){
