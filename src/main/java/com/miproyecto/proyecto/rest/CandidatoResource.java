@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.CandidatoDTO;
+import com.miproyecto.proyecto.model.PostuladoDTO;
 import com.miproyecto.proyecto.model.ValidationGroups;
 import com.miproyecto.proyecto.service.CandidatoService;
 import com.miproyecto.proyecto.service.EstudioService;
@@ -57,35 +58,58 @@ public class CandidatoResource {
         this.historialLaboralService = historialLaboralService;
         this.usuarioService = usuarioService;
     }
-
+    
     @GetMapping("/perfil")
-    public ResponseEntity<Map<String, Object>> mostrarPerfil( 
-            @RequestParam(name = "idUsuario", required = false) Long idUsuario,
-            @RequestParam(name = "nPostulacion", required = false) Long nPostulacion,
-            Model model, HttpSession session) {
+    public ResponseEntity<Map<String, Object>> mostrarPerfil(
+        @RequestParam(name = "idUsuario", required = false) Long idUsuario,
+        @RequestParam(name = "nPostulacion", required = false) Long nPostulacion,
+        Model model, HttpSession session) {
 
-        Map<String, Object> response = new HashMap<>();        
+    Map<String, Object> response = new HashMap<>();
+
+    try {
+        // 1. Obtener ID del token si no viene por parámetro
         if (idUsuario == null && nPostulacion == null) {
-            // Sacamos el ID del usuario que inicia sesion
             String jwtToken = (String) session.getAttribute("jwtToken");
+            if (jwtToken == null) {
+                response.put("error", "No se encontró token de sesión");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+
             DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
             idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-        } else{
+        }
 
-            if (postuladoService.get(nPostulacion).getCandidato().getId() != idUsuario && nPostulacion != null) {
-                response.put("error", "No tienes Permiso para acceder");
+        // 2. Validar si tiene permiso de ver la postulación
+        if (nPostulacion != null) {
+            PostuladoDTO postulado = postuladoService.get(nPostulacion);
+            if (postulado == null || postulado.getCandidato() == null) {
+                response.put("error", "Postulación no encontrada o inválida");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+            if (!postulado.getCandidato().getId().equals(idUsuario)) {
+                response.put("error", "No tienes permiso para acceder");
                 return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
             }
         }
-        
+
+        // 3. Obtener candidato
         CandidatoDTO candidatoDTO = candidatoService.get(idUsuario);
-        if(candidatoDTO == null){return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);}
-        
+        if (candidatoDTO == null) {
+            response.put("error", "Candidato no encontrado");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
         response.put("estudios", estudioService.getEstudiosByIdUsuario(idUsuario));
         response.put("historialLaboral", historialLaboralService.getHistorialByIdUsuario(idUsuario));
         response.put("candidato", candidatoDTO);
-        return ResponseEntity.ok(response); 
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        response.put("error", "Error interno: " + e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createCandidato(@RequestBody  @Valid  CandidatoDTO candidatoDTO) {

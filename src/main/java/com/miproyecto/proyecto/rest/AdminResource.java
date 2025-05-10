@@ -170,17 +170,17 @@ public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
     // Cambiar estado de vacante
     @PostMapping("/cambiar-estado/vacantes")
     public ResponseEntity<Map<String, String>> changeVacancyStatus(
-            @RequestParam("NVacante") Long nVacante,
+            @RequestParam("nvacante") Long nvacante,
             @RequestParam("estado") boolean estado,
             @RequestParam("comentario") String comentario) {
 
-        if (estado == vacanteService.get(nVacante).isActive()) {
+        if (estado == vacanteService.get(nvacante).isActive()) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "La vacante ya está " + estado);
             return ResponseEntity.badRequest().body(errorResponse);
         }
 
-        adminService.cambiarEstadoVacantes(nVacante, estado, comentario);
+        adminService.cambiarEstadoVacantes(nvacante, estado, comentario);
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "Estado de vacante actualizado");
