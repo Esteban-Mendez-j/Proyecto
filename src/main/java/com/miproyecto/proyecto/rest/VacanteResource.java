@@ -129,9 +129,9 @@ public class VacanteResource {
             Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));    
             vacanteDTO.setIdUsuario(idUsuario);
         }
-        // vacanteService.create(vacanteDTO);
+        vacanteService.create(vacanteDTO);
         response.put("status", HttpStatus.CREATED.value());
-        response.put("mensaje", "Empresa creada con exito!");
+        response.put("mensaje", vacanteDTO.getTipo()+" creada con exito!");
         return ResponseEntity.ok(response);
     }
 
@@ -142,11 +142,14 @@ public class VacanteResource {
     }
 
     @PutMapping("/edit/{nvacantes}")
-    public ResponseEntity<Long> updateVacante(
+    public ResponseEntity<Map<String, Object>> updateVacante(
             @PathVariable(name = "nvacantes") final Long nvacantes,
             @RequestBody @Valid final VacanteDTO vacanteDTO) {
+        Map<String, Object> response = new HashMap<>();
         vacanteService.update(nvacantes, vacanteDTO);
-        return ResponseEntity.ok(nvacantes);
+        response.put("status", HttpStatus.CREATED.value());
+        response.put("mensaje", vacanteDTO.getTipo()+" actualizada con exito!");
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete/{nvacantes}")

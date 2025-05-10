@@ -119,6 +119,8 @@ public class VacanteService {
     public void update(final Long nvacantes, final VacanteDTO vacanteDTO) {
         final Vacante vacante = vacanteRepository.findById(nvacantes)
                 .orElseThrow(NotFoundException::new);
+        vacanteDTO.setIdUsuario(vacante.getIdUsuario().getIdUsuario());
+        vacanteDTO.setFechaPublicacion(vacante.getFechaPublicacion());
         mapToEntity(vacanteDTO, vacante);
         vacanteRepository.save(vacante);
     }

@@ -35,7 +35,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         Map<String, Object> responseBody = new HashMap<>();
         if (usuario != null && !usuario.getIsActive()) {
             responseBody.put("status", "banned");
-            responseBody.put("mensaje", "Tu cuneta esta desabilitada");
+            responseBody.put("mensaje", "Tu cuenta esta desabilitada");
             responseBody.put("mensajeAdmin", usuario.getComentarioAdmin());
         } else {
             responseBody.put("status", "error");
