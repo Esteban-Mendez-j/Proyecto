@@ -96,13 +96,13 @@ public class SecurityConfig {
                     "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}",
                     "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" 
                     ,"/api/chats/**", "/app/chat.sendMessage","/api/admin/listar/filtrados","/api/admin/cambiar-estado/usuario",
-                    "/api/vacantes/**"
+                    "/api/vacantes/**","/api/postulados/**","/uploads/img/**"
                 ).permitAll()
                 .requestMatchers("/api/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
                 // .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/api/empresas/**","/api/vacantes/popular/listar").hasRole("EMPRESA")
                 .requestMatchers("/api/candidatos/**").hasRole("CANDIDATO")
-                .requestMatchers( "/api/postulados/**", 
+                .requestMatchers(  
                     "/api/estudios", "/api/historialLaborals").hasAnyRole("EMPRESA", "CANDIDATO")
                 .anyRequest().authenticated()
             )

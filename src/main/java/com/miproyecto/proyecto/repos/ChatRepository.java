@@ -1,16 +1,18 @@
 package com.miproyecto.proyecto.repos;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.miproyecto.proyecto.domain.Chat;
 
 public interface ChatRepository extends MongoRepository<Chat, String> {
     Optional<Chat> findByEmpresaIdAndCandidatoId(String empresaId, String candidatoId);
+    Optional<Chat> findByVacanteIdAndCandidatoId(String vacanteId, String candidatoId);
 
-    List<Chat> findByEmpresaId(String empresaId);
+    Page<Chat> findByEmpresaId(String empresaId,Pageable pageable);
 
-    List<Chat> findByCandidatoId(String candidatoId);
+    Page<Chat> findByCandidatoId(String candidatoId,Pageable pageable);
 }

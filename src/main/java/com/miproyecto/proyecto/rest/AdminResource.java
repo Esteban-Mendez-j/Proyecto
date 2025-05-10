@@ -34,17 +34,17 @@ public class AdminResource {
     private JwtUtils jwtUtils;
 
 
-@GetMapping("/listar/filtrados")
-public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
-        HttpSession session,
-        @PageableDefault(page = 0, size = 10) Pageable pageable,
-        @RequestParam(name = "nombre", required = false) String nombre,
-        @RequestParam(name = "rol", required = false) String rol,
-        @RequestParam(name = "estado", required = false) Boolean estado) {
-    
-    Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(nombre, rol, estado, pageable);
-    return ResponseEntity.ok(response);
-}
+    @GetMapping("/listar/filtrados")
+    public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
+            HttpSession session,
+            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @RequestParam(name = "nombre", required = false) String nombre,
+            @RequestParam(name = "rol", required = false) String rol,
+            @RequestParam(name = "estado", required = false) Boolean estado) {
+        
+        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(nombre, rol, estado, pageable);
+        return ResponseEntity.ok(response);
+    }
 
 
 
