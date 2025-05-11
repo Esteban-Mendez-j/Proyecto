@@ -101,7 +101,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/api/empresas/**","/api/vacantes/popular/listar").hasRole("EMPRESA")
-                .requestMatchers("/api/candidatos/","/api/candidatos/perfil**").hasRole("CANDIDATO")
+                .requestMatchers("/api/candidatos/","/api/candidatos/perfil/**").hasAnyRole("CANDIDATO","EMPRESA","ADMIN","SUPER_ADMIN")
                 .requestMatchers( "/api/postulados/**", 
                     "/api/estudios", "/api/historialLaborals").hasAnyRole("EMPRESA", "CANDIDATO")
                 .anyRequest().authenticated()

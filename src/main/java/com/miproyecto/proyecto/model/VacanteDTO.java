@@ -1,9 +1,9 @@
 package com.miproyecto.proyecto.model;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import java.time.LocalDate;
 
 
 public class VacanteDTO {
@@ -57,6 +57,16 @@ public class VacanteDTO {
     private String nameEmpresa;
 
     private String imagenEmpresa;
+
+    private int nPostulados;
+
+    public int getnPostulados() {
+        return nPostulados;
+    }
+
+    public void setnPostulados(int nPostulados) {
+        this.nPostulados = nPostulados;
+    }
 
     public Long getNvacantes() {
         return nvacantes;

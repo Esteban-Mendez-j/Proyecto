@@ -148,6 +148,7 @@ public class VacanteService {
         vacanteDTO.setIdUsuario(vacante.getIdUsuario() == null ? null : vacante.getIdUsuario().getIdUsuario());
         vacanteDTO.setNameEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getNombre() : "Empresa Desconocida");
         vacanteDTO.setImagenEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getImagen() : "null");
+        vacanteDTO.setnPostulados(vacante.getLitarpostulados().size());
         return vacanteDTO;
     }
 
