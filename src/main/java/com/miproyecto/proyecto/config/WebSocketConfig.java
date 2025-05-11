@@ -12,17 +12,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/user");
-        registry.setApplicationDestinationPrefixes("/app");
-        registry.setUserDestinationPrefix("/user");
+        registry.enableSimpleBroker("/queue"); 
+        registry.setApplicationDestinationPrefixes("/app"); 
+        registry.setUserDestinationPrefix("/user"); 
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chats")
-                // Reemplazar con un origen específico o usar un patrón
-                .setAllowedOrigins("http://localhost:4321") // Cambia según tu frontend
-                .withSockJS();
+        registry.addEndpoint("/chats").setAllowedOriginPatterns("*");
+
     }
 }
 

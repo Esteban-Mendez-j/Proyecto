@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 import com.miproyecto.proyecto.model.VacanteDTO;
-import com.miproyecto.proyecto.repos.VacanteRepository;
 import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
@@ -33,16 +32,14 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping(value = "/api/vacantes", produces = MediaType.APPLICATION_JSON_VALUE)
 public class VacanteResource {
-    private final VacanteRepository vacanteRepository;
     private final VacanteService vacanteService;
     private final JwtUtils jwtUtils;
 
     
 
-    public VacanteResource(VacanteService vacanteService, JwtUtils jwtUtils, VacanteRepository vacanteRepository) {
+    public VacanteResource(VacanteService vacanteService, JwtUtils jwtUtils) {
         this.vacanteService = vacanteService;
         this.jwtUtils = jwtUtils;
-        this.vacanteRepository = vacanteRepository;
     }
 
     @GetMapping
@@ -58,11 +55,15 @@ public class VacanteResource {
     }
 
 
-    @GetMapping("/listar")
+    @PostMapping("/listar")
     public ResponseEntity<Map<String, Object>> listarVacantes(
-        HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable,
+        @RequestBody FiltroVacanteDTO filtro) {
 
-        Map<String, Object> response = vacanteService.findAllByEstado(true, pageable, "vacantes");
+        String jwtToken = (String) session.getAttribute("jwtToken");
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        filtro.setIdUsuario(Long.parseLong(jwtUtils.extractUsername(decodedJWT)));
+        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(filtro, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -90,49 +91,16 @@ public class VacanteResource {
         return ResponseEntity.ok(response);
     }
 
-
-
-    @GetMapping("/listar/filtradas")
+    @PostMapping("/listar/filtradas")
     public ResponseEntity<Map<String, Object>> listarVacantesFiltradas(
     HttpSession session,
     @PageableDefault(page = 0, size = 10) Pageable pageable,
     @RequestBody FiltroVacanteDTO filtro ) {
+        filtro.setRolUser("CANDIDATO");
         Map<String, Object> response = vacanteService.buscarVacantesConFiltros(filtro, pageable);
         return ResponseEntity.ok(response);
     }
-    // @GetMapping("/listar")
-    // public ResponseEntity<Map<String, Object>> listarVacantes(
-    //     HttpSession session) {
-        
-    //         @ModelAttribute VacanteDTO filtro,
-    //     session.setAttribute("filtro", filtro);
-
-    //     List<VacanteDTO> vacantes;
-    //     if (filtro != null && (
-    //         (filtro.getCargo() != null && !filtro.getCargo().isEmpty()) ||
-    //         (filtro.getCiudad() != null && !filtro.getCiudad().isEmpty()) ||
-    //         (filtro.getTipo() != null && !filtro.getTipo().isEmpty()) ||
-    //         (filtro.getModalidad() != null && !filtro.getModalidad().isEmpty()) ||
-    //         (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty())
-    //     )) {
-    //         vacantes = vacanteService.buscarVacantesConFiltros(filtro);
-    //     } else {
-    //         vacantes = vacanteService.findAllByEstado("activa");
-    //     }
-    //     vacantes = vacanteService.findAllByEstado("activa");
-        
-    //     Map<String, Object> response = new HashMap<>();
-    //     response.put("vacantes", vacantes);
-    //     response.put("filtro", filtro);
-
-    //     if (!vacantes.isEmpty()) {
-    //         response.put("vacanteSeleccionada", vacanteService.get(vacantes.get(0).getNvacantes()));
-    //     }
-
-    //     return ResponseEntity.ok(response);
-    // }
-
-
+ 
     @GetMapping("/seleccion/{nvacantes}")
     public ResponseEntity<Map<String, Object>> seleccionVacante(
             @PathVariable(name = "nvacantes") Long nvacantes,
@@ -149,12 +117,6 @@ public class VacanteResource {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/eliminar/filtro")
-    public ResponseEntity<Map<String, String>> eliminaFiltro(HttpSession session) {
-        session.removeAttribute("filtro");
-        return ResponseEntity.ok(Map.of("mensaje", "Filtro eliminado"));
-    }
-    
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createVacante(
@@ -167,9 +129,9 @@ public class VacanteResource {
             Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));    
             vacanteDTO.setIdUsuario(idUsuario);
         }
-        // vacanteService.create(vacanteDTO);
+        vacanteService.create(vacanteDTO);
         response.put("status", HttpStatus.CREATED.value());
-        response.put("mensaje", "Empresa creada con exito!");
+        response.put("mensaje", vacanteDTO.getTipo()+" creada con exito!");
         return ResponseEntity.ok(response);
     }
 
@@ -180,11 +142,14 @@ public class VacanteResource {
     }
 
     @PutMapping("/edit/{nvacantes}")
-    public ResponseEntity<Long> updateVacante(
+    public ResponseEntity<Map<String, Object>> updateVacante(
             @PathVariable(name = "nvacantes") final Long nvacantes,
             @RequestBody @Valid final VacanteDTO vacanteDTO) {
+        Map<String, Object> response = new HashMap<>();
         vacanteService.update(nvacantes, vacanteDTO);
-        return ResponseEntity.ok(nvacantes);
+        response.put("status", HttpStatus.CREATED.value());
+        response.put("mensaje", vacanteDTO.getTipo()+" actualizada con exito!");
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete/{nvacantes}")

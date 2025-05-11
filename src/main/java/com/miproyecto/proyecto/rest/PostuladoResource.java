@@ -51,11 +51,11 @@ public class PostuladoResource {
     //Candidatos postulados a una vacante (para empresa)
     @GetMapping("/lista/{nvacantes}")
     public ResponseEntity<Map<String,Object>> listaByNvacantes(
-                @PathVariable(name = "nvacantes") final Long nvacantes, 
+                @PathVariable(name = "nvacantes") String nvacantes, 
                 @PageableDefault(page = 0, size = 10)
                 Pageable pageable) {
-        
-        Map<String, Object> response = postuladoService.findByNvacantes(nvacantes, pageable); 
+        System.out.println(nvacantes);
+        Map<String, Object> response = postuladoService.findByNvacantes(Long.parseLong(nvacantes), pageable); 
         return ResponseEntity.ok(response);
     }
 

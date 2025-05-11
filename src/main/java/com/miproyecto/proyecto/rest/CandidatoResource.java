@@ -126,7 +126,7 @@ public class CandidatoResource {
         return ResponseEntity.ok(candidatoService.get(idCandidato));
     }
 
-    @PostMapping(value = "/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> editCandidato(
             @RequestPart("candidato") @Validated({ValidationGroups.OnUpdate.class, Default.class}) CandidatoDTO candidatoDTO,
             @RequestPart(name = "img", required = false) MultipartFile imagen,

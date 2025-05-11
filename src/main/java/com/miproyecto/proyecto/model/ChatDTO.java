@@ -6,10 +6,41 @@ public class ChatDTO {
 
     private String id;
     private String empresaId;
+    private String nombreEmpresa;
     private String candidatoId;
+    private String nombreCandidato;
+    private String vacanteId;
     private Boolean isActive;
+    private String tituloVacante;
     private String ContentUltimoMensaje;
     private LocalDateTime horaUltimoMensaje;
+
+    public String getTituloVacante() {
+        return tituloVacante;
+    }
+    public void setTituloVacante(String tituloVacante) {
+        this.tituloVacante = tituloVacante;
+    }
+    public String getNombreCandidato() {
+        return nombreCandidato;
+    }
+    public void setNombreCandidato(String nombreCandidato) {
+        this.nombreCandidato = nombreCandidato;
+    }
+
+    public String getNombreEmpresa() {
+        return nombreEmpresa;
+    }
+    public void setNombreEmpresa(String nombreEmpresa) {
+        this.nombreEmpresa = nombreEmpresa;
+    }
+
+    public String getVacanteId() {
+        return vacanteId;
+    }
+    public void setVacanteId(String vacanteId) {
+        this.vacanteId = vacanteId;
+    }
 
     public LocalDateTime getHoraUltimoMensaje() {
         return horaUltimoMensaje;

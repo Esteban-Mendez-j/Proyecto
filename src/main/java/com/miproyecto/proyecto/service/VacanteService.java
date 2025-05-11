@@ -81,24 +81,6 @@ public class VacanteService {
         Page<VacanteDTO> page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(vacante, new VacanteDTO()));
         return mapResponse(page, "vacantes");         
     }
-    // private String mapJobType(String astroType) {
-    //     switch (astroType) {
-    //         case "fullTime": return "Tiempo completo";
-    //         case "partTime": return "Medio tiempo";
-    //         case "contract": return "Por contrato";
-    //         case "freelance": return "Freelance";
-    //         default: return astroType;
-    //     }
-    // }
-    
-    // private String mapModality(String astroModality) {
-    //     switch (astroModality) {
-    //         case "remote": return "Remota";
-    //         case "office": return "Presencial";
-    //         case "hybrid": return "Híbrido";
-    //         default: return astroModality;
-    //     }
-    // }
 
     // public List<VacanteDTO> TopVacantesPorPostulados(Long idEmpresa){
     //     return vacanteRepository.findVacantesConMasPostulacionesPorEmpresa(idEmpresa).stream()
@@ -137,6 +119,8 @@ public class VacanteService {
     public void update(final Long nvacantes, final VacanteDTO vacanteDTO) {
         final Vacante vacante = vacanteRepository.findById(nvacantes)
                 .orElseThrow(NotFoundException::new);
+        vacanteDTO.setIdUsuario(vacante.getIdUsuario().getIdUsuario());
+        vacanteDTO.setFechaPublicacion(vacante.getFechaPublicacion());
         mapToEntity(vacanteDTO, vacante);
         vacanteRepository.save(vacante);
     }
@@ -209,14 +193,3 @@ public class VacanteService {
     }
 
 }
-//     public Map<String, Object> preparePaginatedResponse(List<String> jobType, List<String> experience, List<String> modality, Pageable pageable) {
-        
-//         Specification<Vacante> spec = Specification.where(
-//             VacanteSpecifications.conFiltrosDesdeAstro(jobType, experience, modality))
-//             .and(VacanteSpecifications.conFiltrosDesdeAstro(jobType, experience, modality));
-        
-//         Page<VacanteDTO> page = vacanteRepository.findAll(spec, pageable).map(vacante -> mapToDTO(vacante, new VacanteDTO()));
-//         return mapResponse(page, "vacantes");
-       
-//     }
-// }

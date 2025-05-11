@@ -46,7 +46,6 @@ public class UsuarioResource {
     public ResponseEntity<Map<String, Object>> getRol( @CookieValue(name = "jwtToken", required = false) String jwtTokenCookee, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         String jwtToken = (String) session.getAttribute("jwtToken");
-        System.out.println(jwtToken);
       
         if (jwtToken == null) {
             // Si no hay token en la sesión, devolver rol de invitado
@@ -67,6 +66,7 @@ public class UsuarioResource {
         String rolPrincipal = decodedJWT.getClaim("rolPrincipal").asString();
 
         response.put("rolPrincipal", rolPrincipal);
+        response.put("id", Long.parseLong(jwtUtils.extractUsername(decodedJWT)));
         response.put("roles", roles);
         return ResponseEntity.ok(response);
     }

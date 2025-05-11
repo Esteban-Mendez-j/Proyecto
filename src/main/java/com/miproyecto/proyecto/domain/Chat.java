@@ -11,12 +11,43 @@ public class Chat {
     @Id
     private String id;
     private String empresaId;
+    private String nombreEmpresa;
     private String candidatoId;
+    private String nombreCandidato;
     private LocalDateTime createdAt;
     private LocalDateTime horaUltimoMensaje;
     private String ContentUltimoMensaje; 
+    private String tituloVacante;
     private Boolean isActive;
+    private String vacanteId;
 
+    public String getTituloVacante() {
+        return tituloVacante;
+    }
+    public void setTituloVacante(String tituloVacante) {
+        this.tituloVacante = tituloVacante;
+    }
+
+    public String getNombreEmpresa() {
+        return nombreEmpresa;
+    }
+    public void setNombreEmpresa(String nombreEmpresa) {
+        this.nombreEmpresa = nombreEmpresa;
+    }
+
+    public String getNombreCandidato() {
+        return nombreCandidato;
+    }
+    public void setNombreCandidato(String nombreCandidato) {
+        this.nombreCandidato = nombreCandidato;
+    }
+
+    public String getVacanteId() {
+        return vacanteId;
+    }
+    public void setVacanteId(String vacanteId) {
+        this.vacanteId = vacanteId;
+    }
     public String getId() {
         return id;
     }

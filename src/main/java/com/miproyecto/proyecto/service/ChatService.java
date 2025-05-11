@@ -1,10 +1,15 @@
 package com.miproyecto.proyecto.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.miproyecto.proyecto.domain.Chat;
@@ -20,90 +25,128 @@ public class ChatService {
 
     @Autowired
     private ChatRepository chatRepository;
-
     @Autowired
     private MensajeRepository mensajeRepository;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;  
+    @Autowired
+    private UsuarioService usuarioService;
+    @Autowired
+    private VacanteService vacanteService;
 
-    public ChatDTO crearChat(String empresaId, String candidatoId) {
-        Chat chat = new Chat();
-        chat.setId("123");
-        chat.setEmpresaId(empresaId);
+    public ChatDTO crearChat(String candidatoId, String vacanteId, String empresaId) {
+    
+    Chat chat = chatRepository.findByVacanteIdAndCandidatoId(vacanteId, candidatoId)
+                .orElse(null);
+
+    if (chat == null) {
+        chat = new Chat(); 
+        chat.setEmpresaId(empresaId);  
         chat.setCandidatoId(candidatoId);
+        chat.setVacanteId(vacanteId);
         chat.setHoraUltimoMensaje(LocalDateTime.now());
         chat.setIsActive(true);
-        // chat = chatRepository.save(chat);
-        return mapToDTO(chat, new ChatDTO());
+        chat.setNombreCandidato(usuarioService.get(Long.parseLong(candidatoId)).getNombre());
+        chat.setNombreEmpresa(usuarioService.get(Long.parseLong(empresaId)).getNombre());
+        chat.setTituloVacante(vacanteService.get(Long.parseLong(vacanteId)).getTitulo());
+        chat = chatRepository.save(chat);     
+    }
+
+    return mapToDTO(chat, new ChatDTO());
+}
+
+
+    public ChatDTO findById(String chatId) {
+        return chatRepository.findById(chatId)
+                    .map(chat -> mapToDTO(chat, new ChatDTO()))
+                    .orElseThrow(NotFoundException::new);
     }
     
 
-    public MensajeDTO agregarMensajeAChat(String chatId, String senderId, String receiverId, String senderRole, String contenido) {
-        if (contenido == null || contenido.trim().isEmpty()) {
+    public MensajeDTO agregarMensajeAChat(MensajeDTO mensajeDTO) {
+        if (mensajeDTO.getContent() == null || mensajeDTO.getContent().trim().isEmpty()) {
             throw new IllegalArgumentException("El contenido no puede estar vacío");
         }
     
-        Chat chat = chatRepository.findById(chatId)
+        Chat chat = chatRepository.findById(mensajeDTO.getChatId())
                 .orElseThrow(() -> new NotFoundException("Chat no encontrado"));
     
-        chat.setContentUltimoMensaje(contenido);
+        // Verificar si el chat está activo antes de permitir agregar un mensaje
+        if (!chat.getIsActive()) {
+            throw new IllegalArgumentException("Este chat ha sido cerrado y no puede recibir más mensajes");
+        }
+    
+        chat.setContentUltimoMensaje(mensajeDTO.getContent());
         chat.setHoraUltimoMensaje(LocalDateTime.now());
         chatRepository.save(chat);
     
-        String receiverRole = senderRole.equalsIgnoreCase("empresa") ? "candidato" : "empresa";
-    
-        Mensaje mensaje = new Mensaje();
-        mensaje.setChatId(chatId);
-        mensaje.setSenderId(senderId);
-        mensaje.setReceiverId(receiverId);
-        mensaje.setSenderRole(senderRole.toLowerCase());
-        mensaje.setReceiverRole(receiverRole.toLowerCase());
-        mensaje.setContent(contenido);
-        mensaje.setTime(LocalDateTime.now());
-        mensaje.setState("enviado");
+        String receiverRole = mensajeDTO.getSenderRole().equalsIgnoreCase("empresa") ? "CANDIDATO" : "EMPRESA";
+        mensajeDTO.setTime(LocalDateTime.now());
+        mensajeDTO.setState("enviado");
+        mensajeDTO.setReceiverRole(receiverRole);
+        Mensaje mensaje = mensajeMapToEntity(mensajeDTO, new Mensaje());
         mensajeRepository.save(mensaje);
-    
         return mensajeMapToDTO(mensaje, new MensajeDTO());
     }
     
-
-    // Listar mensajes de un chat
-    public List<MensajeDTO> obtenerMensajesDeChat(String chatId) {
-        List<Mensaje> Listmensajes = mensajeRepository.findByChatIdOrderByTimeAsc(chatId);
-        return Listmensajes.stream()
+    public List<MensajeDTO> obtenerMensajesDeChat(String chatId, Pageable pageable) {
+        Page<Mensaje> page = mensajeRepository.findByChatIdOrderByTimeAsc(chatId, pageable);
+        return page.getContent().stream()
                 .map(mensaje -> mensajeMapToDTO(mensaje, new MensajeDTO()))
                 .collect(Collectors.toList());
     }
 
-    // Listar chats de una empresa
-    public List<ChatDTO> listarChatsPorEmpresa(String empresaId) {
-        List<Chat> chats = chatRepository.findByEmpresaId(empresaId);
-        return chats.stream()
-                .map(chat -> mapToDTO(chat, new ChatDTO()))
-                .collect(Collectors.toList());
+    //listar todos los chats 
+    public Map<String, Object> listarChatsPaginados(Pageable pageable) {
+        Page<Chat> chatPage = chatRepository.findAll(pageable);
+        Page<ChatDTO> chats = chatPage.map(chat -> mapToDTO(chat, new ChatDTO()));
+        return mapResponse(chats, "chats");
     }
 
-    // Listar chats de un candidato
-    public List<ChatDTO> listarChatsPorCandidato(String candidatoId) {
-        List<Chat> chats = chatRepository.findByCandidatoId(candidatoId);
-        return chats.stream()
-                .map(chat -> mapToDTO(chat, new ChatDTO()))
-                .collect(Collectors.toList());
+    // Listar chats de una empresa con paginación
+    public Map<String, Object> listarChatsPorEmpresa(String empresaId, Pageable pageable) {
+        Page<Chat> chatPage = chatRepository.findByEmpresaId(empresaId, pageable);
+        Page<ChatDTO> chats = chatPage.map(chat -> mapToDTO(chat, new ChatDTO()));
+        return mapResponse(chats, "chats");
     }
 
-    // Cambiar estado del chat (por ejemplo, para cerrarlo)
+    // Listar chats de un candidato con paginación
+    public Map<String, Object> listarChatsPorCandidato(String candidatoId, Pageable pageable) {
+        Page<Chat> chatPage = chatRepository.findByCandidatoId(candidatoId, pageable);
+        Page<ChatDTO> chats = chatPage.map(chat -> mapToDTO(chat, new ChatDTO()));
+        return mapResponse(chats, "chats");
+    }
+
     public void cambiarEstadoChat(String chatId, boolean nuevoEstado) {
         Chat chat = chatRepository.findById(chatId)
-            .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException("Chat no encontrado"));
+
         chat.setIsActive(nuevoEstado);
         chatRepository.save(chat);
+
+        if (!nuevoEstado) {
+            // Notificar a ambos usuarios que el chat fue cerrado (si estás usando WebSocket)
+            String empresaId = chat.getEmpresaId();
+            String candidatoId = chat.getCandidatoId();
+            String mensaje = "El chat ha sido cerrado por la empresa.";
+
+            messagingTemplate.convertAndSendToUser(empresaId, "/queue/messages", mensaje);
+            messagingTemplate.convertAndSendToUser(candidatoId, "/queue/messages", mensaje);
+        }
     }
+
 
     public ChatDTO mapToDTO(Chat chat, ChatDTO chatDTO) {
         chatDTO.setId(chat.getId());
         chatDTO.setEmpresaId(chat.getEmpresaId());
         chatDTO.setCandidatoId(chat.getCandidatoId());
+        chatDTO.setVacanteId(chat.getVacanteId());
         chatDTO.setIsActive(chat.getIsActive());
         chatDTO.setContentUltimoMensaje(chat.getContentUltimoMensaje());
         chatDTO.setHoraUltimoMensaje(chat.getHoraUltimoMensaje());
+        chatDTO.setNombreCandidato(chat.getNombreCandidato());
+        chatDTO.setNombreEmpresa(chat.getNombreEmpresa());
+        chatDTO.setTituloVacante(chat.getTituloVacante());
         return chatDTO;
     }
 
@@ -111,9 +154,22 @@ public class ChatService {
         chat.setId(chatDTO.getId());
         chat.setEmpresaId(chatDTO.getEmpresaId());
         chat.setCandidatoId(chatDTO.getCandidatoId());
+        chat.setVacanteId(chatDTO.getVacanteId());
         chat.setIsActive(chatDTO.getIsActive());
         chat.setHoraUltimoMensaje(chatDTO.getHoraUltimoMensaje());
+        chat.setNombreCandidato(chatDTO.getNombreCandidato());
+        chat.setNombreEmpresa(chatDTO.getNombreEmpresa());
+        chat.setTituloVacante(chatDTO.getTituloVacante());
         return chat;
+    }
+
+    public Map<String,Object> mapResponse(Page<ChatDTO> pageableResponse, String nameList){
+        Map<String,Object> response = new HashMap<>();
+        response.put(nameList, pageableResponse.getContent());
+        response.put("totalElements", pageableResponse.getTotalElements());
+        response.put("pageActual", pageableResponse.getPageable());
+        response.put("totalPage", pageableResponse.getTotalPages());
+        return response;
     }
 
     public Mensaje mensajeMapToEntity(MensajeDTO mensajeDTO, Mensaje mensaje) { 
