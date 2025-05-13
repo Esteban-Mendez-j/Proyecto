@@ -65,51 +65,52 @@ public class CandidatoResource {
         @RequestParam(name = "nPostulacion", required = false) Long nPostulacion,
         Model model, HttpSession session) {
 
-    Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
+        String rol = null; 
+        try {
+            // 1. Obtener ID del token si no viene por parámetro
+            if (idUsuario == null) {
+                String jwtToken = (String) session.getAttribute("jwtToken");
+                if (jwtToken == null) {
+                    response.put("error", "No se encontró token de sesión");
+                    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+                }
 
-    try {
-        // 1. Obtener ID del token si no viene por parámetro
-        if (idUsuario == null && nPostulacion == null) {
-            String jwtToken = (String) session.getAttribute("jwtToken");
-            if (jwtToken == null) {
-                response.put("error", "No se encontró token de sesión");
-                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+                DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+                idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+                rol = decodedJWT.getClaim("rolPrincipal").asString();
             }
 
-            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-            idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-        }
+            // 2. Validar si tiene permiso de ver la postulación
+            if (nPostulacion != null && "EMPRESA".equalsIgnoreCase(rol) ) {
+                PostuladoDTO postulado = postuladoService.get(nPostulacion);
+                if (postulado == null || postulado.getCandidato() == null) {
+                    response.put("error", "Postulación no encontrada o inválida");
+                    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                }
+                if (!postulado.getCandidato().getId().equals(idUsuario)) {
+                    response.put("error", "No tienes permiso para acceder");
+                    return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+                }
+            }
 
-        // 2. Validar si tiene permiso de ver la postulación
-        if (nPostulacion != null) {
-            PostuladoDTO postulado = postuladoService.get(nPostulacion);
-            if (postulado == null || postulado.getCandidato() == null) {
-                response.put("error", "Postulación no encontrada o inválida");
+            // 3. Obtener candidato
+            CandidatoDTO candidatoDTO = candidatoService.get(idUsuario);
+            if (candidatoDTO == null) {
+                response.put("error", "Candidato no encontrado");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            if (!postulado.getCandidato().getId().equals(idUsuario)) {
-                response.put("error", "No tienes permiso para acceder");
-                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-            }
+            System.out.println("candidato: "+ candidatoDTO);
+            response.put("estudios", estudioService.getEstudiosByIdUsuario(idUsuario));
+            response.put("historialLaboral", historialLaboralService.getHistorialByIdUsuario(idUsuario));
+            response.put("candidato", candidatoDTO);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("error", "Error interno: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        // 3. Obtener candidato
-        CandidatoDTO candidatoDTO = candidatoService.get(idUsuario);
-        if (candidatoDTO == null) {
-            response.put("error", "Candidato no encontrado");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-
-        response.put("estudios", estudioService.getEstudiosByIdUsuario(idUsuario));
-        response.put("historialLaboral", historialLaboralService.getHistorialByIdUsuario(idUsuario));
-        response.put("candidato", candidatoDTO);
-        return ResponseEntity.ok(response);
-
-    } catch (Exception e) {
-        response.put("error", "Error interno: " + e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-}
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createCandidato(@RequestBody  @Valid  CandidatoDTO candidatoDTO) {

@@ -26,6 +26,26 @@ public class PostuladoDTO {
 
     private CandidatoResumenDTO candidato;
 
+    private boolean isActive;
+
+    private boolean vacanteIsActive; 
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public boolean isVacanteIsActive() {
+        return vacanteIsActive;
+    }
+
+    public void setVacanteIsActive(boolean vacanteIsActive) {
+        this.vacanteIsActive = vacanteIsActive;
+    }
+
     public Long getnPostulacion() {
         return nPostulacion;
     }

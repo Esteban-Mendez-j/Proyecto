@@ -10,7 +10,10 @@ import com.miproyecto.proyecto.domain.Chat;
 
 public interface ChatRepository extends MongoRepository<Chat, String> {
     Optional<Chat> findByEmpresaIdAndCandidatoId(String empresaId, String candidatoId);
+    
     Optional<Chat> findByVacanteIdAndCandidatoId(String vacanteId, String candidatoId);
+
+    Optional<Chat> findByVacanteIdAndCandidatoId(Long vacanteId, Long candidatoId);
 
     Page<Chat> findByEmpresaId(String empresaId,Pageable pageable);
 

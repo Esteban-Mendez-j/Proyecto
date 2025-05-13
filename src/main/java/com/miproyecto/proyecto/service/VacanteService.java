@@ -108,6 +108,12 @@ public class VacanteService {
                 .orElseThrow(NotFoundException::new);
     }
 
+    public VacanteResumenDTO findVacanteResumenById(final Long nvacantes) {
+        return vacanteRepository.findById(nvacantes)
+                .map(vacante -> mapToResumenDTO(vacante, new VacanteResumenDTO()))
+                .orElseThrow(NotFoundException::new);
+    }
+
     public void create(final VacanteDTO vacanteDTO) {
         final Vacante vacante = new Vacante();
         vacanteDTO.setFechaPublicacion(LocalDate.now());

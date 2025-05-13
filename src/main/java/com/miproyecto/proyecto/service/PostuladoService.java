@@ -4,6 +4,7 @@ import com.miproyecto.proyecto.domain.Candidato;
 import com.miproyecto.proyecto.domain.Postulado;
 import com.miproyecto.proyecto.domain.Vacante;
 import com.miproyecto.proyecto.model.CandidatoResumenDTO;
+import com.miproyecto.proyecto.model.ChatDTO;
 import com.miproyecto.proyecto.model.PostuladoDTO;
 import com.miproyecto.proyecto.model.VacanteResumenDTO;
 import com.miproyecto.proyecto.repos.CandidatoRepository;
@@ -32,17 +33,17 @@ public class PostuladoService {
     private final CandidatoRepository candidatoRepository;
     private final CandidatoService candidatoService;
     private final VacanteService vacanteService;
+    private final ChatService chatService;
 
-    public PostuladoService(final PostuladoRepository postuladoRepository,
-            final VacanteRepository vacanteRepository,
-            final CandidatoRepository candidatoRepository,
-            final CandidatoService candidatoService,
-            final VacanteService vacanteService) {
+    public PostuladoService(PostuladoRepository postuladoRepository, VacanteRepository vacanteRepository,
+            CandidatoRepository candidatoRepository, CandidatoService candidatoService, VacanteService vacanteService,
+            ChatService chatService) {
         this.postuladoRepository = postuladoRepository;
         this.vacanteRepository = vacanteRepository;
         this.candidatoRepository = candidatoRepository;
         this.candidatoService = candidatoService;
         this.vacanteService = vacanteService;
+        this.chatService = chatService;
     }
 
     public List<PostuladoDTO> findAll() {
@@ -84,11 +85,13 @@ public class PostuladoService {
                 .orElseThrow(NotFoundException::new);
     }
     
-    public Long create(final PostuladoDTO postuladoDTO) {
+    public Long create(final PostuladoDTO postuladoDTO, CandidatoResumenDTO candidatoResumenDTO, Long nVacante) {
         
-        postuladoDTO.setVacante(null);
-        postuladoDTO.setCandidato(null);
+        postuladoDTO.setVacante(vacanteService.findVacanteResumenById(nVacante));
+        postuladoDTO.setCandidato(candidatoResumenDTO);
         postuladoDTO.setFechaPostulacion(LocalDate.now());
+        postuladoDTO.setActive(true);
+        postuladoDTO.setVacanteIsActive(true);
         postuladoDTO.setEstado("Espera");
 
         final Postulado postulado = new Postulado();
@@ -96,12 +99,25 @@ public class PostuladoService {
         return postuladoRepository.save(postulado).getNPostulacion();
     }
 
-    public void update(final Long nPostulacion, final PostuladoDTO postuladoDTO) {
-        final Postulado postulado = postuladoRepository.findById(nPostulacion)
+    
+
+    public void update(Long nPostulacion, PostuladoDTO PostuladoDTO) {
+        Postulado postulado = postuladoRepository.findById(nPostulacion)
                 .orElseThrow(NotFoundException::new);
-        mapToEntity(postuladoDTO, postulado);
+        postulado.setEstado(PostuladoDTO.getEstado());
         postuladoRepository.save(postulado);
+
+        // Lógica del chat
+        if ("Rechazada".equalsIgnoreCase(postulado.getEstado())) {
+            ChatDTO chat = chatService.findByVacanteIdAndCandidatoId(
+                    postulado.getVacante().getNvacantes(), 
+                    postulado.getCandidato().getIdUsuario());
+            if (chat != null) {
+                chatService.cambiarEstadoChat(chat.getId(), false);
+            }
+        }
     }
+
 
     public void cambiarEstadoVacantes(Long Nvacante, boolean estado) {
         int postuladosAtualizados = postuladoRepository.actualizarEstadoPostulacionesPorVacante(Nvacante, estado);
@@ -132,6 +148,8 @@ public class PostuladoService {
         postuladoDTO.setnPostulacion(postulado.getNPostulacion());
         postuladoDTO.setFechaPostulacion(postulado.getFechaPostulacion());
         postuladoDTO.setEstado(postulado.getEstado());
+        postuladoDTO.setActive(postulado.isActive());
+        postuladoDTO.setVacanteIsActive(postulado.isVacanteIsActive());
         postuladoDTO.setVacante(
             vacanteService.mapToResumenDTO(postulado.getVacante(), new VacanteResumenDTO())
         );
@@ -150,6 +168,8 @@ public class PostuladoService {
         final Candidato idUsuario = candidatoRepository.findById(postuladoDTO.getCandidato().getId())
                 .orElseThrow(() -> new NotFoundException("idUsuario not found"));
         postulado.setCandidato(idUsuario);
+        postulado.setActive(postuladoDTO.isActive());
+        postulado.setVacanteIsActive(postuladoDTO.isVacanteIsActive());       
         return postulado;
     }
 

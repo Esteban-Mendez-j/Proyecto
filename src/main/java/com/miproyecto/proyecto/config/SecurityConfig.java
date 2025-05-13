@@ -94,16 +94,15 @@ public class SecurityConfig {
                 .requestMatchers("/", "/usuarios/**", "/css/**", 
                     "/images/**", "/js/**", "/api/empresas/add", "/api/candidatos/add","/api/usuarios/rol",
                     "/api/vacantes/listar", "/api/vacantes/seleccion/{nvacantes}",
-                    "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" 
-                    ,"/api/chats/**", "/app/chat.sendMessage",
-                    "/api/vacantes/**","/api/postulados/**","/uploads/img/**"
+                    "/api/vacantes/eliminar/filtro", "/api/apelaciones/**","/api/vacantes/Top/listar","/api/vacantes/listar/filtradas" ,
+                    "/api/vacantes/**", "/api/empresas/perfil/**"
                 ).permitAll()
                 .requestMatchers("/api/admin/agregarRol","/admin/removerRol").hasRole("SUPER_ADMIN")
                 .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/api/empresas/**","/api/vacantes/popular/listar").hasRole("EMPRESA")
-                .requestMatchers("/api/candidatos/","/api/candidatos/perfil/**").hasAnyRole("CANDIDATO","EMPRESA","ADMIN","SUPER_ADMIN")
-                .requestMatchers( "/api/postulados/**", 
-                    "/api/estudios", "/api/historialLaborals").hasAnyRole("EMPRESA", "CANDIDATO")
+                .requestMatchers("/api/candidatos/perfil/**","/api/postulados/**").hasAnyRole("CANDIDATO","EMPRESA","ADMIN","SUPER_ADMIN")
+                .requestMatchers("/api/candidatos/**", "/api/estudios/**", "/api/historialLaborals/**").hasRole("CANDIDATO")
+                .requestMatchers("/api/chats/**", "/app/chat.sendMessage").hasAnyRole("EMPRESA", "CANDIDATO")
                 .anyRequest().authenticated()
             )
             .formLogin(formLogin -> formLogin                       

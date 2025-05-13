@@ -96,6 +96,16 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
+    public ChatDTO findByVacanteIdAndCandidatoId(Long vacanteId, Long candidatoId) {
+        Chat chat = chatRepository.findByVacanteIdAndCandidatoId(vacanteId, candidatoId)
+            .orElse(null);
+        if (chat == null) {
+            return null;  
+        }
+        return mapToDTO(chat, new ChatDTO());
+    }
+
+
     //listar todos los chats 
     public Map<String, Object> listarChatsPaginados(Pageable pageable) {
         Page<Chat> chatPage = chatRepository.findAll(pageable);
@@ -118,18 +128,18 @@ public class ChatService {
     }
 
     public void cambiarEstadoChat(String chatId, boolean nuevoEstado) {
-        Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new NotFoundException("Chat no encontrado"));
-
+        Chat chat = chatRepository.findById(chatId).orElse(null);
+        if(chat == null){return;}
+       
         chat.setIsActive(nuevoEstado);
         chatRepository.save(chat);
 
         if (!nuevoEstado) {
             // Notificar a ambos usuarios que el chat fue cerrado (si estás usando WebSocket)
-            String empresaId = chat.getEmpresaId();
-            String candidatoId = chat.getCandidatoId();
+            String empresaId = usuarioService.get(Long.parseLong(chat.getEmpresaId())).getCorreo();
+            String candidatoId = usuarioService.get(Long.parseLong(chat.getCandidatoId())).getCorreo();
             String mensaje = "El chat ha sido cerrado por la empresa.";
-
+            System.out.println("Enviando notificación a empresa y candidato");
             messagingTemplate.convertAndSendToUser(empresaId, "/queue/messages", mensaje);
             messagingTemplate.convertAndSendToUser(candidatoId, "/queue/messages", mensaje);
         }

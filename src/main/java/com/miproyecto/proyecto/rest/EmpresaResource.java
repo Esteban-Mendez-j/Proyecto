@@ -3,7 +3,6 @@ package com.miproyecto.proyecto.rest;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.EmpresaDTO;
 import com.miproyecto.proyecto.service.EmpresaService;
-import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 import jakarta.servlet.http.HttpSession;
@@ -34,23 +32,20 @@ public class EmpresaResource {
 
     private final EmpresaService empresaService;
     private final JwtUtils jwtUtils;
-    private final VacanteService vacanteService;
 
     
 
-    public EmpresaResource(EmpresaService empresaService, JwtUtils jwtUtils, VacanteService vacanteService) {
+    public EmpresaResource(EmpresaService empresaService, JwtUtils jwtUtils) {
         this.empresaService = empresaService;
         this.jwtUtils = jwtUtils;
-        this.vacanteService = vacanteService;
     }
 
 
     @GetMapping("/perfil")
     public ResponseEntity<Map<String, Object>> mostrarPerfil( Model model,HttpSession session,
-            @RequestParam(value = "idUsuario", required = false) Long idUsuario,
-            Pageable pageable) {        
+            @RequestParam(value = "idUsuario", required = false) Long idUsuario) {        
         
-        Map<String, Object> response = vacanteService.findByIdUsuario(idUsuario, pageable);        
+        Map<String, Object> response = new HashMap<>();     
         if (idUsuario == null) {
             // Sacamos el ID del usuario que inicia sesion
             String jwtToken = (String) session.getAttribute("jwtToken");

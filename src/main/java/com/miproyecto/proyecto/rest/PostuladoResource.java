@@ -8,7 +8,6 @@ import com.miproyecto.proyecto.service.PostuladoService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +105,7 @@ public class PostuladoResource {
         // Crear postulación
         PostuladoDTO postuladoDTO = new PostuladoDTO();
         postuladoDTO.setCandidato(candidatoResumenDTO);
-        postuladoService.create(postuladoDTO);
+        postuladoService.create(postuladoDTO, candidatoResumenDTO, nvacantes);
 
         response.put("status", "success");
         response.put("message", "Postulación realizada con éxito.");
@@ -122,7 +121,7 @@ public class PostuladoResource {
     @PutMapping("/edit/{nPostulacion}")
     public ResponseEntity<Long> updatePostulado(
             @PathVariable(name = "nPostulacion") final Long nPostulacion,
-            @RequestBody @Valid final PostuladoDTO postuladoDTO) {
+            @RequestBody final PostuladoDTO postuladoDTO) {
         postuladoService.update(nPostulacion, postuladoDTO);
         return ResponseEntity.ok(nPostulacion);
     }

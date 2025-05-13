@@ -62,7 +62,6 @@ public class JwtTokenValidator extends OncePerRequestFilter {
             System.out.println("token invalido, flata pner el mensaje");
             response.sendRedirect("/usuarios/cerrarSesion");
             return;
-            // throw new TokenExpiredException("token expirado, hola munod", expiredToken.getExpiredOn());
     
         } catch (JWTVerificationException exception) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
