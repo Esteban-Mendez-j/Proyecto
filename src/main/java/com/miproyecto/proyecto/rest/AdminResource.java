@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.miproyecto.proyecto.service.AdminService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.service.VacanteService;
-import com.miproyecto.proyecto.util.JwtUtils;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -30,8 +29,6 @@ public class AdminResource {
     private UsuarioService usuarioService;
     @Autowired
     private VacanteService vacanteService;
-    @Autowired
-    private JwtUtils jwtUtils;
 
 
     @GetMapping("/listar/filtrados")

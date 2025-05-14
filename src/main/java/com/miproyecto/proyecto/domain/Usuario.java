@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -51,6 +52,12 @@ public class Usuario {
 
     @Column
     private String comentarioAdmin;
+
+    @Column
+    private LocalDate fechaRegistro;
+
+    @Column
+    private LocalDate fechaInicioSesion;
     
     @ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.MERGE )
     @JoinTable(
@@ -71,6 +78,22 @@ public class Usuario {
 
         
     public Usuario() {
+    }
+
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public LocalDate getFechaInicioSesion() {
+        return fechaInicioSesion;
+    }
+
+    public void setFechaInicioSesion(LocalDate fechaInicioSesion) {
+        this.fechaInicioSesion = fechaInicioSesion;
     }
     
     public Long getIdUsuario() {

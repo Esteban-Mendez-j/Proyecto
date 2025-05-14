@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.repos;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -19,7 +20,39 @@ import com.miproyecto.proyecto.domain.Vacante;
 @Transactional
 public interface PostuladoRepository extends JpaRepository<Postulado, Long>{
 
-    Page<Postulado> findByVacante(Vacante vacante, Pageable pageable); 
+    @Query("""
+        SELECT p FROM Postulado p
+        WHERE p.vacante = :vacante
+            AND (:estado IS NULL OR p.estado = :estado)
+            AND (:fechaMinima IS NULL OR p.fechaPostulacion >= :fechaMinima)
+            AND (:nombreCandidato IS NULL OR LOWER(p.candidato.nombre) LIKE LOWER(CONCAT('%', :nombreCandidato, '%')))
+    """)
+    Page<Postulado> buscarPorFiltros(@Param("vacante") Vacante vacante, @Param("estado") String estado,
+        @Param("fechaMinima") LocalDate fechaMinima,
+        @Param("nombreCandidato") String nombreCandidato,
+        Pageable pageable
+    );
+
+
+    @Query("SELECT p FROM Postulado p " +
+        "JOIN p.vacante v " +
+        "JOIN v.idUsuario e " +
+        "WHERE (:idCandidato IS NULL OR p.candidato.id = :idCandidato) " +
+        "AND (:estado IS NULL OR LOWER(p.estado) = LOWER(:estado)) " +
+        "AND (:tituloVacante IS NULL OR LOWER(v.titulo) LIKE LOWER(CONCAT('%', :tituloVacante, '%'))) " +
+        "AND (:nombreEmpresa IS NULL OR LOWER(e.nombre) LIKE LOWER(CONCAT('%', :nombreEmpresa, '%'))) " +
+        "AND (:fechaMinima IS NULL OR p.fechaPostulacion >= :fechaMinima) " +
+        "AND p.isActive = true " +
+        "AND p.vacanteIsActive = true")
+    Page<Postulado> buscarPostulacionesFiltradas(
+        @Param("idCandidato") Long idCandidato,
+        @Param("estado") String estado,
+        @Param("tituloVacante") String tituloVacante,
+        @Param("nombreEmpresa") String nombreEmpresa,
+        @Param("fechaMinima") LocalDate fechaMinima,
+        Pageable pageable
+    );
+
 
     Optional<Postulado> findByVacante_NvacantesAndCandidato_IdUsuario(Long vacanteId, Long idUsuarioId);  // Cambiar Nvacante a Vacante y asegurar que los parámetros sean correctos
 

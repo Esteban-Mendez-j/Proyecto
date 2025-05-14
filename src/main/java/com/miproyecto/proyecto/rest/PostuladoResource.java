@@ -9,12 +9,14 @@ import com.miproyecto.proyecto.util.JwtUtils;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -48,31 +51,40 @@ public class PostuladoResource {
     }
 
     //Candidatos postulados a una vacante (para empresa)
-    @GetMapping("/lista/{nvacantes}")
-    public ResponseEntity<Map<String,Object>> listaByNvacantes(
-                @PathVariable(name = "nvacantes") String nvacantes, 
-                @PageableDefault(page = 0, size = 10)
-                Pageable pageable) {
-        System.out.println(nvacantes);
-        Map<String, Object> response = postuladoService.findByNvacantes(Long.parseLong(nvacantes), pageable); 
+    @GetMapping("/lista")
+    public ResponseEntity<Map<String, Object>> listaByNvacantes(
+        @RequestParam(name = "nvacantes") Long nvacantes,
+        @RequestParam(name = "estado", required = false) String estado,
+        @RequestParam(name = "fechaMinima", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaMinima,
+        @RequestParam(name = "nombreCandidato", required = false) String nombreCandidato,
+        @PageableDefault(page = 0, size = 10) Pageable pageable) {
+
+        Map<String, Object> response = postuladoService.findByNvacantes(nvacantes, estado, fechaMinima, nombreCandidato, pageable);
         return ResponseEntity.ok(response);
     }
+
 
     // lista de postulaciones de un candidato (para candidato )
     @GetMapping("/lista/candidato")
     public ResponseEntity<Map<String, Object>> listaByIdUsuario(
-                HttpSession session,
-                @PageableDefault(page = 0, size = 10)
-                Pageable pageable) {
-
-        // Extraer el ID del usuario desde el token JWT guardado en sesión
+            HttpSession session,
+            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) LocalDate fechaMinima,
+            @RequestParam(required = false) String tituloVacante,
+            @RequestParam(required = false) String empresa
+    ) {
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-        Map<String, Object> response =  postuladoService.findByIdUsuario(idUsuario, pageable);
+        Map<String, Object> response = postuladoService.findByIdUsuario(
+            idUsuario, estado, tituloVacante, empresa, fechaMinima, pageable
+        );
         return ResponseEntity.ok(response);
     }
+
+
 
 
     @PostMapping("/add/{nvacantes}")

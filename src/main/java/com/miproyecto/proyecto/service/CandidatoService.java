@@ -1,20 +1,14 @@
 package com.miproyecto.proyecto.service;
 
 import com.miproyecto.proyecto.domain.Candidato;
-import com.miproyecto.proyecto.domain.Estudio;
-import com.miproyecto.proyecto.domain.HistorialLaboral;
-import com.miproyecto.proyecto.domain.Postulado;
 import com.miproyecto.proyecto.domain.Roles;
 import com.miproyecto.proyecto.model.CandidatoDTO;
 import com.miproyecto.proyecto.model.CandidatoResumenDTO;
 import com.miproyecto.proyecto.repos.CandidatoRepository;
-import com.miproyecto.proyecto.repos.EstudioRepository;
-import com.miproyecto.proyecto.repos.HistorialLaboralRepository;
-import com.miproyecto.proyecto.repos.PostuladoRepository;
 import com.miproyecto.proyecto.repos.RolesRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
-import com.miproyecto.proyecto.util.ReferencedWarning;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,19 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class CandidatoService{
 
     private final CandidatoRepository candidatoRepository;
-    private final PostuladoRepository postuladoRepository;
-    private final EstudioRepository estudioRepository;
-    private final HistorialLaboralRepository historialLaboralRepository;
     private final PasswordEncoder passwordEncoder;
     private final RolesRepository rolesRepository;
 
-    public CandidatoService(CandidatoRepository candidatoRepository, PostuladoRepository postuladoRepository,
-            EstudioRepository estudioRepository, HistorialLaboralRepository historialLaboralRepository,
-            PasswordEncoder passwordEncoder, RolesRepository rolesRepository) {
+
+    public CandidatoService(CandidatoRepository candidatoRepository, PasswordEncoder passwordEncoder,
+            RolesRepository rolesRepository) {
         this.candidatoRepository = candidatoRepository;
-        this.postuladoRepository = postuladoRepository;
-        this.estudioRepository = estudioRepository;
-        this.historialLaboralRepository = historialLaboralRepository;
         this.passwordEncoder = passwordEncoder;
         this.rolesRepository = rolesRepository;
     }
@@ -75,6 +63,7 @@ public class CandidatoService{
         roles.add(rolesRepository.findByRol("CANDIDATO"));
         candidatoDTO.setIsActive(true);
         candidatoDTO.setImagen("/images/imgCandidato.png");
+        candidatoDTO.setFechaRegistro(LocalDate.now());
         mapToEntity(candidatoDTO, candidato, true);
         candidato.setRoles(roles);// guarda el rol en la db
         
@@ -109,6 +98,8 @@ public class CandidatoService{
         candidatoDTO.setIdentificacion(candidato.getIdentificacion());
         candidatoDTO.setIsActive(candidato.getIsActive());
         candidatoDTO.setComentarioAdmin(candidato.getComentarioAdmin());
+        candidatoDTO.setFechaInicioSesion(candidato.getFechaInicioSesion());
+        candidatoDTO.setFechaRegistro(candidato.getFechaRegistro());
 
         candidatoDTO.setRoles(
             candidato.getRoles().stream()
@@ -144,6 +135,8 @@ public class CandidatoService{
         candidato.setIdentificacion(candidatoDTO.getIdentificacion());
         candidato.setIsActive(candidatoDTO.getIsActive());
         candidato.setComentarioAdmin(candidatoDTO.getComentarioAdmin());
+        candidatoDTO.setFechaInicioSesion(candidato.getFechaInicioSesion());
+        candidatoDTO.setFechaRegistro(candidato.getFechaRegistro());
         return candidato;
     }
 
@@ -151,35 +144,5 @@ public class CandidatoService{
         return candidatoRepository.existsByIdentificacionIgnoreCase(identificacion);
     }
 
-
-    public ReferencedWarning getReferencedWarning(final Long idUsuario) {
-        final ReferencedWarning referencedWarning = new ReferencedWarning();
-        final Candidato candidato = candidatoRepository.findById(idUsuario)
-                .orElseThrow(NotFoundException::new);
-        
-        // Verificamos si hay alguna referencia en las otras tablas.
-        final Postulado postulado = postuladoRepository.findFirstByCandidato(candidato);
-        if (postulado != null) {
-            referencedWarning.setKey("candidato.postulado.idUsuario.referenced");
-            referencedWarning.addParam(postulado.getNPostulacion());
-            return referencedWarning;
-        }
-
-        final Estudio estudio = estudioRepository.findFirstByIdUsuario(candidato);
-        if (estudio != null) {
-            referencedWarning.setKey("candidato.estudio.idUsuario.referenced");
-            referencedWarning.addParam(estudio.getIdEstudio());
-            return referencedWarning;
-        }
-
-        final HistorialLaboral historialLaboral = historialLaboralRepository.findFirstByIdUsuario(candidato);
-        if (historialLaboral != null) {
-            referencedWarning.setKey("candidato.historialLaboral.idUsuario.referenced");
-            referencedWarning.addParam(historialLaboral.getIDHistorial());
-            return referencedWarning;
-        }
-
-        return null;
-    }
 }
 

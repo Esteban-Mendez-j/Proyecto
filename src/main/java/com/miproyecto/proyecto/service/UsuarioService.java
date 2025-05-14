@@ -189,6 +189,8 @@ public class UsuarioService {
         usuarioDTO.setImagen(usuario.getImagen());
         usuarioDTO.setIsActive(usuario.getIsActive());
         usuarioDTO.setComentarioAdmin(usuario.getComentarioAdmin());
+        usuarioDTO.setFechaInicioSesion(usuario.getFechaInicioSesion());
+        usuarioDTO.setFechaRegistro(usuario.getFechaRegistro());
         usuarioDTO.setRoles(
             usuario.getRoles().stream()
                 .map(roles -> roles.getRol())
@@ -207,6 +209,8 @@ public class UsuarioService {
         usuario.setImagen(usuarioDTO.getImagen());
         usuario.setIsActive(usuarioDTO.getIsActive());
         usuario.setComentarioAdmin(usuarioDTO.getComentarioAdmin());
+        usuario.setFechaInicioSesion(usuarioDTO.getFechaInicioSesion());
+        usuario.setFechaRegistro(usuarioDTO.getFechaRegistro());
         usuario.setRoles(
             usuarioDTO.getRoles().stream()
                     .map(roles -> rolesRepository.findByRol(roles))
@@ -233,7 +237,7 @@ public class UsuarioService {
 
 
 
-        public Map<String,Object> mapResponse(Page<UsuarioDTO> pageableResponse, String nameList){
+    public Map<String,Object> mapResponse(Page<UsuarioDTO> pageableResponse, String nameList){
         Map<String,Object> response = new HashMap<>();
 
         response.put(nameList, pageableResponse.getContent());

@@ -1,10 +1,8 @@
 package com.miproyecto.proyecto.model;
 
-
+import java.time.LocalDate;
 import java.util.List;
-
 import com.miproyecto.proyecto.service.EncryptionService;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -38,6 +36,10 @@ public class UsuarioDTO {
     @Size(max = 255)
     private String imagen;
 
+    private LocalDate fechaRegistro;
+
+    private LocalDate fechaInicioSesion;
+
     private Boolean isActive;
 
     private String comentarioAdmin;
@@ -47,6 +49,22 @@ public class UsuarioDTO {
     // Constructor donde se inicializa el servicio de encriptación
     public UsuarioDTO() {
         this.encryptionService = new EncryptionService();  
+    }
+
+    public LocalDate getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDate fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public LocalDate getFechaInicioSesion() {
+        return fechaInicioSesion;
+    }
+
+    public void setFechaInicioSesion(LocalDate fechaInicioSesion) {
+        this.fechaInicioSesion = fechaInicioSesion;
     }
     
     public String getComentarioAdmin() {

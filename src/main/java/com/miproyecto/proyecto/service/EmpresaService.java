@@ -1,6 +1,7 @@
 package com.miproyecto.proyecto.service;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,6 +58,7 @@ public class EmpresaService {
         List<Roles> roles= new ArrayList<>();
         empresaDTO.setIsActive(true);
         empresaDTO.setImagen("/images/imgEmpresa.png");
+        empresaDTO.setFechaRegistro(LocalDate.now());
         roles.add(rolesRepository.findByRol("EMPRESA"));
         Empresa empresa = mapToEntity(empresaDTO, new Empresa());
         empresa.setRoles(roles);

@@ -53,24 +53,29 @@ public class PostuladoService {
                 .toList();
     }
 
-    // obtienen todos los psotulados registrados en la misma vacante 
-    public Map<String, Object> findByNvacantes(Long nvacantes, Pageable pageable) {
+    public Map<String, Object> findByNvacantes(Long nvacantes, String estado, LocalDate fechaMinima, String nombreCandidato, Pageable pageable) {
         final Vacante vacante = vacanteRepository.findById(nvacantes)
-                .orElseThrow(NotFoundException::new);
-        Page<PostuladoDTO> postulados = postuladoRepository.findByVacante(vacante, pageable)
-                .map(postulado -> mapToDTO(postulado, new PostuladoDTO())); 
-        return mapResponse(postulados, "postulados");
-    }
+                .orElseThrow(() -> new NotFoundException("Vacante no encontrada"));
 
-
-    public Map<String, Object> findByIdUsuario(Long  idUsuario, Pageable pageable) {
-        final Candidato candidato = candidatoRepository.findById(idUsuario)
-                .orElseThrow(NotFoundException::new);
-
-        Page<PostuladoDTO> postulados = postuladoRepository.findByCandidato(candidato, pageable)
+        Page<PostuladoDTO> postulados = postuladoRepository.buscarPorFiltros(vacante, estado, fechaMinima, nombreCandidato, pageable)
                 .map(postulado -> mapToDTO(postulado, new PostuladoDTO()));
+
         return mapResponse(postulados, "postulados");
     }
+
+
+    public Map<String, Object> findByIdUsuario(Long idUsuario, String estado, String titulo, String empresa, LocalDate fechaMinima, Pageable pageable) {
+        Candidato candidato = candidatoRepository.findById(idUsuario)
+                .orElseThrow(NotFoundException::new);
+
+        Page<PostuladoDTO> postulados = postuladoRepository
+                .buscarPostulacionesFiltradas(candidato.getIdUsuario(), estado, titulo, empresa, fechaMinima, pageable)
+                .map(postulado -> mapToDTO(postulado, new PostuladoDTO()));
+
+        return mapResponse(postulados, "postulados");
+    }
+
+
 
     public PostuladoDTO findByNvacantesAndIdUsuario(Long nvacanteId, Long idUsuarioId) {
         return postuladoRepository.findByVacante_NvacantesAndCandidato_IdUsuario(nvacanteId, idUsuarioId)

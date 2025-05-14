@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.miproyecto.proyecto.model.UsuarioDTO;
 import com.miproyecto.proyecto.service.UsuarioService;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -41,10 +43,14 @@ public class JwtUtils {
     public String createToken(Authentication authentication) {
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 
-        // se guarda el username (correo), pero hay que guradar el id par que se mas facil 
         User user = (User) authentication.getPrincipal();
-        String username =  usuarioService.findIdByCorreo(user.getUsername()).toString();
-        String rolPrincipal = usuarioService.findByCorreo(user.getUsername()).getRolPrinciapl();
+        UsuarioDTO usuarioDTO = usuarioService.findByCorreo(user.getUsername());
+        String username = usuarioDTO.getIdUsuario().toString();
+        String rolPrincipal = usuarioDTO.getRolPrinciapl();
+        usuarioDTO.setFechaInicioSesion(LocalDate.now());
+        usuarioService.update(usuarioDTO.getIdUsuario(), usuarioDTO);
+
+        
         String authorities = authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
