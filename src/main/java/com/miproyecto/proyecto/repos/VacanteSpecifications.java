@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.miproyecto.proyecto.domain.Empresa;
 import com.miproyecto.proyecto.domain.Vacante;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 
@@ -18,12 +19,23 @@ public class VacanteSpecifications {
 
             if (filtro.getIdUsuario() != null && filtro.getIdUsuario() > 0) {
                 Join<Object, Object> empresaJoin = root.join("idUsuario", JoinType.INNER);
-                predicates.add(criteriaBuilder.equal(empresaJoin.get("idUsuario"), filtro.getIdUsuario()));
+                predicates.add(criteriaBuilder.equal(empresaJoin.get("idUsuario"), filtro.getIdUsuario()));   
             }
 
-            if ("CANDIDATO".equalsIgnoreCase(filtro.getRolUser())) {
-                predicates.add(criteriaBuilder.equal(root.get("isActive"), true));
+            if (filtro.getTotalpostulaciones() >= 0){
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("totalpostulaciones"), filtro.getTotalpostulaciones()));
+
             }
+            if (filtro.getNameEmpresa() != null && !filtro.getNameEmpresa().isEmpty()) {
+                Join<Vacante, Empresa> empresaJoin = root.join("idUsuario", JoinType.INNER);
+                predicates.add(criteriaBuilder.like(
+                        criteriaBuilder.lower(empresaJoin.get("nombre")),
+                        "%" + filtro.getNameEmpresa().toLowerCase() + "%"));
+            }
+        
+
+            predicates.add(criteriaBuilder.equal(root.get("isActive"), filtro.getIsActive()));
+           
 
             if (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty()) {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("titulo")), "%" + filtro.getTitulo().toLowerCase() + "%"));
@@ -49,7 +61,7 @@ public class VacanteSpecifications {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("fechaPublicacion"), filtro.getFechaPublicacion()));
             }
 
-            if ("null".equals(filtro.getTipo())) {
+            if ("todos".equals(filtro.getTipo())) {
                 predicates.add(criteriaBuilder.or(
                     criteriaBuilder.equal(root.get("tipo"), "Practica"),
                     criteriaBuilder.equal(root.get("tipo"), "Vacante")

@@ -269,8 +269,11 @@ public class UsuarioService {
 //     }
     //FiltrosUsuarios
     public Map<String, Object> buscarUsuariosConFiltros( String nombre , String rol, Boolean estado  , Pageable pageable) {
+        System.out.println("Este es el rol service: " + rol);
         Specification<Usuario> specification = UsuarioSpecifications.conFiltros(nombre,  rol,  estado);
+        
         Page<UsuarioDTO> page = usuarioRepository.findAll(specification, pageable).map(usuario -> mapToDTO(usuario, new UsuarioDTO())); 
+        
         return mapResponse(page, "usuarios");  
     }
 }

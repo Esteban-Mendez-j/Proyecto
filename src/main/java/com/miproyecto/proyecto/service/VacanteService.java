@@ -79,6 +79,7 @@ public class VacanteService {
     public Map<String, Object> buscarVacantesConFiltros(FiltroVacanteDTO filtro, Pageable pageable) {
         Specification<Vacante> specification = VacanteSpecifications.conFiltros(filtro);
         Page<VacanteDTO> page = vacanteRepository.findAll(specification, pageable).map(vacante -> mapToDTO(vacante, new VacanteDTO()));
+        
         return mapResponse(page, "vacantes");         
     }
 
@@ -155,6 +156,7 @@ public class VacanteService {
         vacanteDTO.setNameEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getNombre() : "Empresa Desconocida");
         vacanteDTO.setImagenEmpresa(vacante.getIdUsuario() != null ? vacante.getIdUsuario().getImagen() : "null");
         vacanteDTO.setnPostulados(vacante.getLitarpostulados().size());
+        vacanteDTO.setTotalpostulaciones(vacante.getTotalpostulaciones());
         return vacanteDTO;
     }
 

@@ -13,8 +13,23 @@ public class FiltroVacanteDTO {
     private String tipo;
     private String nameEmpresa;
     private Long idUsuario;
+    private int totalpostulaciones;
     private String rolUser;
+    private boolean isActive;
 
+     public int getTotalpostulaciones() {
+        return totalpostulaciones;
+    }
+    public void setTotalpostulaciones(int totalpostulaciones) {
+        this.totalpostulaciones = totalpostulaciones;
+    }
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
     public String getRolUser() {
         return rolUser;
     }
@@ -81,10 +96,5 @@ public class FiltroVacanteDTO {
     public void setNameEmpresa(String nameEmpresa) {
         this.nameEmpresa = nameEmpresa;
     }
-    @Override
-    public String toString() {
-        return "FiltroVacanteDTO [cargo=" + cargo + ", fechaPublicacion=" + fechaPublicacion + ", sueldo=" + sueldo
-                + ", modalidad=" + modalidad + ", experiencia=" + experiencia + ", ciudad=" + ciudad + ", titulo="
-                + titulo + ", tipo=" + tipo + ", nameEmpresa=" + nameEmpresa + ", idUsuario=" + idUsuario + "]";
-    }
+
 }
