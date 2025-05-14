@@ -18,7 +18,6 @@ public class UsuarioSpecifications {
         public static Specification<Usuario> conFiltros( String nombre, String rol, Boolean estado) {
                 return (root, query, criteriaBuilder) -> {
                         List<Predicate> predicates = new ArrayList<>();
-                        System.out.println("Este es el rol: " + rol);
                        
                         // if(idUsuario != null){
                         // predicates.add(criteriaBuilder.equal(root.get("idUsuario"),    idUsuario.n));

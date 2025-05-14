@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.FiltroVacanteDTO;
 import com.miproyecto.proyecto.service.AdminService;
 import com.miproyecto.proyecto.service.PostuladoService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.service.VacanteService;
+import com.miproyecto.proyecto.util.JwtUtils;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -34,6 +36,8 @@ public class AdminResource {
     private UsuarioService usuarioService;
     @Autowired
     private VacanteService vacanteService;
+    @Autowired
+    private JwtUtils jwtUtils ;
 
 
     @GetMapping("/listar/filtrados")
@@ -44,9 +48,12 @@ public class AdminResource {
             @RequestParam(name = "nombre", required = false) String nombre,
             @RequestParam(name = "rolPrinciapl", required = false) String rol,
             @RequestParam(name = "estado", required = false) Boolean estado) {
-                System.out.println("Este es el rol: " + rol);
+
+        String jwtToken = (String) session.getAttribute("jwtToken");
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
         
-        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(nombre, rol, estado, pageable);
+        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(idUsuario, nombre, rol, estado, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -90,10 +97,7 @@ public class AdminResource {
     public ResponseEntity<Map<String, Object>> listarVacantes(
         HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable,
         @RequestBody FiltroVacanteDTO filtro) {
-        System.out.println("este es el valor del filtro: "+filtro);
         Map<String, Object> response = vacanteService.buscarVacantesConFiltros(filtro, pageable);
-        System.out.println("despues del proceso?? " + filtro);
-         
         return ResponseEntity.ok(response);
     }
 

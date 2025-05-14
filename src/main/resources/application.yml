@@ -20,9 +20,9 @@ spring:
           new_generator_mappings: true
   data:
     mongodb:
-      # uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/ChatDB}
-      uri: "mongodb+srv://searchjobs:Searchjobs05@chat-cluster.we1rkbx.mongodb.net/ChatDB?retryWrites=true&w=majority"
-
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/ChatDB}
+      # uri: "mongodb+srv://searchjobs:Searchjobs05@chat-cluster.we1rkbx.mongodb.net/ChatDB?retryWrites=true&w=majority"
+      # uri: "mongodb+srv://searchjobs:Searchjobs05@chat-cluster.we1rkbx.mongodb.net/ChatDB?retryWrites=true&w=majority&appName=chat-cluster"
 
 
   mvc:

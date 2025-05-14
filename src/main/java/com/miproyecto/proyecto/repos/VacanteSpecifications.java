@@ -32,8 +32,8 @@ public class VacanteSpecifications {
                         criteriaBuilder.lower(empresaJoin.get("nombre")),
                         "%" + filtro.getNameEmpresa().toLowerCase() + "%"));
             }
-        
-
+            
+           
             predicates.add(criteriaBuilder.equal(root.get("isActive"), filtro.getIsActive()));
            
 
