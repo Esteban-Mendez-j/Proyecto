@@ -47,6 +47,16 @@ public class VacanteDTO {
 
     @Size(max = 400)
     private String requerimientos;
+    
+    private int totalpostulaciones;
+
+    public int getTotalpostulaciones() {
+        return totalpostulaciones;
+    }
+
+    public void setTotalpostulaciones(int totalpostulaciones) {
+        this.totalpostulaciones = totalpostulaciones;
+    }
 
     private boolean isActive;
 

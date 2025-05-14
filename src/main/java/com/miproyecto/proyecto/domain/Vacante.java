@@ -57,6 +57,9 @@ public class Vacante {
     private String requerimientos;
 
     @Column
+    private int totalpostulaciones;
+   
+    @Column
     private boolean isActive;
 
     @Column
@@ -182,6 +185,15 @@ public class Vacante {
     public void setIdUsuario(final Empresa idUsuario) {
         this.idUsuario = idUsuario;
     }
+     
+    public int getTotalpostulaciones() {
+        return totalpostulaciones;
+    }
+
+    public void setTotalpostulaciones(int totalpostulaciones) {
+        this.totalpostulaciones = totalpostulaciones;
+    }
+
 
     public boolean getIsActive() {
         return isActive;

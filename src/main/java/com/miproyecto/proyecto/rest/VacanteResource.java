@@ -96,7 +96,7 @@ public class VacanteResource {
     HttpSession session,
     @PageableDefault(page = 0, size = 10) Pageable pageable,
     @RequestBody FiltroVacanteDTO filtro ) {
-        filtro.setRolUser("CANDIDATO");
+        filtro.setActive(false);
         Map<String, Object> response = vacanteService.buscarVacantesConFiltros(filtro, pageable);
         return ResponseEntity.ok(response);
     }
