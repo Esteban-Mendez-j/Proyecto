@@ -92,6 +92,10 @@ public class PostuladoService {
     
     public Long create(final PostuladoDTO postuladoDTO, CandidatoResumenDTO candidatoResumenDTO, Long nVacante) {
         
+        Vacante vacante = vacanteRepository.findById(nVacante).orElseThrow(NotFoundException::new);
+        vacante.setTotalpostulaciones(vacante.getTotalpostulaciones()+1);
+        vacanteRepository.save(vacante);
+
         postuladoDTO.setVacante(vacanteService.findVacanteResumenById(nVacante));
         postuladoDTO.setCandidato(candidatoResumenDTO);
         postuladoDTO.setFechaPostulacion(LocalDate.now());
@@ -125,14 +129,12 @@ public class PostuladoService {
 
 
     public void cambiarEstadoVacantes(Long Nvacante, boolean estado) {
-        int postuladosAtualizados = postuladoRepository.actualizarEstadoPostulacionesPorVacante(Nvacante, estado);
-        System.out.println("postulados actualizados: " + postuladosAtualizados);
+        int numero = postuladoRepository.actualizarEstadoPostulacionesPorVacante(Nvacante, estado);
+        System.out.println("numero "+numero);
     }
 
     public void cambiarEstadoPorUsuario(Long idUsuario, boolean estado) {
-        int postuladosAtualizados = postuladoRepository.actualizarEstadoPostulacionesPorUsuario(idUsuario, estado);
-        
-        System.out.println("postulados actualizados: " + postuladosAtualizados);
+        postuladoRepository.actualizarEstadoPostulacionesPorUsuario(idUsuario, estado);
     }
 
     public void delete(final Long nPostulacion) {

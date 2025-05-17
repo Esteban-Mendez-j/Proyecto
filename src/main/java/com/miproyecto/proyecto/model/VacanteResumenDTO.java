@@ -5,7 +5,21 @@ public class VacanteResumenDTO {
     private String titulo;
     private String ciudad;
     private String tipo;
-
+    private Boolean activaPorEmpresa;
+    private Boolean isActive;
+    
+    public Boolean getActivaPorEmpresa() {
+        return activaPorEmpresa;
+    }
+    public void setActivaPorEmpresa(Boolean activaPorEmpresa) {
+        this.activaPorEmpresa = activaPorEmpresa;
+    }
+    public Boolean getIsActive() {
+        return isActive;
+    }
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
     public Long getId() {
         return nvacantes;
     }

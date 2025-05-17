@@ -97,7 +97,8 @@ public class AdminResource {
     public ResponseEntity<Map<String, Object>> listarVacantes(
         HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable,
         @RequestBody FiltroVacanteDTO filtro) {
-        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(filtro, pageable);
+        Long idCadidato= 0L;
+        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(idCadidato, filtro, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -155,11 +156,11 @@ public class AdminResource {
             @RequestParam("estado") boolean estado,
             @RequestParam("comentario") String comentario) {
 
-        if (estado == vacanteService.get(nvacante).isActive()) {
+        if (estado == vacanteService.get(0L,nvacante).isActive()) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", "La vacante ya está " + estado);
             System.out.println("Mensaje desde admin resource: "+ estado);
-            System.out.println("Mensaje desde adninresource: "+ vacanteService.get(nvacante).isActive());
+            System.out.println("Mensaje desde adninresource: "+ vacanteService.get(0L,nvacante).isActive());
             return ResponseEntity.badRequest().body(errorResponse);
         }
 

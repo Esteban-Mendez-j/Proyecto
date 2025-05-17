@@ -10,13 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -54,7 +54,7 @@ public class VacanteResource {
         return ResponseEntity.ok(response);
     }
 
-
+    //para empresas
     @PostMapping("/listar")
     public ResponseEntity<Map<String, Object>> listarVacantes(
         HttpSession session, @PageableDefault(page = 0, size = 10) Pageable pageable,
@@ -63,7 +63,8 @@ public class VacanteResource {
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         filtro.setIdUsuario(Long.parseLong(jwtUtils.extractUsername(decodedJWT)));
-        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(filtro, pageable);
+        Long idUsuarioPostulacion = 0L;
+        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(idUsuarioPostulacion,filtro, pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -81,32 +82,53 @@ public class VacanteResource {
     //     return ResponseEntity.ok(response);
     // }
 
+    // para candidatos e invitados 
     @GetMapping("/Top/listar")
     public ResponseEntity<Map<String, Object>> TopVacantesPorFechaSueldoExperiencia(
-        HttpSession session) {
-        List<VacanteDTO>vacantes = vacanteService.TopVacantesPorFechaSueldoExperiencia();
+        @CookieValue(name = "jwtToken", required = false) String jwtToken) {
+        Long idUsuario=0L;
+        if (jwtToken != null) {
+            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+            idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));    
+        }
         
+        List<VacanteDTO>vacantes = vacanteService.TopVacantesPorFechaSueldoExperiencia(idUsuario);
         Map<String, Object> response = new HashMap<>();
         response.put("vacantes", vacantes);
         return ResponseEntity.ok(response);
     }
 
+    // para candidatos e invitados
     @PostMapping("/listar/filtradas")
     public ResponseEntity<Map<String, Object>> listarVacantesFiltradas(
     HttpSession session,
-    @PageableDefault(page = 0, size = 10) Pageable pageable,
+    @PageableDefault(page = 0, size = 10) Pageable pageable,@CookieValue(name = "jwtToken", required = false) String jwtToken,
     @RequestBody FiltroVacanteDTO filtro ) {
+        Long idUsuario=0L;
+        if (jwtToken != null) {
+            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+            idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));    
+        }
         filtro.setActive(true);
-        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(filtro, pageable);
+        Map<String, Object> response = vacanteService.buscarVacantesConFiltros(idUsuario,filtro, pageable);
         return ResponseEntity.ok(response);
     }
  
     @GetMapping("/seleccion/{nvacantes}")
     public ResponseEntity<Map<String, Object>> seleccionVacante(
             @PathVariable(name = "nvacantes") Long nvacantes,
-            HttpSession session) {
-
-        VacanteDTO vacanteSeleccionada = vacanteService.get(nvacantes);
+            @CookieValue(name = "jwtToken", required = false) String jwtToken) {
+        
+        Long idUsuario=0L;
+        
+        if (jwtToken != null) {
+            DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+            String rolPrincipal = decodedJWT.getClaim("rolPrincipal").asString();
+            if ("CANDIDATO".equals(rolPrincipal)) {
+                idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+            }
+        }
+        VacanteDTO vacanteSeleccionada = vacanteService.get(idUsuario, nvacantes);
 
         if (vacanteSeleccionada == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("mensaje", "Vacante no encontrada"));
@@ -138,7 +160,8 @@ public class VacanteResource {
     @GetMapping("/edit/{nvacantes}")
     public ResponseEntity<VacanteDTO> getVacante(
             @PathVariable(name = "nvacantes") final Long nvacantes) {
-        return ResponseEntity.ok(vacanteService.get(nvacantes));
+        Long idUsuario = 0L;
+        return ResponseEntity.ok(vacanteService.get(idUsuario,nvacantes));
     }
 
     @PutMapping("/edit/{nvacantes}")
@@ -152,12 +175,12 @@ public class VacanteResource {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/delete/{nvacantes}")
-    public ResponseEntity<Void> deleteVacante(
-            @PathVariable(name = "nvacantes") final Long nvacantes) {
-        
-        vacanteService.delete(nvacantes);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/estado/{idVacante}")
+    public ResponseEntity<Void> cambiarEstadoVacante(
+            @PathVariable Long idVacante,
+            @RequestParam boolean estado
+    ) {
+        vacanteService.cambiarEstado(idVacante, estado);
+        return ResponseEntity.ok().build();
     }
-
 }

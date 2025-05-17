@@ -58,16 +58,18 @@ public class JwtTokenValidator extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);  
             
-        } catch(TokenExpiredException expiredToken){
-            System.out.println("token invalido, flata pner el mensaje");
-            response.sendRedirect("/usuarios/cerrarSesion");
-            return;
-    
-        } catch (JWTVerificationException exception) {
+        } catch (TokenExpiredException expiredToken) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("token invalido, "+ exception.getMessage());
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"TOKEN_EXPIRED\"}");
             response.getWriter().flush();
             return;
-        } 
+        } catch (JWTVerificationException exception) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"INVALID_TOKEN\", \"message\": \"" + exception.getMessage() + "\"}");
+            response.getWriter().flush();
+            return;
+        }
     }
 }

@@ -10,7 +10,6 @@ public class VacanteDTO {
 
     private Long nvacantes;
 
-    
     @NotNull
     @Size(max = 50)
     private String cargo;
@@ -50,15 +49,11 @@ public class VacanteDTO {
     
     private int totalpostulaciones;
 
-    public int getTotalpostulaciones() {
-        return totalpostulaciones;
-    }
+    private Boolean candidatoPostulado;
 
-    public void setTotalpostulaciones(int totalpostulaciones) {
-        this.totalpostulaciones = totalpostulaciones;
-    }
+    private Boolean activaPorEmpresa;
 
-    private boolean isActive;
+    private Boolean isActive;
 
     private String comentarioAdmin;
 
@@ -72,6 +67,30 @@ public class VacanteDTO {
 
     public int getnPostulados() {
         return nPostulados;
+    }
+
+    public Boolean getCandidatoPostulado() {
+        return candidatoPostulado;
+    }
+
+    public Boolean isActivaPorEmpresa() {
+        return activaPorEmpresa;
+    }
+
+    public void setActivaPorEmpresa(Boolean activaPorEmpresa) {
+        this.activaPorEmpresa = activaPorEmpresa;
+    }
+
+    public void setCandidatoPostulado(Boolean candidatoPostulado) {
+        this.candidatoPostulado = candidatoPostulado;
+    }
+
+    public int getTotalpostulaciones() {
+        return totalpostulaciones;
+    }
+
+    public void setTotalpostulaciones(int totalpostulaciones) {
+        this.totalpostulaciones = totalpostulaciones;
     }
 
     public void setnPostulados(int nPostulados) {

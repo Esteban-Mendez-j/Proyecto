@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import com.miproyecto.proyecto.model.MensajeDTO;
 import com.miproyecto.proyecto.repos.ChatRepository;
 import com.miproyecto.proyecto.repos.MensajeRepository;
 import com.miproyecto.proyecto.util.NotFoundException;
+import org.springframework.data.mongodb.core.query.*;
 
 @Service
 public class ChatService {
@@ -33,6 +36,9 @@ public class ChatService {
     private UsuarioService usuarioService;
     @Autowired
     private VacanteService vacanteService;
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
 
     public ChatDTO crearChat(String candidatoId, String vacanteId, String empresaId) {
     
@@ -48,9 +54,10 @@ public class ChatService {
         chat.setIsActive(true);
         chat.setNombreCandidato(usuarioService.get(Long.parseLong(candidatoId)).getNombre());
         chat.setNombreEmpresa(usuarioService.get(Long.parseLong(empresaId)).getNombre());
-        chat.setTituloVacante(vacanteService.get(Long.parseLong(vacanteId)).getTitulo());
+        chat.setTituloVacante(vacanteService.get(0L,Long.parseLong(vacanteId)).getTitulo());
         chat = chatRepository.save(chat);     
     }
+    if(!chat.getIsActive()){chat.setIsActive(true);}
 
     return mapToDTO(chat, new ChatDTO());
 }
@@ -113,18 +120,48 @@ public class ChatService {
         return mapResponse(chats, "chats");
     }
 
-    // Listar chats de una empresa con paginación
-    public Map<String, Object> listarChatsPorEmpresa(String empresaId, Pageable pageable) {
-        Page<Chat> chatPage = chatRepository.findByEmpresaId(empresaId, pageable);
-        Page<ChatDTO> chats = chatPage.map(chat -> mapToDTO(chat, new ChatDTO()));
-        return mapResponse(chats, "chats");
-    }
+    
+    public Map<String, Object> buscarChatsConFiltros(
+        String userId, String tipoUsuario, Boolean activoFiltro, String search, Pageable pageable) {
 
-    // Listar chats de un candidato con paginación
-    public Map<String, Object> listarChatsPorCandidato(String candidatoId, Pageable pageable) {
-        Page<Chat> chatPage = chatRepository.findByCandidatoId(candidatoId, pageable);
-        Page<ChatDTO> chats = chatPage.map(chat -> mapToDTO(chat, new ChatDTO()));
-        return mapResponse(chats, "chats");
+        Query query = new Query();
+
+        // Filtra por tipo de usuario
+        if ("empresa".equalsIgnoreCase(tipoUsuario)) {
+            query.addCriteria(Criteria.where("empresaId").is(userId));
+        } else if ("candidato".equalsIgnoreCase(tipoUsuario)) {
+            query.addCriteria(Criteria.where("candidatoId").is(userId));
+        } else {
+            throw new IllegalArgumentException("Tipo de usuario inválido");
+        }
+
+        // Filtra por estado activo/inactivo si se especifica
+        if (activoFiltro != null) {
+            query.addCriteria(Criteria.where("isActive").is(activoFiltro));
+        }
+
+        // Filtra por búsqueda en título vacante (ignore case)
+        if (search != null && !search.isEmpty()) {
+            query.addCriteria(Criteria.where("tituloVacante").regex(search, "i"));
+        }
+
+        // Conteo total para paginación
+        long count = mongoTemplate.count(query, Chat.class);
+
+        // Aplica paginación y orden (opcional)
+        query.with(pageable);
+
+        List<Chat> chats = mongoTemplate.find(query, Chat.class);
+
+        // Mapear a DTOs
+        List<ChatDTO> chatDTOs = chats.stream()
+            .map(chat -> mapToDTO(chat, new ChatDTO()))
+            .collect(Collectors.toList());
+
+        // Crear la página con DTOs
+        Page<ChatDTO> pageDto = new PageImpl<>(chatDTOs, pageable, count);
+
+        return mapResponse(pageDto, "chats");
     }
 
     public void cambiarEstadoChat(String chatId, boolean nuevoEstado) {
@@ -139,7 +176,6 @@ public class ChatService {
             String empresaId = usuarioService.get(Long.parseLong(chat.getEmpresaId())).getCorreo();
             String candidatoId = usuarioService.get(Long.parseLong(chat.getCandidatoId())).getCorreo();
             String mensaje = "El chat ha sido cerrado por la empresa.";
-            System.out.println("Enviando notificación a empresa y candidato");
             messagingTemplate.convertAndSendToUser(empresaId, "/queue/messages", mensaje);
             messagingTemplate.convertAndSendToUser(candidatoId, "/queue/messages", mensaje);
         }

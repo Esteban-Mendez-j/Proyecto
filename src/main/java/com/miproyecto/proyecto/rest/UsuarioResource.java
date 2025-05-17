@@ -43,9 +43,8 @@ public class UsuarioResource {
 
 
     @GetMapping("/rol")
-    public ResponseEntity<Map<String, Object>> getRol( @CookieValue(name = "jwtToken", required = false) String jwtTokenCookee, HttpSession session) {
+    public ResponseEntity<Map<String, Object>> getRol( @CookieValue(name = "jwtToken", required = false) String jwtToken, HttpSession session) {
         Map<String, Object> response = new HashMap<>();
-        String jwtToken = (String) session.getAttribute("jwtToken");
       
         if (jwtToken == null) {
             // Si no hay token en la sesión, devolver rol de invitado

@@ -3,8 +3,10 @@ package com.miproyecto.proyecto.rest;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.CandidatoResumenDTO;
 import com.miproyecto.proyecto.model.PostuladoDTO;
+import com.miproyecto.proyecto.model.VacanteDTO;
 import com.miproyecto.proyecto.service.CandidatoService;
 import com.miproyecto.proyecto.service.PostuladoService;
+import com.miproyecto.proyecto.service.VacanteService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 import jakarta.servlet.http.HttpSession;
@@ -17,8 +19,10 @@ import java.util.Map;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,13 +41,15 @@ public class PostuladoResource {
     private final PostuladoService postuladoService;
     private final CandidatoService candidatoService;
     private final JwtUtils jwtUtils;
+    private final VacanteService vacanteService;
 
-    public PostuladoResource(PostuladoService postuladoService, CandidatoService candidatoService, JwtUtils jwtUtils) {
+    public PostuladoResource(PostuladoService postuladoService, CandidatoService candidatoService, JwtUtils jwtUtils,
+            VacanteService vacanteService) {
         this.postuladoService = postuladoService;
         this.candidatoService = candidatoService;
         this.jwtUtils = jwtUtils;
+        this.vacanteService = vacanteService;
     }
-
 
     @GetMapping
     public ResponseEntity<List<PostuladoDTO>> getAllPostulados() {
@@ -57,8 +63,17 @@ public class PostuladoResource {
         @RequestParam(name = "estado", required = false) String estado,
         @RequestParam(name = "fechaMinima", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaMinima,
         @RequestParam(name = "nombreCandidato", required = false) String nombreCandidato,
-        @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        @PageableDefault(page = 0, size = 10) Pageable pageable,
+        @CookieValue(name = "jwtToken", required = false) String jwtToken) {
 
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        String rolPrincipal = decodedJWT.getClaim("rolPrincipal").asString();
+        VacanteDTO vacante = vacanteService.findByIdUsuarioAndNvacante(idUsuario, nvacantes);
+        
+        if( vacante == null && rolPrincipal.equalsIgnoreCase("EMPRESA")){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         Map<String, Object> response = postuladoService.findByNvacantes(nvacantes, estado, fechaMinima, nombreCandidato, pageable);
         return ResponseEntity.ok(response);
     }

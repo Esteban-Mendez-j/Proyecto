@@ -34,8 +34,14 @@ public class VacanteSpecifications {
             }
             
            
-            predicates.add(criteriaBuilder.equal(root.get("isActive"), filtro.getIsActive()));
-           
+            if (filtro.getIsActive() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("isActive"), filtro.getIsActive()));
+            }
+
+            if (filtro.isActivaPorEmpresa() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("activaPorEmpresa"), filtro.isActivaPorEmpresa()));
+            }
+
 
             if (filtro.getTitulo() != null && !filtro.getTitulo().isEmpty()) {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("titulo")), "%" + filtro.getTitulo().toLowerCase() + "%"));

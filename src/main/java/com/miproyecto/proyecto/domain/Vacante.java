@@ -60,7 +60,10 @@ public class Vacante {
     private int totalpostulaciones;
    
     @Column
-    private boolean isActive;
+    private Boolean isActive;
+
+    @Column
+    private Boolean activaPorEmpresa;
 
     @Column
     private String comentarioAdmin;
@@ -76,6 +79,14 @@ public class Vacante {
 
     public Long getNvacantes() {
         return nvacantes;
+    }
+
+    public Boolean isActivaPorEmpresa() {
+        return activaPorEmpresa;
+    }
+
+    public void setActivaPorEmpresa(Boolean activaPorEmpresa) {
+        this.activaPorEmpresa = activaPorEmpresa;
     }
 
     public void setNvacantes(final Long nvacantes) {
@@ -195,11 +206,11 @@ public class Vacante {
     }
 
 
-    public boolean getIsActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(boolean isActive) {
+    public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
     }
 

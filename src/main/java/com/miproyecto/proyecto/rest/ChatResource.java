@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class ChatResource {
     @PostMapping("/crear")
     public ResponseEntity<ChatDTO> crearChat(@RequestBody ChatDTO response) {
         // Verificar que la empresa exista y sea un usuario tipo "empresa"
-        VacanteDTO vacantesDTO =vacanteService.get(Long.parseLong(response.getVacanteId()));
+        VacanteDTO vacantesDTO =vacanteService.get(0L,Long.parseLong(response.getVacanteId()));
 
         UsuarioDTO empresa = usuarioService.get(vacantesDTO.getIdUsuario());
         
@@ -54,6 +55,11 @@ public class ChatResource {
             throw new IllegalArgumentException("No existe este candidato");
         }
 
+        if(!candidato.getIsActive()){
+            ResponseEntity.status(HttpStatus.BAD_REQUEST.value())
+                .body("Error al iniciar chat, El usaurio esta baneado");
+        }
+        
         ChatDTO chatDTO = chatService.crearChat(response.getCandidatoId(),response.getVacanteId(), empresa.getIdUsuario().toString());
         return ResponseEntity.ok(chatDTO);
     }
@@ -96,25 +102,28 @@ public class ChatResource {
         return ResponseEntity.ok(response);
     }
 
-    // Listar chats por empresa
-    @GetMapping("/empresa/{empresaId}")
-    public ResponseEntity<Map<String, Object>> listarChatsPorEmpresa(
-        @PathVariable String empresaId,
+    @PatchMapping("/{tipoUsuario}/{userId}")
+    public ResponseEntity<Map<String, Object>> listarChatsPorUsuario(
+        @PathVariable String tipoUsuario,        // "empresa" o "candidato"
+        @PathVariable String userId,
+        @RequestParam(name = "estado",required = false) String estado,
+        @RequestParam(name = "search" , required = false) String search,
         @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        
-        Map<String, Object> response = chatService.listarChatsPorEmpresa(empresaId, pageable);
+
+        Boolean activoFiltro = null;
+        if ("activos".equalsIgnoreCase(estado)) {
+            activoFiltro = true;
+        } else if ("inactivos".equalsIgnoreCase(estado)) {
+            activoFiltro = false;
+        }
+        System.out.println(" texto: "+search +" "+ activoFiltro);
+
+        Map<String, Object> response = chatService.buscarChatsConFiltros(userId,tipoUsuario,
+        activoFiltro,search,pageable);
+
         return ResponseEntity.ok(response);
     }
 
-    // Listar chats por candidato
-    @GetMapping("/candidato/{candidatoId}")
-    public ResponseEntity<Map<String, Object>> listarChatsPorCandidato(
-        @PathVariable String candidatoId,
-        @PageableDefault(page = 0, size = 10) Pageable pageable) {
-        
-        Map<String, Object> response = chatService.listarChatsPorCandidato(candidatoId, pageable);
-        return ResponseEntity.ok(response);
-    }
 
 
     @PatchMapping("/{chatId}/estado")
