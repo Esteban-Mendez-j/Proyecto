@@ -143,6 +143,8 @@ public class VacanteService {
                 .orElseThrow(NotFoundException::new);
         vacanteDTO.setIdUsuario(vacante.getIdUsuario().getIdUsuario());
         vacanteDTO.setFechaPublicacion(vacante.getFechaPublicacion());
+        vacanteDTO.setActive(vacante.getIsActive());
+        vacanteDTO.setActivaPorEmpresa(vacante.isActivaPorEmpresa());
         mapToEntity(vacanteDTO, vacante);
         vacanteRepository.save(vacante);
     }
