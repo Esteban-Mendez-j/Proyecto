@@ -182,6 +182,10 @@ public class VacanteService {
                 .stream()
                 .anyMatch(p -> p.getCandidato().getIdUsuario().equals(idPostulaciones))
         );
+        vacante.getLitarpostulados().stream()
+            .filter(p -> p.getCandidato().getIdUsuario().equals(idPostulaciones))
+            .findFirst()
+            .ifPresent(p -> vacanteDTO.setEstadoPostulacion(p.getEstado())); // o p.getEstado().name()
         return vacanteDTO;
     }
 

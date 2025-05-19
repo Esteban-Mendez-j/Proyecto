@@ -143,10 +143,14 @@ public class PostuladoService {
         postuladoRepository.actualizarEstadoPostulacionesPorUsuario(idUsuario, estado);
     }
 
-    public void cancelarPostulacion (Long idUsuario, boolean estado){
+    public void cancelarPostulacion (Long idUsuario, boolean estado, Long nVacante){
         Postulado postulado = postuladoRepository.findById(idUsuario).orElse(null);
         postulado.setActive(estado);
         postuladoRepository.save(postulado);
+
+        Vacante vacante = vacanteRepository.findById(nVacante).orElseThrow(NotFoundException::new);
+        vacante.setTotalpostulaciones(vacante.getTotalpostulaciones()-1);
+        vacanteRepository.save(vacante);
 
         ChatDTO chat = chatService.findByVacanteIdAndCandidatoId(
                     postulado.getVacante().getNvacantes(), 

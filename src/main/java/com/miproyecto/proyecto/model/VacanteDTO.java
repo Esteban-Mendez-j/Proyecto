@@ -65,6 +65,17 @@ public class VacanteDTO {
 
     private int nPostulados;
 
+    private String estadoPostulacion;
+
+
+    public String getEstadoPostulacion() {
+        return estadoPostulacion;
+    }
+
+    public void setEstadoPostulacion(String estadoPostulacion) {
+        this.estadoPostulacion = estadoPostulacion;
+    }
+
     public int getnPostulados() {
         return nPostulados;
     }

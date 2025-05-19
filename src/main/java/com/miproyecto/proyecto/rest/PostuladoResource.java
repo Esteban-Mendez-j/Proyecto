@@ -165,9 +165,10 @@ public class PostuladoResource {
     @PatchMapping("/cancelar/{nPostulacion}")
     public ResponseEntity<Void> cancelarPostulado(
             @PathVariable Long nPostulacion,
-            @RequestParam(name = "estado") Boolean estado) {
+            @RequestParam(name = "estado") Boolean estado,
+            @RequestParam(name = "nvacante") Long nvacantes) {
 
-        postuladoService.cancelarPostulacion(nPostulacion, estado);
+        postuladoService.cancelarPostulacion(nPostulacion, estado, nvacantes);
         return ResponseEntity.noContent().build();   // 204 No Content
     } 
 }
