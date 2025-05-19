@@ -39,5 +39,10 @@ public class EmpresaDTO extends UsuarioDTO  {
         this.nit = nit;
     }
 
+    @Override
+    public String toString() {
+        return "EmpresaDTO [sectorEmpresarial=" + sectorEmpresarial + ", sitioWeb=" + sitioWeb + ", nit=" + nit + "]";
+    }
+
 
 }

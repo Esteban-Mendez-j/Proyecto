@@ -59,7 +59,7 @@ public class EmpresaService {
         empresaDTO.setIsActive(true);
         empresaDTO.setFechaRegistro(LocalDate.now());
         roles.add(rolesRepository.findByRol("EMPRESA"));
-        Empresa empresa = mapToEntity(empresaDTO, new Empresa());
+        Empresa empresa = mapToEntity(empresaDTO, new Empresa(), true);
         empresa.setRoles(roles);
         empresaRepository.save(empresa);
     }
@@ -67,7 +67,7 @@ public class EmpresaService {
     public void update(final Long idUsuario, final EmpresaDTO empresaDTO) {
         final Empresa empresa = empresaRepository.findById(idUsuario)
                 .orElseThrow(NotFoundException::new);
-        mapToEntity(empresaDTO, empresa);
+        mapToEntity(empresaDTO, empresa, false);
         empresaRepository.save(empresa);
     }
 
@@ -96,9 +96,14 @@ public class EmpresaService {
         return empresaDTO;
     }
 
-    private Empresa mapToEntity(final EmpresaDTO empresaDTO, final Empresa empresa) {
+    private Empresa mapToEntity(final EmpresaDTO empresaDTO, final Empresa empresa, boolean create) {
+        
+        if (create) {
+            empresa.setContrasena(passwordEncoder.encode(empresaDTO.getContrasena()));
+            empresa.setIsActive(empresaDTO.getIsActive());
+            empresa.setComentarioAdmin(empresaDTO.getComentarioAdmin());
+        }
         empresa.setNombre(empresaDTO.getNombre());
-        empresa.setContrasena(passwordEncoder.encode(empresaDTO.getContrasena()));
         empresa.setCorreo(empresaDTO.getCorreo());
         empresa.setTelefono(empresaDTO.getTelefono());
         empresa.setDescripcion(empresaDTO.getDescripcion());
@@ -106,8 +111,6 @@ public class EmpresaService {
         empresa.setSectorEmpresarial(empresaDTO.getSectorEmpresarial());
         empresa.setSitioWeb(empresaDTO.getSitioWeb());
         empresa.setNit(empresaDTO.getNit());
-        empresa.setIsActive(empresaDTO.getIsActive());
-        empresa.setComentarioAdmin(empresaDTO.getComentarioAdmin());
         // empresa.setRoles(
         //     empresaDTO.getRoles().stream()
         //             .map(roles -> rolesRepository.findByRol(roles))

@@ -9,6 +9,7 @@ import com.miproyecto.proyecto.util.NotFoundException;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -66,9 +67,21 @@ public class HistorialLaboralService {
         historialLaboralRepository.deleteById(iDHistorial);
     }
 
+    @Transactional
+    public void replaceHistorial(Long candidatoId, List<HistorialLaboralDTO> nuevosDTO) {
+
+        historialLaboralRepository.deleteByIdUsuario_IdUsuario(candidatoId);
+        
+        List<HistorialLaboral> nuevos = nuevosDTO.stream()
+                .map(dto -> mapToEntity(dto, new HistorialLaboral()))   // ① dto, ② entidad vacía
+                .toList();
+
+        historialLaboralRepository.saveAll(nuevos);
+    }
+
     private HistorialLaboralDTO mapToDTO(final HistorialLaboral historialLaboral,
             final HistorialLaboralDTO historialLaboralDTO) {
-        historialLaboralDTO.setIDHistorial(historialLaboral.getIDHistorial());
+        historialLaboralDTO.setiDHistorial(historialLaboral.getIDHistorial());
         historialLaboralDTO.setTitulo(historialLaboral.getTitulo());
         historialLaboralDTO.setEmpresa(historialLaboral.getEmpresa());
         historialLaboralDTO.setIdUsuario(historialLaboral.getIdUsuario() == null ? null : historialLaboral.getIdUsuario().getIdUsuario());

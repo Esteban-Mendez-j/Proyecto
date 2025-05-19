@@ -1,6 +1,5 @@
 package com.miproyecto.proyecto.model;
 
-import com.miproyecto.proyecto.service.EncryptionService;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 public class EstudioDTO {
 
-    private String idEstudio;
+    private Long idEstudio;
 
     @NotNull
     @Size(max = 80)
@@ -18,33 +17,21 @@ public class EstudioDTO {
     @Size(max = 80)
     private String academia;
 
-    private String idUsuario;
-
-
-    private EncryptionService encryptionService;
-
-    public EstudioDTO() {
-        this.encryptionService = new EncryptionService();  
-    }
+    private Long idUsuario;
 
     public Long getIdEstudio() {
-        return encryptionService.decrypt(idEstudio);
-    }
-
-    public void setIdEstudio(final Long idEstudio) {
-        this.idEstudio = encryptionService.encrypt(idEstudio);
-    }
-
-    public String getIdEstudioEncrypt() {
         return idEstudio;
     }
-    
+
+    public void setIdEstudio(Long idEstudio) {
+        this.idEstudio = idEstudio;
+    }
 
     public String getTitulo() {
         return titulo;
     }
 
-    public void setTitulo(final String titulo) {
+    public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
 
@@ -52,20 +39,23 @@ public class EstudioDTO {
         return academia;
     }
 
-    public void setAcademia(final String academia) {
+    public void setAcademia(String academia) {
         this.academia = academia;
     }
 
     public Long getIdUsuario() {
-        return encryptionService.decrypt(idUsuario);
-    }
-
-    public String getIdUsuarioEncrypt() {
         return idUsuario;
     }
-    
-    public void setIdUsuario(final Long idUsuario) {
-        this.idUsuario = encryptionService.encrypt(idUsuario);
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
+
+    @Override
+    public String toString() {
+        return "EstudioDTO [idEstudio=" + idEstudio + ", titulo=" + titulo + ", academia=" + academia + ", idUsuario="
+                + idUsuario + "]";
+    }
+
 
 }

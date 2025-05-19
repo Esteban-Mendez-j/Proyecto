@@ -45,6 +45,16 @@ public class EstudioResource {
         return ResponseEntity.ok(estudioService.get(idEstudio));
     }
 
+    @PutMapping("/replace/{candidatoId}")
+    public ResponseEntity<Void> replaceEstudios(
+            @PathVariable Long candidatoId,
+            @RequestBody List<EstudioDTO> estudios) {
+        
+            
+        estudioService.replaceEstudios(candidatoId, estudios);
+        return ResponseEntity.ok().build();   
+    }
+
     @PutMapping("/edit/{idEstudio}")
     public ResponseEntity<Long> updateEstudio(
             @PathVariable(name = "idEstudio") final Long idEstudio,

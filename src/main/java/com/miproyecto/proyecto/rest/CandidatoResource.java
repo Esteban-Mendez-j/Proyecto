@@ -100,7 +100,6 @@ public class CandidatoResource {
                 response.put("error", "Candidato no encontrado");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            System.out.println("candidato: "+ candidatoDTO);
             response.put("estudios", estudioService.getEstudiosByIdUsuario(idUsuario));
             response.put("historialLaboral", historialLaboralService.getHistorialByIdUsuario(idUsuario));
             response.put("candidato", candidatoDTO);
@@ -162,7 +161,6 @@ public class CandidatoResource {
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {
-            System.out.println("Error al guardar/eliminar archivos:"+ e); 
             response.put("status", HttpStatus.BAD_REQUEST.value());
             response.put("mensaje", "Error al guardar la imagen.");
             return ResponseEntity.badRequest().body(response);

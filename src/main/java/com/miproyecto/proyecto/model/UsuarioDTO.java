@@ -2,14 +2,14 @@ package com.miproyecto.proyecto.model;
 
 import java.time.LocalDate;
 import java.util.List;
-import com.miproyecto.proyecto.service.EncryptionService;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 
 public class UsuarioDTO {
     
-    String idUsuario;
+    Long idUsuario;
+
 
     private List<String> roles;
 
@@ -33,6 +33,7 @@ public class UsuarioDTO {
     @Size(max = 400)
     private String descripcion;
 
+    @NotNull(message = "Sube una imagen de perfil", groups = ValidationGroups.OnCreate.class)
     @Size(max = 255)
     private String imagen;
 
@@ -44,11 +45,15 @@ public class UsuarioDTO {
 
     private String comentarioAdmin;
     
-    private EncryptionService encryptionService;
     
     // Constructor donde se inicializa el servicio de encriptación
-    public UsuarioDTO() {
-        this.encryptionService = new EncryptionService();  
+    
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public LocalDate getFechaRegistro() {
@@ -75,17 +80,6 @@ public class UsuarioDTO {
         this.comentarioAdmin = comentarioAdmin;
     }
     
-    public Long getIdUsuario() {
-        return encryptionService.decrypt(idUsuario);
-    }
-    
-    public String getIdUsuarioEncrypt() {
-        return idUsuario;
-    }
-    
-    public void setIdUsuario(final Long idUsuario) {
-        this.idUsuario = encryptionService.encrypt(idUsuario);
-    }
 
     public List<String> getRoles() {
         return roles;

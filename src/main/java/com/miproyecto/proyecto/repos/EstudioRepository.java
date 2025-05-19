@@ -15,6 +15,8 @@ public interface EstudioRepository extends JpaRepository<Estudio, Long> {
     boolean existsByIdUsuario(Candidato candidato);
 
     List<Estudio> findByIdUsuario(Candidato candidato);
+
+    void deleteByIdUsuario_IdUsuario(Long idUsuario);
     
 
 }

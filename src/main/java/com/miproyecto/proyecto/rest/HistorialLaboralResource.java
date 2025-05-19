@@ -57,6 +57,17 @@ public class HistorialLaboralResource {
         return ResponseEntity.ok(historialLaboralService.get(iDHistorial));
     }
 
+    @PutMapping("/replace/{candidatoId}")
+    public ResponseEntity<Void> replaceEstudios(
+            @PathVariable Long candidatoId,
+            @RequestBody List<HistorialLaboralDTO> historial) {
+                
+        System.out.println(candidatoId);
+        System.out.println(historial);
+        historialLaboralService.replaceHistorial(candidatoId, historial);
+        return ResponseEntity.ok().build();   
+    }
+
     @PutMapping("/edit/{iDHistorial}")
     public ResponseEntity<Long> updateHistorialLaboral(
             @PathVariable(name = "iDHistorial") final Long iDHistorial,

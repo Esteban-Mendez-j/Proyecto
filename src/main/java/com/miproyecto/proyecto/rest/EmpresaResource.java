@@ -1,5 +1,6 @@
 package com.miproyecto.proyecto.rest;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,15 +18,20 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.miproyecto.proyecto.model.EmpresaDTO;
+import com.miproyecto.proyecto.model.ValidationGroups;
 import com.miproyecto.proyecto.service.EmpresaService;
+import com.miproyecto.proyecto.service.UsuarioService;
 import com.miproyecto.proyecto.util.JwtUtils;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 
 
 @RestController
@@ -32,14 +40,14 @@ public class EmpresaResource {
 
     private final EmpresaService empresaService;
     private final JwtUtils jwtUtils;
+    private UsuarioService usuarioService;
 
-    
 
-    public EmpresaResource(EmpresaService empresaService, JwtUtils jwtUtils) {
+    public EmpresaResource(EmpresaService empresaService, JwtUtils jwtUtils, UsuarioService usuarioService) {
         this.empresaService = empresaService;
         this.jwtUtils = jwtUtils;
+        this.usuarioService = usuarioService;
     }
-
 
     @GetMapping("/perfil")
     public ResponseEntity<Map<String, Object>> mostrarPerfil( Model model,HttpSession session,
@@ -73,12 +81,46 @@ public class EmpresaResource {
         return ResponseEntity.ok(empresaService.get(idEmpresa));
     }
 
-    @PutMapping("/edit/{idEmpresa}")
-    public ResponseEntity<Long> updateEmpresa(
-            @PathVariable(name = "idEmpresa") final Long idEmpresa,
-            @RequestBody @Valid final EmpresaDTO empresaDTO) {
-        empresaService.update(idEmpresa, empresaDTO);
-        return ResponseEntity.ok(idEmpresa);
+
+
+    @PutMapping(value = "/edit/{idUsuario}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> editCandidato(
+            @RequestPart("empresa") @Validated({ValidationGroups.OnUpdate.class, Default.class}) EmpresaDTO empresaDTO,
+            @RequestPart(name = "img", required = false) MultipartFile imagen,
+            @CookieValue(name = "jwtToken", required = false) String jwtToken) {
+
+        Map<String, Object> response = new HashMap<>();
+        
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+ 
+
+        try {
+            
+            if (imagen != null && !imagen.isEmpty()) {
+                if (empresaDTO.getImagen() != null && !empresaDTO.getImagen().isEmpty()) {
+
+                    usuarioService.eliminarArchivo(empresaDTO.getImagen(), true);
+                }
+                String rutaImagen = usuarioService.guardarArchivo(imagen, idUsuario);
+                empresaDTO.setImagen(rutaImagen);
+            }
+
+            // Actualizar los datos
+            empresaService.update(idUsuario, empresaDTO);
+            response.put("status", HttpStatus.OK.value());
+            response.put("mensaje", "Candidato actualizado correctamente.");
+            return ResponseEntity.ok(response);
+
+        } catch (IOException e) {
+            response.put("status", HttpStatus.BAD_REQUEST.value());
+            response.put("mensaje", "Error al guardar la imagen.");
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("status", HttpStatus.BAD_REQUEST.value());
+            response.put("mensaje", "Error al actualizar el candidato.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     @DeleteMapping("/delete/{idEmpresa}")
@@ -89,10 +131,5 @@ public class EmpresaResource {
         return ResponseEntity.noContent().build();
     }
 
-    // @PostMapping("/buscar")
-    // public ResponseEntity<List<EmpresaDTO>> buscarEmpresas(@RequestBody EmpresaDTO filtro) {
-    //     List<EmpresaDTO> resultados = empresaService.buscarEmpresasConFiltro(filtro);
-    //     return ResponseEntity.ok(resultados);
-    // }
 }
 
