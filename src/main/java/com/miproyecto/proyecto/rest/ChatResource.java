@@ -140,7 +140,7 @@ public class ChatResource {
             throw new IllegalArgumentException("Solo la empresa que creó el chat puede cambiar su estado");
         }
 
-        chatService.cambiarEstadoChat(chatId, isActive);
+        chatService.cambiarEstadoChat(chatId, isActive, "El chat fue cerrado por la empresa");
         return ResponseEntity.noContent().build();
     }
 

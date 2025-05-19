@@ -57,7 +57,6 @@ public class EmpresaService {
     public void create(final EmpresaDTO empresaDTO) {
         List<Roles> roles= new ArrayList<>();
         empresaDTO.setIsActive(true);
-        empresaDTO.setImagen("/images/imgEmpresa.png");
         empresaDTO.setFechaRegistro(LocalDate.now());
         roles.add(rolesRepository.findByRol("EMPRESA"));
         Empresa empresa = mapToEntity(empresaDTO, new Empresa());

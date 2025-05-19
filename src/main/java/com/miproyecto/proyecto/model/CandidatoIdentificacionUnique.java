@@ -5,7 +5,6 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 
 import com.miproyecto.proyecto.service.CandidatoService;
-import com.miproyecto.proyecto.service.EncryptionService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Constraint;
@@ -41,13 +40,11 @@ public @interface CandidatoIdentificacionUnique {
 
         private final CandidatoService candidatoService;
         private final HttpServletRequest request;
-        private final EncryptionService encryptionService;
 
         public CandidatoIdentificacionUniqueValidator(final CandidatoService candidatoService,
-                final HttpServletRequest request, final EncryptionService encryptionService) {
+                final HttpServletRequest request) {
             this.candidatoService = candidatoService;
             this.request = request;
-            this.encryptionService = encryptionService;
         }
 
         // value es el valor de la identificacion que se esta pasando 
@@ -63,10 +60,9 @@ public @interface CandidatoIdentificacionUnique {
             final String dataBaseId = pathVariables.get("idUsuario");
 
             if (dataBaseId != null){
-                Long idDescrypt = encryptionService.decrypt(dataBaseId);
+                Long id = Long.parseLong(dataBaseId);
                 
-                if (value.equalsIgnoreCase(candidatoService.get(idDescrypt).getIdentificacion()) ) {
-                    // value hasn't changed
+                if (value.equalsIgnoreCase(candidatoService.get(id).getIdentificacion()) ) {
                     return true;
                 }
             }

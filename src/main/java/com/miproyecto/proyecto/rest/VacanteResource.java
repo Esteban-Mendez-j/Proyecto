@@ -68,19 +68,19 @@ public class VacanteResource {
         return ResponseEntity.ok(response);
     }
 
-    // @GetMapping("/popular/listar")
-    // public ResponseEntity<Map<String, Object>> TopVacantes(
-    //     HttpSession session) {
+    @GetMapping("/popular/listar")
+    public ResponseEntity<Map<String, Object>> TopVacantes(
+        HttpSession session) {
 
-    //     String jwtToken = (String) session.getAttribute("jwtToken");
-    //     DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
-    //     Long idEmpresa = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
-    //     List<VacanteDTO>vacantes = vacanteService.TopVacantesPorPostulados(idEmpresa);
+        String jwtToken = (String) session.getAttribute("jwtToken");
+        DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
+        Long idEmpresa = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        List<VacanteDTO>vacantes = vacanteService.TopVacantesPorPostulados(idEmpresa);
         
-    //     Map<String, Object> response = new HashMap<>();
-    //     response.put("vacantes", vacantes);
-    //     return ResponseEntity.ok(response);
-    // }
+        Map<String, Object> response = new HashMap<>();
+        response.put("vacantes", vacantes);
+        return ResponseEntity.ok(response);
+    }
 
     // para candidatos e invitados 
     @GetMapping("/Top/listar")

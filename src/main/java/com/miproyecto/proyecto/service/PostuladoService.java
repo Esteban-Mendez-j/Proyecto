@@ -107,8 +107,14 @@ public class PostuladoService {
         mapToEntity(postuladoDTO, postulado);
         return postuladoRepository.save(postulado).getNPostulacion();
     }
-
     
+    public void cambiarEstado (PostuladoDTO postuladoDTO, Boolean estado){
+        postuladoDTO.setActive(estado);
+        postuladoDTO.setFechaPostulacion(LocalDate.now());
+        postuladoDTO.setEstado("Espera");
+        Postulado postulado = mapToEntity(postuladoDTO, new Postulado());
+        postuladoRepository.save(postulado);
+    }
 
     public void update(Long nPostulacion, PostuladoDTO PostuladoDTO) {
         Postulado postulado = postuladoRepository.findById(nPostulacion)
@@ -122,7 +128,7 @@ public class PostuladoService {
                     postulado.getVacante().getNvacantes(), 
                     postulado.getCandidato().getIdUsuario());
             if (chat != null) {
-                chatService.cambiarEstadoChat(chat.getId(), false);
+                chatService.cambiarEstadoChat(chat.getId(), false, "Lamentamos informarte que tu postulación ha sido rechazada. El chat se ha cerrado");
             }
         }
     }
@@ -137,10 +143,20 @@ public class PostuladoService {
         postuladoRepository.actualizarEstadoPostulacionesPorUsuario(idUsuario, estado);
     }
 
-    public void delete(final Long nPostulacion) {
-        postuladoRepository.deleteById(nPostulacion);
+    public void cancelarPostulacion (Long idUsuario, boolean estado){
+        Postulado postulado = postuladoRepository.findById(idUsuario).orElse(null);
+        postulado.setActive(estado);
+        postuladoRepository.save(postulado);
+
+        ChatDTO chat = chatService.findByVacanteIdAndCandidatoId(
+                    postulado.getVacante().getNvacantes(), 
+                    postulado.getCandidato().getIdUsuario());
+        if (chat != null) {
+            chatService.cambiarEstadoChat(chat.getId(), false, "El candidato cancelo la postulacion");
+        }
     }
 
+   
     public Map<String,Object> mapResponse(Page<PostuladoDTO> pageableResponse, String nameList){
         Map<String,Object> response = new HashMap<>();
 

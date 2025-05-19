@@ -164,7 +164,7 @@ public class ChatService {
         return mapResponse(pageDto, "chats");
     }
 
-    public void cambiarEstadoChat(String chatId, boolean nuevoEstado) {
+    public void cambiarEstadoChat(String chatId, boolean nuevoEstado, String mensajeContent) {
         Chat chat = chatRepository.findById(chatId).orElse(null);
         if(chat == null){return;}
        
@@ -172,12 +172,22 @@ public class ChatService {
         chatRepository.save(chat);
 
         if (!nuevoEstado) {
+
+            MensajeDTO mensaje = new MensajeDTO();
+
+            mensaje.setChatId(chatId);
+            mensaje.setContent(mensajeContent);
+            mensaje.setTime(LocalDateTime.now());
+            mensaje.setState("enviado");
+        
             // Notificar a ambos usuarios que el chat fue cerrado (si estás usando WebSocket)
             String empresaId = usuarioService.get(Long.parseLong(chat.getEmpresaId())).getCorreo();
             String candidatoId = usuarioService.get(Long.parseLong(chat.getCandidatoId())).getCorreo();
-            String mensaje = "El chat ha sido cerrado por la empresa.";
+            
             messagingTemplate.convertAndSendToUser(empresaId, "/queue/messages", mensaje);
             messagingTemplate.convertAndSendToUser(candidatoId, "/queue/messages", mensaje);
+            
+            System.out.println(candidatoId+ "/queue/messages"+ mensaje);
         }
     }
 

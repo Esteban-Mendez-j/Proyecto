@@ -40,7 +40,7 @@ import jakarta.validation.groups.Default;
 @RestController
 @RequestMapping(value = "/api/candidatos", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CandidatoResource {
-
+    
     private final CandidatoService candidatoService;
     private final JwtUtils jwtUtils;
     private final PostuladoService postuladoService;
@@ -127,22 +127,20 @@ public class CandidatoResource {
         return ResponseEntity.ok(candidatoService.get(idCandidato));
     }
 
-    @PutMapping(value = "/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/edit/{idUsuario}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<String, Object>> editCandidato(
             @RequestPart("candidato") @Validated({ValidationGroups.OnUpdate.class, Default.class}) CandidatoDTO candidatoDTO,
             @RequestPart(name = "img", required = false) MultipartFile imagen,
-            @RequestPart(name = "pdf", required = false) MultipartFile curriculo) {
+            @RequestPart(name = "pdf", required = true) MultipartFile curriculo) {
 
         Map<String, Object> response = new HashMap<>();
         Long idUsuario = candidatoDTO.getIdUsuario();
 
         try {
-            // Si hay errores de validación, lo ideal es capturarlos con @ControllerAdvice
-            // pero para este ejemplo asumimos que ya están validados.
-
-            // Verificar si se ha proporcionado una nueva imagen
+            
             if (imagen != null && !imagen.isEmpty()) {
                 if (candidatoDTO.getImagen() != null && !candidatoDTO.getImagen().isEmpty()) {
+
                     usuarioService.eliminarArchivo(candidatoDTO.getImagen(), true);
                 }
                 String rutaImagen = usuarioService.guardarArchivo(imagen, idUsuario);
@@ -159,17 +157,18 @@ public class CandidatoResource {
             }
             // Actualizar los datos
             candidatoService.update(idUsuario, candidatoDTO);
-            response.put("status", "success");
-            response.put("message", "Candidato actualizado correctamente.");
+            response.put("status", HttpStatus.OK.value());
+            response.put("mensaje", "Candidato actualizado correctamente.");
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {
-            response.put("status", "error");
-            response.put("message", "Error al guardar la imagen.");
+            System.out.println("Error al guardar/eliminar archivos:"+ e); 
+            response.put("status", HttpStatus.BAD_REQUEST.value());
+            response.put("mensaje", "Error al guardar la imagen.");
             return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
-            response.put("status", "error");
-            response.put("message", "Error al actualizar el candidato.");
+            response.put("status", HttpStatus.BAD_REQUEST.value());
+            response.put("mensaje", "Error al actualizar el candidato.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

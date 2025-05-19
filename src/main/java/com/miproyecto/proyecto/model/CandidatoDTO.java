@@ -1,14 +1,17 @@
 package com.miproyecto.proyecto.model;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 
 public class CandidatoDTO  extends UsuarioDTO {
 
+    @NotNull
     @Size(max = 20)
     private String apellido;
 
-    @Size(max = 255)
+    
+    @Size(max = 225)
     private String curriculo;
 
     @Size(max = 4)
@@ -51,4 +54,11 @@ public class CandidatoDTO  extends UsuarioDTO {
         this.identificacion = identificacion;
     }
 
+    @Override
+    public String toString() {
+        return "CandidatoDTO [apellido=" + apellido + ", curriculo=" + curriculo + ", experiencia=" + experiencia
+                + ", identificacion=" + identificacion + ", toString()=" + super.toString() + "]";
+    }
+
+    
 }

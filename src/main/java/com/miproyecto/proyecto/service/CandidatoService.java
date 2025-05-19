@@ -62,7 +62,6 @@ public class CandidatoService{
 
         roles.add(rolesRepository.findByRol("CANDIDATO"));
         candidatoDTO.setIsActive(true);
-        candidatoDTO.setImagen("/images/imgCandidato.png");
         candidatoDTO.setFechaRegistro(LocalDate.now());
         mapToEntity(candidatoDTO, candidato, true);
         candidato.setRoles(roles);// guarda el rol en la db

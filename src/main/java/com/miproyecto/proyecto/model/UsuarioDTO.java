@@ -18,7 +18,7 @@ public class UsuarioDTO {
     private String nombre;
 
     @NotNull(groups = ValidationGroups.OnCreate.class)
-    @Size(max = 15)
+    @Size(max = 15, groups = ValidationGroups.OnCreate.class)
     private String contrasena;
 
     @NotNull

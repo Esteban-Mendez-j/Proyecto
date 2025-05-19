@@ -28,7 +28,6 @@ public interface VacanteRepository extends JpaRepository<Vacante, Long>, JpaSpec
 
     List<Vacante> findTop2ByIsActiveOrderByExperienciaAsc(Boolean estado);
 
-    // @Query("SELECT v FROM Vacante v LEFT JOIN v.litarpostulados p WHERE v.idUsuario = :idEmpresa AND v.estado = 'activa' GROUP BY v ORDER BY COUNT(p) DESC")
-    // List<Vacante> findVacantesConMasPostulacionesPorEmpresa(@Param("idEmpresa") Long idEmpresa);
-
+    List<Vacante> findTop6ByIdUsuarioOrderByTotalpostulacionesDesc(Empresa idUsuario);
+    
 }

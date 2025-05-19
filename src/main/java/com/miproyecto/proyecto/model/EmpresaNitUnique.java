@@ -5,7 +5,6 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 
 import com.miproyecto.proyecto.service.EmpresaService;
-import com.miproyecto.proyecto.service.EncryptionService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Constraint;
@@ -41,13 +40,11 @@ public @interface EmpresaNitUnique {
 
         private final EmpresaService empresaService;
         private final HttpServletRequest request;
-        private final EncryptionService encryptionService;
 
         public EmpresaNitUniqueValidator(final EmpresaService empresaService,
-                final HttpServletRequest request,final EncryptionService encryptionService) {
+                final HttpServletRequest request) {
             this.empresaService = empresaService;
             this.request = request;
-            this.encryptionService = encryptionService;
         }
 
         @Override
@@ -62,9 +59,9 @@ public @interface EmpresaNitUnique {
 
             
             if (currentId != null){
-                Long idDescrypt = encryptionService.decrypt(currentId);
+                Long id = Long.parseLong(currentId);
                 
-                if (value.equalsIgnoreCase((empresaService.get(idDescrypt)).getNit())) {
+                if (value.equalsIgnoreCase((empresaService.get(id)).getNit())) {
                     // value hasn't changed
                     return true;
                 }

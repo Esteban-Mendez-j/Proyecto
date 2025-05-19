@@ -4,7 +4,6 @@ import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 
-import com.miproyecto.proyecto.service.EncryptionService;
 import com.miproyecto.proyecto.service.UsuarioService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Constraint;
@@ -40,13 +39,11 @@ public @interface UsuarioTelefonoUnique {
 
         private final UsuarioService usuarioService;
         private final HttpServletRequest request;
-        private final EncryptionService encryptionService;
 
         public UsuarioTelefonoUniqueValidator(final UsuarioService usuarioService,
-                final HttpServletRequest request, final EncryptionService encryptionService) {
+                final HttpServletRequest request) {
             this.usuarioService = usuarioService;
             this.request = request;
-            this.encryptionService = encryptionService;
         }
 
         @Override
@@ -61,9 +58,9 @@ public @interface UsuarioTelefonoUnique {
 
 
             if (currentId != null){
-                Long idDescrypt = encryptionService.decrypt(currentId);
+                Long id = Long.parseLong(currentId);
                 
-                if (value.equalsIgnoreCase(usuarioService.get(idDescrypt).getTelefono())) {
+                if (value.equalsIgnoreCase(usuarioService.get(id).getTelefono())) {
                     // value hasn't changed
                     return true;
                 }

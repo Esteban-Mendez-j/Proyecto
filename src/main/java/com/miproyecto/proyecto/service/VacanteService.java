@@ -92,11 +92,16 @@ public class VacanteService {
         return mapResponse(page, "vacantes");         
     }
 
-    // public List<VacanteDTO> TopVacantesPorPostulados(Long idEmpresa){
-    //     return vacanteRepository.findVacantesConMasPostulacionesPorEmpresa(idEmpresa).stream()
-    //     .map(vacante -> mapToDTO(vacante, new VacanteDTO()))
-    //     .toList();
-    // }
+    public List<VacanteDTO> TopVacantesPorPostulados(Long idEmpresa){
+        
+        Empresa empresa = empresaRepository.findById(idEmpresa)
+                .orElse(null);
+
+        return vacanteRepository.findTop6ByIdUsuarioOrderByTotalpostulacionesDesc(empresa).stream()
+            .map(v -> mapToDTO(0L, v, new VacanteDTO()))
+            .collect(Collectors.toList());  
+        
+    }
 
     public List<VacanteDTO> TopVacantesPorFechaSueldoExperiencia(Long idLogin) {
         Set<Vacante> topVacantes = new HashSet<>();

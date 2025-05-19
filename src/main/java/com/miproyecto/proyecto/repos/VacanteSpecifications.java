@@ -26,6 +26,7 @@ public class VacanteSpecifications {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("totalpostulaciones"), filtro.getTotalpostulaciones()));
 
             }
+
             if (filtro.getNameEmpresa() != null && !filtro.getNameEmpresa().isEmpty()) {
                 Join<Vacante, Empresa> empresaJoin = root.join("idUsuario", JoinType.INNER);
                 predicates.add(criteriaBuilder.like(

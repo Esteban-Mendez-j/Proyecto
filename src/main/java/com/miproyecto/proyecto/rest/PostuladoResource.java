@@ -23,8 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -104,40 +104,49 @@ public class PostuladoResource {
 
     @PostMapping("/add/{nvacantes}")
     public ResponseEntity<Map<String, Object>> addPostulacion(
-            @PathVariable("nvacantes") Long nvacantes,
+            @PathVariable Long nvacantes,
             HttpSession session) {
 
         Map<String, Object> response = new HashMap<>();
 
-        // Obtener ID del usuario desde el token JWT en sesión
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
 
-        // Verificar si ya está postulado
-        if (postuladoService.findByNvacantesAndIdUsuario(nvacantes, idUsuario) != null) {
+        // Verificar si ya existe una postulación activa
+        PostuladoDTO postuladoDTO = postuladoService
+                .findByNvacantesAndIdUsuario(nvacantes, idUsuario);
+
+        if (postuladoDTO != null && postuladoDTO.isActive()) {
             response.put("status", "error");
             response.put("message", "Ya postulaste a esta vacante.");
             return ResponseEntity.badRequest().body(response);
         }
 
-        // Verificar datos del perfil del candidato
-        CandidatoResumenDTO candidatoResumenDTO = candidatoService.getCandidatoResumen(idUsuario);
+        //  Verificar datos del perfil (currículum obligatorio)
+        CandidatoResumenDTO candidatoResumenDTO = candidatoService
+                .getCandidatoResumen(idUsuario);
 
-        if (candidatoResumenDTO.getCurriculo() == null ) {
+        if (candidatoResumenDTO.getCurriculo() == null) {
             response.put("status", "info");
-            response.put("message", "Debes subir tu curriculo para postularte");
+            response.put("message", "Debes subir tu currículum para postularte.");
             return ResponseEntity.badRequest().body(response);
         }
-        // Crear postulación
-        PostuladoDTO postuladoDTO = new PostuladoDTO();
-        postuladoDTO.setCandidato(candidatoResumenDTO);
-        postuladoService.create(postuladoDTO, candidatoResumenDTO, nvacantes);
+
+        //  Si existe postuladoDTO lo reactivamos; de lo contrario creamos uno nuevo
+        if (postuladoDTO != null) {
+            postuladoService.cambiarEstado(postuladoDTO, true);
+        } else {
+            PostuladoDTO nuevo = new PostuladoDTO();
+            nuevo.setCandidato(candidatoResumenDTO);
+            postuladoService.create(nuevo, candidatoResumenDTO, nvacantes);
+        }
 
         response.put("status", "success");
         response.put("message", "Postulación realizada con éxito.");
         return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/edit/{nPostulacion}")
     public ResponseEntity<PostuladoDTO> getPostulado(
@@ -153,11 +162,12 @@ public class PostuladoResource {
         return ResponseEntity.ok(nPostulacion);
     }
 
-    @DeleteMapping("/delete/{nPostulacion}")
-    public ResponseEntity<Void> deletePostulado(
-            @PathVariable(name = "nPostulacion") final Long nPostulacion) {
-        postuladoService.delete(nPostulacion);
-        return ResponseEntity.noContent().build();
-    }
+    @PatchMapping("/cancelar/{nPostulacion}")
+    public ResponseEntity<Void> cancelarPostulado(
+            @PathVariable Long nPostulacion,
+            @RequestParam(name = "estado") Boolean estado) {
 
+        postuladoService.cancelarPostulacion(nPostulacion, estado);
+        return ResponseEntity.noContent().build();   // 204 No Content
+    } 
 }
