@@ -171,24 +171,14 @@ public class ChatService {
         chat.setIsActive(nuevoEstado);
         chatRepository.save(chat);
 
-        if (!nuevoEstado) {
-
-            MensajeDTO mensaje = new MensajeDTO();
-
-            mensaje.setChatId(chatId);
-            mensaje.setContent(mensajeContent);
-            mensaje.setTime(LocalDateTime.now());
-            mensaje.setState("enviado");
-        
-            // Notificar a ambos usuarios que el chat fue cerrado (si estás usando WebSocket)
-            String empresaId = usuarioService.get(Long.parseLong(chat.getEmpresaId())).getCorreo();
-            String candidatoId = usuarioService.get(Long.parseLong(chat.getCandidatoId())).getCorreo();
-            
-            messagingTemplate.convertAndSendToUser(empresaId, "/queue/messages", mensaje);
-            messagingTemplate.convertAndSendToUser(candidatoId, "/queue/messages", mensaje);
-            
-            System.out.println(candidatoId+ "/queue/messages"+ mensaje);
+        if (nuevoEstado) {
+            mensajeContent= "chat abierto nuevamente";
         }
+        String empresaId = usuarioService.get(Long.parseLong(chat.getEmpresaId())).getCorreo();
+        String candidatoId = usuarioService.get(Long.parseLong(chat.getCandidatoId())).getCorreo();
+            
+        messagingTemplate.convertAndSendToUser(empresaId, "/queue/chat-change", mensajeContent);
+        messagingTemplate.convertAndSendToUser(candidatoId, "/queue/chat-change", mensajeContent);
     }
 
 
