@@ -146,6 +146,7 @@ public class PostuladoService {
     public void cancelarPostulacion (Long idUsuario, boolean estado, Long nVacante){
         Postulado postulado = postuladoRepository.findById(idUsuario).orElse(null);
         postulado.setActive(estado);
+        postulado.setEstado("Cancelada");
         postuladoRepository.save(postulado);
 
         Vacante vacante = vacanteRepository.findById(nVacante).orElseThrow(NotFoundException::new);
