@@ -30,44 +30,39 @@ public class UsuarioSpecifications {
                 predicates.add(criteriaBuilder.equal(root.get("isActive"), estado));
             }
 
-            // Join con la tabla de roles
             Join<Usuario, Roles> joinRoles = root.join("roles", JoinType.INNER);
 
-            // Lógica para SUPER_ADMIN
             if ("SUPER_ADMIN".equalsIgnoreCase(rolUsuario)) {
                 if (rol == null || rol.isEmpty()) {
-                    Predicate esCandidato = criteriaBuilder.like(
-                        criteriaBuilder.lower(joinRoles.get("rol")), "%candidato%");
-                    Predicate esEmpresa = criteriaBuilder.like(
-                        criteriaBuilder.lower(joinRoles.get("rol")), "%empresa%");
-                    Predicate esAdmin = criteriaBuilder.like(
-                        criteriaBuilder.lower(joinRoles.get("rol")), "admin");
-
-                    predicates.add(criteriaBuilder.or(esCandidato, esEmpresa, esAdmin));
+                    // SUPER_ADMIN puede ver todos los roles
+                    predicates.add(joinRoles.get("rol").in("ADMIN", "EMPRESA", "CANDIDATO"));
                 } else {
-                    predicates.add(criteriaBuilder.like(
+                    // Filtrar por el rol exacto (sin LIKE para evitar coincidencias parciales)
+                    predicates.add(criteriaBuilder.equal(
                         criteriaBuilder.lower(joinRoles.get("rol")), rol.toLowerCase()));
                 }
 
-            // Lógica para ADMIN
             } else if ("ADMIN".equalsIgnoreCase(rolUsuario)) {
                 if (rol == null || rol.isEmpty()) {
-                    Predicate esCandidato = criteriaBuilder.like(
-                        criteriaBuilder.lower(joinRoles.get("rol")), "%candidato%");
-                    Predicate esEmpresa = criteriaBuilder.like(
-                        criteriaBuilder.lower(joinRoles.get("rol")), "%empresa%");
-                    predicates.add(criteriaBuilder.or(esCandidato, esEmpresa));
-                } else if (!"ADMIN".equalsIgnoreCase(rol)) {
-                    System.out.println("este es el rol de la sesion actual y su id: " + rolUsuario + " " + rol);
-                    predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(joinRoles.get("rol")), rol.toLowerCase()));
+                    // ADMIN solo puede ver EMPRESA y CANDIDATO
+                    predicates.add(joinRoles.get("rol").in("EMPRESA", "CANDIDATO"));
+                } else {
+                    String rolLower = rol.toLowerCase();
+                    if ("admin".equals(rolLower)) {
+                        // ADMIN no puede buscar por ADMIN
+                        System.out.println("ADMIN no tiene permiso para buscar usuarios con rol ADMIN.");
+                        predicates.add(criteriaBuilder.disjunction()); // Fuerza resultado vacío
+                    } else if ("empresa".equals(rolLower) || "candidato".equals(rolLower)) {
+                        // Filtro permitido
+                        predicates.add(criteriaBuilder.equal(
+                            criteriaBuilder.lower(joinRoles.get("rol")), rolLower));
+                    } else {
+                        // Rol inválido para ADMIN, fuerza resultado vacío
+                        predicates.add(criteriaBuilder.disjunction());
+                    }
                 }
             }
 
-            // 🚨 Protección para evitar mostrar todo si no se aplicaron filtros
-            if (predicates.isEmpty()) {
-                return criteriaBuilder.disjunction(); // Equivale a "WHERE 1 = 0"
-            }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };

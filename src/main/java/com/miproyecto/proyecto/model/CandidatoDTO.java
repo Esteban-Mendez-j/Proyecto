@@ -10,7 +10,6 @@ public class CandidatoDTO  extends UsuarioDTO {
     @Size(max = 20)
     private String apellido;
 
-    
     @Size(max = 225)
     private String curriculo;
 

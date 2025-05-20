@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/mydbtutoria?serverTimezone=UTC}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
@@ -20,7 +20,7 @@ spring:
           new_generator_mappings: true
   data:
     mongodb:
-        uri: mongodb+srv://searchjobs:Searchjobs05@chat-cluster.we1rkbx.mongodb.net/ChatDB?retryWrites=true&w=majority&appName=chat-cluster
+        uri: ${MONGODB_URI}
     
   mvc:
     format:
