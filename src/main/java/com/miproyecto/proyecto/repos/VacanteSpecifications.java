@@ -22,11 +22,11 @@ public class VacanteSpecifications {
                 predicates.add(criteriaBuilder.equal(empresaJoin.get("idUsuario"), filtro.getIdUsuario()));   
             }
 
-            // if (filtro.getTotalpostulaciones() >= 0){
-            //     predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("totalpostulaciones"),filtro.getTotalpostulaciones()
-            //         )
-            //     );
-            // }
+            if (filtro.getTotalpostulaciones() >= 0){
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("totalpostulaciones"),filtro.getTotalpostulaciones()
+                    )
+                );
+            }
 
             if (filtro.getNameEmpresa() != null && !filtro.getNameEmpresa().isEmpty()) {
                 Join<Vacante, Empresa> empresaJoin = root.join("idUsuario", JoinType.INNER);

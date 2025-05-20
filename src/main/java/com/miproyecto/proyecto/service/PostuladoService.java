@@ -78,7 +78,10 @@ public class PostuladoService {
 
 
     public PostuladoDTO findByNvacantesAndIdUsuario(Long nvacanteId, Long idUsuarioId) {
-        return postuladoRepository.findByVacante_NvacantesAndCandidato_IdUsuario(nvacanteId, idUsuarioId)
+        Vacante vacante = vacanteRepository.findById(nvacanteId).orElseThrow(NotFoundException::new);
+        Candidato candidato =candidatoRepository.findById(idUsuarioId).orElseThrow(NotFoundException::new);
+        
+        return postuladoRepository.findByCandidatoAndVacante(candidato, vacante)
                 .map(postulado -> mapToDTO(postulado, new PostuladoDTO()))
                 .orElse(null); 
     }
@@ -109,10 +112,16 @@ public class PostuladoService {
     }
     
     public void cambiarEstado (PostuladoDTO postuladoDTO, Boolean estado){
+        Vacante vacante = vacanteRepository.findById(postuladoDTO.getVacante().getId())
+                .orElseThrow(NotFoundException::new);
+        vacante.setTotalpostulaciones(vacante.getTotalpostulaciones()+1);
+        vacanteRepository.save(vacante);
+
         postuladoDTO.setActive(estado);
         postuladoDTO.setFechaPostulacion(LocalDate.now());
         postuladoDTO.setEstado("Espera");
         Postulado postulado = mapToEntity(postuladoDTO, new Postulado());
+        postulado.setNPostulacion(postuladoDTO.getnPostulacion());
         postuladoRepository.save(postulado);
     }
 

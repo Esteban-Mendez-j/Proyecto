@@ -50,6 +50,7 @@ public class UsuarioResource {
             // Si no hay token en la sesión, devolver rol de invitado
             response.put("rolPrincipal", "ROLE_INVITADO");
             response.put("roles", List.of("ROLE_INVITADO"));
+            response.put("status", HttpStatus.UNAUTHORIZED.value());
             return ResponseEntity.ok(response);
         }
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
@@ -57,6 +58,7 @@ public class UsuarioResource {
             // Si el token es inválido, también devolver como invitado
             response.put("rolPrincipal", "ROLE_INVITADO");
             response.put("roles", List.of("ROLE_INVITADO"));
+            response.put("status", HttpStatus.UNAUTHORIZED.value());
             return ResponseEntity.ok(response);
         }
 
