@@ -116,8 +116,6 @@ public class ChatResource {
         } else if ("inactivos".equalsIgnoreCase(estado)) {
             activoFiltro = false;
         }
-        System.out.println(" texto: "+search +" "+ activoFiltro);
-
         Map<String, Object> response = chatService.buscarChatsConFiltros(userId,tipoUsuario,
         activoFiltro,search,pageable);
 
