@@ -44,7 +44,6 @@ public class AdminResource {
     public ResponseEntity<Map<String, Object>> listarUsuariosFiltrados(
             HttpSession session,
             @PageableDefault(page = 0, size = 10) Pageable pageable,
-            // @RequestParam(name= "idUsuario", required = false) Long idUsuario,
             @RequestParam(name = "nombre", required = false) String nombre,
             @RequestParam(name = "rolPrinciapl", required = false) String rol,
             @RequestParam(name = "estado", required = false) Boolean estado) {
@@ -52,8 +51,10 @@ public class AdminResource {
         String jwtToken = (String) session.getAttribute("jwtToken");
         DecodedJWT decodedJWT = jwtUtils.validateToken(jwtToken);
         Long idUsuario = Long.parseLong(jwtUtils.extractUsername(decodedJWT));
+        String rolUsuario = decodedJWT.getClaim("rolPrincipal").asString();
         
-        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(idUsuario, nombre, rol, estado, pageable);
+        Map<String, Object> response = usuarioService.buscarUsuariosConFiltros(idUsuario,rolUsuario, nombre, rol, estado, pageable);
+        // System.out.println("este es el rol de la sesion actual y su id: "+ rolUsuario +" "+ idUsuario) ;
         return ResponseEntity.ok(response);
     }
 
@@ -103,7 +104,7 @@ public class AdminResource {
     }
 
     // Obtener vacantes desactivadas
-     @GetMapping("/listVacantes/desactivadas")
+    @GetMapping("/listVacantes/desactivadas")
      public ResponseEntity<Map<String, Object>> getInactiveVacancies(@PageableDefault(page = 0, size = 10) Pageable pageable) {
          Map<String, Object> response = vacanteService
              .findAllByEstado(false, pageable, "vacantesDesactivadas");
@@ -112,8 +113,8 @@ public class AdminResource {
 
     // Agregar rol de administrador a un usuario
     @PostMapping("/agregarRol")
-    public ResponseEntity<Map<String, String>> addAdminRole(@RequestParam("idUsuario") Long idUsuario) {
-        adminService.modificarRoles(idUsuario, true);
+    public ResponseEntity<Map<String, String>> addAdminRole(@RequestParam("idUsuario") Long idUsuario, @RequestParam("estado") boolean estado) {
+        adminService.modificarRoles(idUsuario, estado);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Rol de admin agregado exitosamente");
         return ResponseEntity.ok(response);
