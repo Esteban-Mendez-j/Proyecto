@@ -54,7 +54,7 @@ public interface PostuladoRepository extends JpaRepository<Postulado, Long>{
     );
 
 
-    Optional<Postulado> findByVacante_NvacantesAndCandidato_IdUsuario(Long vacanteId, Long idUsuarioId);  // Cambiar Nvacante a Vacante y asegurar que los parámetros sean correctos
+    Optional<Postulado> findByCandidatoAndVacante(Candidato candidato, Vacante vacante);  // Cambiar Nvacante a Vacante y asegurar que los parámetros sean correctos
 
     Page<Postulado> findByCandidato(Candidato candidato, Pageable pageable);
 
@@ -70,13 +70,4 @@ public interface PostuladoRepository extends JpaRepository<Postulado, Long>{
     @Query("UPDATE Postulado p SET p.isActive = :estado WHERE p.candidato.idUsuario = :idUsuario")
     int actualizarEstadoPostulacionesPorUsuario(@Param("idUsuario") Long idUsuario, @Param("estado") boolean estado);
 
-    // Actualiza el estado de la postulación (isActive) para un determinado postulado
-    // @Modifying
-    // @Query("UPDATE Postulado p SET p.isActive = :estado WHERE p.nPostulacion = :nPostulacion")
-    // int actualizarEstadoPostulacion(@Param("nPostulacion") Long nPostulacion, @Param("estado") boolean estado);
-
-    // // Actualiza el estado de la vacante asociada a la postulación (vacanteIsActive)
-    // @Modifying
-    // @Query("UPDATE Postulado p SET p.vacanteIsActive = :estado WHERE p.nPostulacion = :nPostulacion")
-    // int actualizarEstadoVacantePostulacion(@Param("nPostulacion") Long nPostulacion, @Param("estado") boolean estado);
 }

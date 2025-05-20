@@ -134,7 +134,7 @@ public class PostuladoResource {
         }
 
         //  Si existe postuladoDTO lo reactivamos; de lo contrario creamos uno nuevo
-        if (postuladoDTO != null) {
+        if (postuladoDTO != null ) {
             postuladoService.cambiarEstado(postuladoDTO, true);
         } else {
             PostuladoDTO nuevo = new PostuladoDTO();
